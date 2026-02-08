@@ -1,0 +1,1071 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Helvetica}
+  \setmonofont[]{Menlo}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.05}
+\setlength{\emergencystretch}{1em}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\floatplacement{figure}{H}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={FPP3 Chapter 2 Graphics Exercise},
+  pdfauthor={Randy Howk},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{FPP3 Chapter 2 Graphics Exercise}
+\author{Randy Howk}
+\date{February 08, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Explore four time series}\label{explore-four-time-series}
+
+Series explored:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Bricks} from \texttt{aus\_production}
+\item
+  \textbf{Lynx} from \texttt{pelt}
+\item
+  \textbf{Close} from \texttt{gafa\_stock}
+\item
+  \textbf{Demand} from \texttt{vic\_elec}
+\end{itemize}
+
+\subsection{Dataset help pages}\label{dataset-help-pages}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{?aus\_production}
+\NormalTok{?pelt}
+\NormalTok{?gafa\_stock}
+\NormalTok{?vic\_elec}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Time interval of each
+series}\label{time-interval-of-each-series}
+
+Below, I compute the interval from each tsibble index.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bricks\_ts }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(Quarter, Bricks)}
+\NormalTok{lynx\_ts }\OtherTok{\textless{}{-}} \FunctionTok{pelt\_long}\NormalTok{(pelt) }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Lynx"}\NormalTok{)}
+\NormalTok{close\_ts  }\OtherTok{\textless{}{-}}\NormalTok{ gafa\_stock }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(Symbol, Date, Close)}
+\NormalTok{demand\_ts }\OtherTok{\textless{}{-}}\NormalTok{ vic\_elec }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(Time, Demand)}
+
+\NormalTok{bricks\_interval }\OtherTok{\textless{}{-}}\NormalTok{ bricks\_ts }\SpecialCharTok{|\textgreater{}}\NormalTok{ tsibble}\SpecialCharTok{::}\FunctionTok{interval}\NormalTok{()}
+\NormalTok{lynx\_interval   }\OtherTok{\textless{}{-}}\NormalTok{ lynx\_ts   }\SpecialCharTok{|\textgreater{}}\NormalTok{ tsibble}\SpecialCharTok{::}\FunctionTok{interval}\NormalTok{()}
+\NormalTok{close\_interval  }\OtherTok{\textless{}{-}}\NormalTok{ close\_ts  }\SpecialCharTok{|\textgreater{}}\NormalTok{ tsibble}\SpecialCharTok{::}\FunctionTok{interval}\NormalTok{()}
+\NormalTok{demand\_interval }\OtherTok{\textless{}{-}}\NormalTok{ demand\_ts }\SpecialCharTok{|\textgreater{}}\NormalTok{ tsibble}\SpecialCharTok{::}\FunctionTok{interval}\NormalTok{()}
+
+\NormalTok{bricks\_interval}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1Q
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lynx\_interval}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1Y
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{close\_interval}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] !
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{demand\_interval}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 30m
+\end{verbatim}
+
+\textbf{Answer (interpretation):}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{aus\_production} (\textbf{Bricks}) is \textbf{quarterly}
+  (index is \texttt{yearquarter}).
+\item
+  \texttt{pelt} (\textbf{Lynx}) is \textbf{annual} (index is
+  \texttt{year}).
+\item
+  \texttt{gafa\_stock} (\textbf{Close}) is \textbf{daily trading days}
+  (dates exist only on trading days, so the calendar is not strictly
+  regular daily).
+\item
+  \texttt{vic\_elec} (\textbf{Demand}) is \textbf{half-hourly}
+  (sub-daily regular interval).
+\end{itemize}
+
+\subsection{Time plots (autoplot)}\label{time-plots-autoplot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Bricks}
+\NormalTok{bricks\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Bricks) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian brick production"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Bricks"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/time-plots-autoplot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Lynx}
+\NormalTok{lynx\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(value) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Lynx pelts"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Year"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Pelts"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/time-plots-autoplot-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Close (all four stocks)}
+\NormalTok{gafa\_stock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Close) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Daily closing prices: GAFA"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Date"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Close"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/time-plots-autoplot-3.pdf}}
+
+\subsection{Demand plot with modified axis labels and
+title}\label{demand-plot-with-modified-axis-labels-and-title}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{demand\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Demand) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Victoria electricity demand (half{-}hourly)"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Time"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Demand (MW)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/demand-plot-1.pdf}}
+
+\section{Peak closing price day(s) for each GAFA
+stock}\label{peak-closing-price-days-for-each-gafa-stock}
+
+Find the trading day(s) (ties possible) corresponding to the maximum
+closing price for each of the four stocks.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gafa\_peaks }\OtherTok{\textless{}{-}}\NormalTok{ gafa\_stock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(Symbol) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Close }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(Close, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(Symbol, Date) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Symbol, Date, Close)}
+
+\NormalTok{gafa\_peaks}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 4 x 3 [!]
+## # Key:       Symbol [4]
+## # Groups:    Symbol [4]
+##   Symbol Date       Close
+##   <chr>  <date>     <dbl>
+## 1 AAPL   2018-10-03  232.
+## 2 AMZN   2018-09-04 2040.
+## 3 FB     2018-07-25  218.
+## 4 GOOG   2018-07-26 1268.
+\end{verbatim}
+
+\textbf{Answer:} The table above lists the peak closing date(s) and peak
+\texttt{Close} for each symbol.
+
+\section{tute1.csv: import, tsibble conversion, plots, and
+faceting}\label{tute1.csv-import-tsibble-conversion-plots-and-faceting}
+
+\texttt{tute1.csv} contains quarterly series \textbf{Sales},
+\textbf{AdBudget}, and \textbf{GDP} (inflation-adjusted).
+
+\subsection{Download and read the
+data}\label{download-and-read-the-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tute1\_url }\OtherTok{\textless{}{-}} \StringTok{"https://otexts.com/fpp3/extrafiles/tute1.csv"}
+\NormalTok{tute1 }\OtherTok{\textless{}{-}}\NormalTok{ readr}\SpecialCharTok{::}\FunctionTok{read\_csv}\NormalTok{(tute1\_url)}
+
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{glimpse}\NormalTok{(tute1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 100
+## Columns: 4
+## $ Quarter  <date> 1981-03-01, 1981-06-01, 1981-09-01, 1981-12-01, 1982-03-01, ~
+## $ Sales    <dbl> 1020.2, 889.2, 795.0, 1003.9, 1057.7, 944.4, 778.5, 932.5, 99~
+## $ AdBudget <dbl> 659.2, 589.0, 512.5, 614.1, 647.2, 602.0, 530.7, 608.4, 637.9~
+## $ GDP      <dbl> 251.8, 290.9, 290.8, 292.4, 279.1, 254.0, 295.6, 271.7, 259.6~
+\end{verbatim}
+
+\subsection{Convert to a quarterly
+tsibble}\label{convert-to-a-quarterly-tsibble}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mytimeseries }\OtherTok{\textless{}{-}}\NormalTok{ tute1 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Quarter =} \FunctionTok{yearquarter}\NormalTok{(Quarter)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ Quarter)}
+
+\NormalTok{mytimeseries}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 100 x 4 [1Q]
+##    Quarter Sales AdBudget   GDP
+##      <qtr> <dbl>    <dbl> <dbl>
+##  1 1981 Q1 1020.     659.  252.
+##  2 1981 Q2  889.     589   291.
+##  3 1981 Q3  795      512.  291.
+##  4 1981 Q4 1004.     614.  292.
+##  5 1982 Q1 1058.     647.  279.
+##  6 1982 Q2  944.     602   254 
+##  7 1982 Q3  778.     531.  296.
+##  8 1982 Q4  932.     608.  272.
+##  9 1983 Q1  996.     638.  260.
+## 10 1983 Q2  908.     582.  280.
+## # i 90 more rows
+\end{verbatim}
+
+\subsection{Plot all three series with
+facets}\label{plot-all-three-series-with-facets}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mytimeseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{Quarter) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Quarter, }\AttributeTok{y =}\NormalTok{ value, }\AttributeTok{colour =}\NormalTok{ name)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{(name }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Sales, AdBudget, and GDP (facetted)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{, }\AttributeTok{y =} \StringTok{""}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/three-with-facets-1.pdf}}
+
+\subsection{\texorpdfstring{Plot without
+\texttt{facet\_grid()}}{Plot without facet\_grid()}}\label{plot-without-facet_grid}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mytimeseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{Quarter) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Quarter, }\AttributeTok{y =}\NormalTok{ value, }\AttributeTok{colour =}\NormalTok{ name)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Sales, AdBudget, and GDP (no faceting)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{, }\AttributeTok{y =} \StringTok{""}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/without-facetgrid-1.pdf}}
+
+\textbf{Answer:} Without faceting (and a shared y-axis), the
+largest-scale series visually dominates and the smaller-scale series
+become difficult to compare.
+
+\section{USgas: annual natural gas consumption by state (New
+England)}\label{usgas-annual-natural-gas-consumption-by-state-new-england}
+
+\subsection{\texorpdfstring{Create a tsibble from \texttt{us\_total}
+(year index, state
+key)}{Create a tsibble from us\_total (year index, state key)}}\label{create-a-tsibble-from-us_total-year-index-state-key}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(}\StringTok{"us\_total"}\NormalTok{, }\AttributeTok{package =} \StringTok{"USgas"}\NormalTok{)}
+
+\NormalTok{gas\_ts }\OtherTok{\textless{}{-}}\NormalTok{ us\_total }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ year, }\AttributeTok{key =}\NormalTok{ state)}
+
+\NormalTok{gas\_ts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 1,266 x 3 [1Y]
+## # Key:       state [53]
+##     year state        y
+##    <int> <chr>    <int>
+##  1  1997 Alabama 324158
+##  2  1998 Alabama 329134
+##  3  1999 Alabama 337270
+##  4  2000 Alabama 353614
+##  5  2001 Alabama 332693
+##  6  2002 Alabama 379343
+##  7  2003 Alabama 350345
+##  8  2004 Alabama 382367
+##  9  2005 Alabama 353156
+## 10  2006 Alabama 391093
+## # i 1,256 more rows
+\end{verbatim}
+
+\subsection{Plot New England states}\label{plot-new-england-states}
+
+New England = Maine, Vermont, New Hampshire, Massachusetts, Connecticut,
+Rhode Island.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{new\_england }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Maine"}\NormalTok{, }\StringTok{"Vermont"}\NormalTok{, }\StringTok{"New Hampshire"}\NormalTok{,}
+                 \StringTok{"Massachusetts"}\NormalTok{, }\StringTok{"Connecticut"}\NormalTok{, }\StringTok{"Rhode Island"}\NormalTok{)}
+
+\NormalTok{gas\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(state }\SpecialCharTok{\%in\%}\NormalTok{ new\_england) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(y) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Annual natural gas consumption (New England states)"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Year"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Consumption"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plot-ne-states-1.pdf}}
+
+\section{\texorpdfstring{tourism.xlsx: recreate \texttt{tourism} tsibble
+and
+summaries}{tourism.xlsx: recreate tourism tsibble and summaries}}\label{tourism.xlsx-recreate-tourism-tsibble-and-summaries}
+
+\subsection{Download and read
+tourism.xlsx}\label{download-and-read-tourism.xlsx}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tourism\_url }\OtherTok{\textless{}{-}} \StringTok{"https://otexts.com/fpp3/extrafiles/tourism.xlsx"}
+\NormalTok{tourism\_file }\OtherTok{\textless{}{-}} \FunctionTok{tempfile}\NormalTok{(}\AttributeTok{fileext =} \StringTok{".xlsx"}\NormalTok{)}
+
+\FunctionTok{download.file}\NormalTok{(tourism\_url, tourism\_file, }\AttributeTok{mode =} \StringTok{"wb"}\NormalTok{)}
+
+\NormalTok{tourism\_raw }\OtherTok{\textless{}{-}}\NormalTok{ readxl}\SpecialCharTok{::}\FunctionTok{read\_excel}\NormalTok{(tourism\_file)}
+
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{glimpse}\NormalTok{(tourism\_raw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 24,320
+## Columns: 5
+## $ Quarter <chr> "1998-01-01", "1998-04-01", "1998-07-01", "1998-10-01", "1999-~
+## $ Region  <chr> "Adelaide", "Adelaide", "Adelaide", "Adelaide", "Adelaide", "A~
+## $ State   <chr> "South Australia", "South Australia", "South Australia", "Sout~
+## $ Purpose <chr> "Business", "Business", "Business", "Business", "Business", "B~
+## $ Trips   <dbl> 135.0777, 109.9873, 166.0347, 127.1605, 137.4485, 199.9126, 16~
+\end{verbatim}
+
+\subsection{\texorpdfstring{Create a tsibble identical in structure to
+\texttt{tsibble::tourism}}{Create a tsibble identical in structure to tsibble::tourism}}\label{create-a-tsibble-identical-in-structure-to-tsibbletourism}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tourism\_ts }\OtherTok{\textless{}{-}}\NormalTok{ tourism\_raw }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Quarter =} \FunctionTok{yearquarter}\NormalTok{(Quarter)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tsibble}\NormalTok{(}
+    \AttributeTok{index =}\NormalTok{ Quarter,}
+    \AttributeTok{key =} \FunctionTok{c}\NormalTok{(State, Region, Purpose)}
+\NormalTok{  )}
+
+\NormalTok{tourism\_ts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 24,320 x 5 [1Q]
+## # Key:       State, Region, Purpose [304]
+##    Quarter Region   State Purpose  Trips
+##      <qtr> <chr>    <chr> <chr>    <dbl>
+##  1 1998 Q1 Canberra ACT   Business 150. 
+##  2 1998 Q2 Canberra ACT   Business  99.9
+##  3 1998 Q3 Canberra ACT   Business 130. 
+##  4 1998 Q4 Canberra ACT   Business 102. 
+##  5 1999 Q1 Canberra ACT   Business  95.5
+##  6 1999 Q2 Canberra ACT   Business 229. 
+##  7 1999 Q3 Canberra ACT   Business 109. 
+##  8 1999 Q4 Canberra ACT   Business 159. 
+##  9 2000 Q1 Canberra ACT   Business 105. 
+## 10 2000 Q2 Canberra ACT   Business 202. 
+## # i 24,310 more rows
+\end{verbatim}
+
+\subsection{Ensure temporal ordering for each
+Region/Purpose}\label{ensure-temporal-ordering-for-each-regionpurpose}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tourism\_ts }\OtherTok{\textless{}{-}}\NormalTok{ tourism\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(Region, Purpose, Quarter)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Region--Purpose combination with maximum average overnight
+trips}\label{regionpurpose-combination-with-maximum-average-overnight-trips}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{max\_region\_purpose }\OtherTok{\textless{}{-}}\NormalTok{ tourism\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(Region, Purpose) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{avg\_trips =} \FunctionTok{mean}\NormalTok{(Trips, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(avg\_trips)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{max\_region\_purpose}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 1 x 4 [1Q]
+## # Key:       Region, Purpose [1]
+##   Region    Purpose  Quarter avg_trips
+##   <chr>     <chr>      <qtr>     <dbl>
+## 1 Melbourne Visiting 2017 Q4      985.
+\end{verbatim}
+
+\textbf{Answer:} The row above identifies the
+\texttt{(Region,\ Purpose)} combination with the greatest mean
+\texttt{Trips}.
+
+\subsection{Total trips by State (combining Region and
+Purpose)}\label{total-trips-by-state-combining-region-and-purpose}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tourism\_state\_total }\OtherTok{\textless{}{-}}\NormalTok{ tourism\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{index\_by}\NormalTok{(Quarter) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(State) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Trips =} \FunctionTok{sum}\NormalTok{(Trips, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ Quarter, }\AttributeTok{key =}\NormalTok{ State)}
+
+\NormalTok{tourism\_state\_total}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tsibble: 640 x 3 [1Q]
+## # Key:       State [8]
+##    State Quarter Trips
+##    <chr>   <qtr> <dbl>
+##  1 ACT   1998 Q1  551.
+##  2 ACT   1998 Q2  416.
+##  3 ACT   1998 Q3  436.
+##  4 ACT   1998 Q4  450.
+##  5 ACT   1999 Q1  379.
+##  6 ACT   1999 Q2  558.
+##  7 ACT   1999 Q3  449.
+##  8 ACT   1999 Q4  595.
+##  9 ACT   2000 Q1  600.
+## 10 ACT   2000 Q2  557.
+## # i 630 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tourism\_state\_total }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Total overnight trips by State"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/tourism-state-total-1.pdf}}
+
+\section{aus\_arrivals: compare arrivals from Japan, NZ, UK,
+US}\label{aus_arrivals-compare-arrivals-from-japan-nz-uk-us}
+
+\textcolor{red}{(JUST FOR FUN)}
+
+Use \texttt{autoplot()}, \texttt{gg\_season()}, and
+\texttt{gg\_subseries()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_arrivals }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Arrivals) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"International arrivals to Australia"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Arrivals"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/aus-arrivals-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_arrivals }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{gg\_season}\NormalTok{(Arrivals) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Seasonal plot: arrivals to Australia"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Arrivals"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/aus-arrivals-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_arrivals }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{gg\_subseries}\NormalTok{(Arrivals) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Subseries plot: arrivals to Australia"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Arrivals"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/aus-arrivals-3.pdf}}
+
+\textbf{Answer (unusual observations):}\\
+The subseries plot highlights deviations from the typical seasonal
+pattern by showing each quarter separately over time. Japan exhibits
+unusually low arrivals in Q2 and Q3 during later years, deviating
+sharply from its normally strong seasonal structure. The United States
+shows occasional Q3 spikes that exceed the typical seasonal range,
+indicating one-off surges rather than regular seasonality. The UK also
+displays increased variability in Q3 and Q4, with some years standing
+out as unusually high. In contrast, New Zealand arrivals remain
+relatively stable across all quarters, with no clear unusual
+observations.
+
+\section{aus\_retail: sample a series and
+explore}\label{aus_retail-sample-a-series-and-explore}
+
+\textcolor{red}{(JUST FOR FUN)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{67}\NormalTok{)}
+\NormalTok{myseries }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{Series ID}\StringTok{\textasciigrave{}} \SpecialCharTok{==} \FunctionTok{sample}\NormalTok{(aus\_retail}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{Series ID}\StringTok{\textasciigrave{}}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{glimpse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 441
+## Columns: 5
+## Key: State, Industry [1]
+## $ State       <chr> "New South Wales", "New South Wales", "New South Wales", "~
+## $ Industry    <chr> "Department stores", "Department stores", "Department stor~
+## $ `Series ID` <chr> "A3349790V", "A3349790V", "A3349790V", "A3349790V", "A3349~
+## $ Month       <mth> 1982 Apr, 1982 May, 1982 Jun, 1982 Jul, 1982 Aug, 1982 Sep~
+## $ Turnover    <dbl> 178.3, 202.8, 176.3, 172.6, 169.6, 181.4, 173.9, 206.6, 34~
+\end{verbatim}
+
+\subsection{Graphics exploration}\label{graphics-exploration}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Turnover) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Selected retail turnover series"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Month"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/graphics-exploration-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{gg\_season}\NormalTok{(Turnover) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Seasonal plot: selected retail series"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/graphics-exploration-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{gg\_subseries}\NormalTok{(Turnover) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Subseries plot: selected retail series"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/graphics-exploration-3.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{gg\_lag}\NormalTok{(Turnover) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Lag plot: selected retail series"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/graphics-exploration-4.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ACF}\NormalTok{(Turnover) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ACF: selected retail series"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/graphics-exploration-5.pdf}}
+
+\textbf{Answer (seasonality/cyclicity/trend):}\\
+- \textbf{Seasonality} is indicated by repeating within-year patterns
+and ACF spikes at seasonal lags (e.g., 12 for monthly data).\\
+- \textbf{Trend} appears as persistent long-run increase/decrease and
+often as slow ACF decay.\\
+- \textbf{Cyclicity} shows as multi-year rises/falls not tied to a fixed
+seasonal frequency.\\
+Use the plots above to describe what is present in \emph{this specific
+sampled series}.
+
+\section{Explore five additional series with common graphics +
+ACF}\label{explore-five-additional-series-with-common-graphics-acf}
+
+Series: - \textbf{``Total Private'' Employed} from
+\texttt{us\_employment} - \textbf{Bricks} from \texttt{aus\_production}
+- \textbf{Hare} from \texttt{pelt} - \textbf{``H02'' Cost} from
+\texttt{PBS} - \textbf{Barrels} from \texttt{us\_gasoline}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{emp\_private }\OtherTok{\textless{}{-}}\NormalTok{ us\_employment }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Title }\SpecialCharTok{==} \StringTok{"Total Private"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Employed)}
+
+\NormalTok{bricks\_ts }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(Quarter, Bricks)}
+
+\NormalTok{hare\_ts }\OtherTok{\textless{}{-}} \FunctionTok{pelt\_long}\NormalTok{(pelt) }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Hare"}\NormalTok{)}
+
+\NormalTok{pbs\_keys }\OtherTok{\textless{}{-}} \FunctionTok{key\_vars}\NormalTok{(PBS)}
+
+\NormalTok{pbs\_h02 }\OtherTok{\textless{}{-}}\NormalTok{ PBS }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(ATC2 }\SpecialCharTok{==} \StringTok{"H02"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(}\FunctionTok{key\_vars}\NormalTok{(PBS)))) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(dplyr}\SpecialCharTok{::}\FunctionTok{cur\_group\_id}\NormalTok{() }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Cost)}
+
+\NormalTok{gas\_barrels }\OtherTok{\textless{}{-}}\NormalTok{ us\_gasoline }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(Week, Barrels)}
+\end{Highlighting}
+\end{Shaded}
+
+Helper to run the same exploration:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{explore\_series }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data, value\_col, }\AttributeTok{title\_prefix =} \StringTok{""}\NormalTok{) \{}
+  \FunctionTok{list}\NormalTok{(}
+    \AttributeTok{time =}\NormalTok{ data }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(\{\{ value\_col \}\}) }\SpecialCharTok{+}
+      \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(title\_prefix, }\StringTok{" — time plot"}\NormalTok{)),}
+
+    \AttributeTok{season =} \FunctionTok{tryCatch}\NormalTok{(}
+\NormalTok{      data }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_season}\NormalTok{(\{\{ value\_col \}\}) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(title\_prefix, }\StringTok{" — seasonal plot"}\NormalTok{)),}
+      \AttributeTok{error =} \ControlFlowTok{function}\NormalTok{(e) }\ConstantTok{NULL}
+\NormalTok{    ),}
+
+    \AttributeTok{subseries =} \FunctionTok{tryCatch}\NormalTok{(}
+\NormalTok{      data }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_subseries}\NormalTok{(\{\{ value\_col \}\}) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(title\_prefix, }\StringTok{" — subseries plot"}\NormalTok{)),}
+      \AttributeTok{error =} \ControlFlowTok{function}\NormalTok{(e) }\ConstantTok{NULL}
+\NormalTok{    ),}
+
+    \AttributeTok{lag =} \FunctionTok{tryCatch}\NormalTok{(}
+\NormalTok{      data }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_lag}\NormalTok{(\{\{ value\_col \}\}) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(title\_prefix, }\StringTok{" — lag plot"}\NormalTok{)),}
+      \AttributeTok{error =} \ControlFlowTok{function}\NormalTok{(e) }\ConstantTok{NULL}
+\NormalTok{    ),}
+
+    \AttributeTok{acf =}\NormalTok{ data }\SpecialCharTok{|\textgreater{}} \FunctionTok{ACF}\NormalTok{(\{\{ value\_col \}\}) }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+      \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste0}\NormalTok{(title\_prefix, }\StringTok{" — ACF"}\NormalTok{))}
+\NormalTok{  )}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots\_emp }\OtherTok{\textless{}{-}} \FunctionTok{explore\_series}\NormalTok{(emp\_private, Employed, }\StringTok{"US Employment (Total Private)"}\NormalTok{)}
+\NormalTok{plots\_emp}\SpecialCharTok{$}\NormalTok{time; plots\_emp}\SpecialCharTok{$}\NormalTok{season; plots\_emp}\SpecialCharTok{$}\NormalTok{subseries; plots\_emp}\SpecialCharTok{$}\NormalTok{lag; plots\_emp}\SpecialCharTok{$}\NormalTok{acf}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-5.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots\_bricks }\OtherTok{\textless{}{-}} \FunctionTok{explore\_series}\NormalTok{(bricks\_ts, Bricks, }\StringTok{"Australian Bricks Production"}\NormalTok{)}
+\NormalTok{plots\_bricks}\SpecialCharTok{$}\NormalTok{time; plots\_bricks}\SpecialCharTok{$}\NormalTok{season; plots\_bricks}\SpecialCharTok{$}\NormalTok{subseries; plots\_bricks}\SpecialCharTok{$}\NormalTok{lag; plots\_bricks}\SpecialCharTok{$}\NormalTok{acf}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-10.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots\_hare }\OtherTok{\textless{}{-}} \FunctionTok{explore\_series}\NormalTok{(hare\_ts, value, }\StringTok{"Hare Pelts"}\NormalTok{)}
+\NormalTok{plots\_hare}\SpecialCharTok{$}\NormalTok{time; plots\_hare}\SpecialCharTok{$}\NormalTok{season; plots\_hare}\SpecialCharTok{$}\NormalTok{subseries; plots\_hare}\SpecialCharTok{$}\NormalTok{lag; plots\_hare}\SpecialCharTok{$}\NormalTok{acf}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-11.pdf}}
+
+\begin{verbatim}
+## NULL
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-12.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-13.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-14.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots\_pbs }\OtherTok{\textless{}{-}} \FunctionTok{explore\_series}\NormalTok{(pbs\_h02, Cost, }\StringTok{"PBS H02 Cost"}\NormalTok{)}
+\NormalTok{plots\_pbs}\SpecialCharTok{$}\NormalTok{time; plots\_pbs}\SpecialCharTok{$}\NormalTok{season; plots\_pbs}\SpecialCharTok{$}\NormalTok{subseries; plots\_pbs}\SpecialCharTok{$}\NormalTok{lag; plots\_pbs}\SpecialCharTok{$}\NormalTok{acf}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-15.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-16.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-17.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-18.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-19.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plots\_gas }\OtherTok{\textless{}{-}} \FunctionTok{explore\_series}\NormalTok{(gas\_barrels, Barrels, }\StringTok{"US Gasoline Barrels"}\NormalTok{)}
+\NormalTok{plots\_gas}\SpecialCharTok{$}\NormalTok{time; plots\_gas}\SpecialCharTok{$}\NormalTok{season; plots\_gas}\SpecialCharTok{$}\NormalTok{subseries; plots\_gas}\SpecialCharTok{$}\NormalTok{lag; plots\_gas}\SpecialCharTok{$}\NormalTok{acf}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-20.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-21.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-22.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-23.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/plots-gas-emp-hare-pbs-bricks-24.pdf}}
+
+\textbf{Answer (what we learn):} - \textbf{US Gasoline Barrels} and
+\textbf{PBS H02 Cost} show clear \textbf{seasonality}: repeating
+within‑year patterns and ACF spikes at seasonal lags (and multiples). -
+\textbf{US Employment (Total Private)} shows a strong \textbf{trend /
+nonstationarity}: long‑run drift in the time plot and a slowly decaying
+ACF. - \textbf{Hare Pelts} shows \textbf{cycles} over multiple years:
+oscillations in the time plot with an ACF that alternates signs. -
+\textbf{Australian Bricks Production} shows \textbf{unusual
+years/structural change}: a sharp drop in the early 1980s followed by a
+sustained lower level and higher volatility from the early 1990s onward.
+
+\section{Match time plots to ACF
+plots}\label{match-time-plots-to-acf-plots}
+
+\textcolor{red}{(JUST FOR FUN)}
+
+The book's figure is included below for matching.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{acf\_url }\OtherTok{\textless{}{-}} \StringTok{"https://otexts.com/fpp3/fpp\_files/figure{-}html/acfguess{-}1.png"}
+\NormalTok{acf\_file }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(}\FunctionTok{tempdir}\NormalTok{(), }\StringTok{"acfguess{-}1.png"}\NormalTok{)}
+
+\FunctionTok{download.file}\NormalTok{(acf\_url, acf\_file, }\AttributeTok{mode =} \StringTok{"wb"}\NormalTok{)}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(acf\_file)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=7.87in]{../../../../../../private/var/folders/z7/hslcs7d13097n9zmv9b992xr0000gn/T/Rtmp7QNPNw/acfguess-1}
+
+\textbf{Answer:} Based on the figure: - \textbf{Time plot A} matches
+\textbf{ACF B} - \textbf{Time plot B} matches \textbf{ACF A} -
+\textbf{Time plot C} matches \textbf{ACF D} - \textbf{Time plot D}
+matches \textbf{ACF C}
+
+\textbf{Justification (brief):} - \textbf{B → A:} near‑zero,
+short‑memory ACF fits the cow temperature series. - \textbf{A → B:}
+strong seasonal spikes (esp.~lag 12) fit monthly accidental deaths. -
+\textbf{D → C:} high, slowly decaying ACF fits the trending air
+passengers series. - \textbf{C → D:} oscillating, alternating‑sign ACF
+fits mink trappings cycles.
+
+\section{aus\_livestock pigs in Victoria (1990--1995): autoplot + ACF;
+compare to white
+noise}\label{aus_livestock-pigs-in-victoria-19901995-autoplot-acf-compare-to-white-noise}
+
+\textcolor{red}{(JUST FOR FUN)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_vic\_9095 }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Pigs"}\NormalTok{, State }\SpecialCharTok{==} \StringTok{"Victoria"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textgreater{}=} \DecValTok{1990}\NormalTok{, }\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textless{}=} \DecValTok{1995}\NormalTok{)}
+
+\NormalTok{pigs\_vic\_9095 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(Count) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Pigs slaughtered in Victoria (1990–1995)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Month"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/aus-livestock-pigs-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_vic\_9095 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ACF}\NormalTok{(Count) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ACF: Pigs slaughtered in Victoria (1990–1995)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/aus-livestock-pigs-2.pdf}}
+
+Compare to longer period:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_vic\_full }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Pigs"}\NormalTok{, State }\SpecialCharTok{==} \StringTok{"Victoria"}\NormalTok{)}
+
+\NormalTok{pigs\_vic\_full }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ACF}\NormalTok{(Count) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ACF: Pigs slaughtered in Victoria (Full series)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/pigs-longer-period-1.pdf}}
+
+\textbf{Answer:}\\
+- Compared with \textbf{white noise}, this series shows
+\textbf{structured autocorrelation} (significant ACF spikes rather than
+hovering near zero), indicating dependence and often
+seasonality/persistence. - Using a \textbf{longer period} typically
+yields a \textbf{more stable ACF estimate} and can make seasonal and
+low-frequency structure clearer.
+
+\section{Google stock daily changes: re-indexing, differences, ACF;
+assess white
+noise}\label{google-stock-daily-changes-re-indexing-differences-acf-assess-white-noise}
+
+\textcolor{red}{(JUST FOR FUN)}
+
+Compute daily changes in GOOG closing prices:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dgoog }\OtherTok{\textless{}{-}}\NormalTok{ gafa\_stock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Symbol }\SpecialCharTok{==} \StringTok{"GOOG"}\NormalTok{, }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}=} \DecValTok{2018}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{trading\_day =} \FunctionTok{row\_number}\NormalTok{()) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{update\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ trading\_day, }\AttributeTok{regular =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff =} \FunctionTok{difference}\NormalTok{(Close))}
+
+\NormalTok{dgoog }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{glimpse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 251
+## Columns: 10
+## Key: Symbol [1]
+## $ Symbol      <chr> "GOOG", "GOOG", "GOOG", "GOOG", "GOOG", "GOOG", "GOOG", "G~
+## $ Date        <date> 2018-01-02, 2018-01-03, 2018-01-04, 2018-01-05, 2018-01-0~
+## $ Open        <dbl> 1048.34, 1064.31, 1088.00, 1094.00, 1102.23, 1109.40, 1097~
+## $ High        <dbl> 1066.940, 1086.290, 1093.570, 1104.250, 1111.270, 1110.570~
+## $ Low         <dbl> 1045.230, 1063.210, 1084.002, 1092.000, 1101.620, 1101.231~
+## $ Close       <dbl> 1065.00, 1082.48, 1086.40, 1102.23, 1106.94, 1106.26, 1102~
+## $ Adj_Close   <dbl> 1065.00, 1082.48, 1086.40, 1102.23, 1106.94, 1106.26, 1102~
+## $ Volume      <dbl> 1237600, 1430200, 1004600, 1279100, 1047600, 902500, 10428~
+## $ trading_day <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,~
+## $ diff        <dbl> NA, 17.479980, 3.920044, 15.829956, 4.709961, -0.679931, -~
+\end{verbatim}
+
+\subsection{Why re-index the tsibble?}\label{why-re-index-the-tsibble}
+
+\textbf{Answer:} The \texttt{Date} index is not strictly regular because
+trading does not occur on weekends/holidays. Re-indexing by
+\texttt{trading\_day} creates a \textbf{regular} index where each step
+is ``next observed trading day,'' so lag operations (and the ACF) align
+with equal steps.
+
+\subsection{Plot differences and their
+ACF}\label{plot-differences-and-their-acf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dgoog }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{(diff) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Daily changes in GOOG closing price"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Trading day index"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Difference in Close"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/diff-and-acf-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dgoog }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ACF}\NormalTok{(diff) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ACF: Daily changes in GOOG closing price"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework1_files/figure-latex/diff-and-acf-2.pdf}}
+
+\subsection{Do the changes look like white
+noise?}\label{do-the-changes-look-like-white-noise}
+
+\textbf{Answer:} Price \textbf{changes} often show weak linear
+autocorrelation (ACF near zero at most lags), consistent with white
+noise in the mean. However, volatility clustering (periods of
+larger/smaller variability) can still appear in the time plot, so the
+series may not be i.i.d. white noise in a strict sense.
+
+\end{document}

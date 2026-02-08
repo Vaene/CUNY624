@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-02-08" />
+
+<title>FPP3 Chapter 2 Graphics Exercise</title>
+
+<script src="homework1_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="homework1_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="homework1_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="homework1_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="homework1_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="homework1_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="homework1_files/navigation-1.1/tabsets.js"></script>
+<link href="homework1_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="homework1_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">FPP3 Chapter 2 Graphics Exercise</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">February 08, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#explore-four-time-series"
+id="toc-explore-four-time-series"><span
+class="toc-section-number">1</span> Explore four time series</a>
+<ul>
+<li><a href="#dataset-help-pages" id="toc-dataset-help-pages"><span
+class="toc-section-number">1.1</span> Dataset help pages</a></li>
+<li><a href="#time-interval-of-each-series"
+id="toc-time-interval-of-each-series"><span
+class="toc-section-number">1.2</span> Time interval of each
+series</a></li>
+<li><a href="#time-plots-autoplot" id="toc-time-plots-autoplot"><span
+class="toc-section-number">1.3</span> Time plots (autoplot)</a></li>
+<li><a href="#demand-plot-with-modified-axis-labels-and-title"
+id="toc-demand-plot-with-modified-axis-labels-and-title"><span
+class="toc-section-number">1.4</span> Demand plot with modified axis
+labels and title</a></li>
+</ul></li>
+<li><a href="#peak-closing-price-days-for-each-gafa-stock"
+id="toc-peak-closing-price-days-for-each-gafa-stock"><span
+class="toc-section-number">2</span> Peak closing price day(s) for each
+GAFA stock</a></li>
+<li><a href="#tute1.csv-import-tsibble-conversion-plots-and-faceting"
+id="toc-tute1.csv-import-tsibble-conversion-plots-and-faceting"><span
+class="toc-section-number">3</span> tute1.csv: import, tsibble
+conversion, plots, and faceting</a>
+<ul>
+<li><a href="#download-and-read-the-data"
+id="toc-download-and-read-the-data"><span
+class="toc-section-number">3.1</span> Download and read the
+data</a></li>
+<li><a href="#convert-to-a-quarterly-tsibble"
+id="toc-convert-to-a-quarterly-tsibble"><span
+class="toc-section-number">3.2</span> Convert to a quarterly
+tsibble</a></li>
+<li><a href="#plot-all-three-series-with-facets"
+id="toc-plot-all-three-series-with-facets"><span
+class="toc-section-number">3.3</span> Plot all three series with
+facets</a></li>
+<li><a href="#plot-without-facet_grid"
+id="toc-plot-without-facet_grid"><span
+class="toc-section-number">3.4</span> Plot without
+<code>facet_grid()</code></a></li>
+</ul></li>
+<li><a href="#usgas-annual-natural-gas-consumption-by-state-new-england"
+id="toc-usgas-annual-natural-gas-consumption-by-state-new-england"><span
+class="toc-section-number">4</span> USgas: annual natural gas
+consumption by state (New England)</a>
+<ul>
+<li><a href="#create-a-tsibble-from-us_total-year-index-state-key"
+id="toc-create-a-tsibble-from-us_total-year-index-state-key"><span
+class="toc-section-number">4.1</span> Create a tsibble from
+<code>us_total</code> (year index, state key)</a></li>
+<li><a href="#plot-new-england-states"
+id="toc-plot-new-england-states"><span
+class="toc-section-number">4.2</span> Plot New England states</a></li>
+</ul></li>
+<li><a href="#tourism.xlsx-recreate-tourism-tsibble-and-summaries"
+id="toc-tourism.xlsx-recreate-tourism-tsibble-and-summaries"><span
+class="toc-section-number">5</span> tourism.xlsx: recreate
+<code>tourism</code> tsibble and summaries</a>
+<ul>
+<li><a href="#download-and-read-tourism.xlsx"
+id="toc-download-and-read-tourism.xlsx"><span
+class="toc-section-number">5.1</span> Download and read
+tourism.xlsx</a></li>
+<li><a href="#create-a-tsibble-identical-in-structure-to-tsibbletourism"
+id="toc-create-a-tsibble-identical-in-structure-to-tsibbletourism"><span
+class="toc-section-number">5.2</span> Create a tsibble identical in
+structure to <code>tsibble::tourism</code></a></li>
+<li><a href="#ensure-temporal-ordering-for-each-regionpurpose"
+id="toc-ensure-temporal-ordering-for-each-regionpurpose"><span
+class="toc-section-number">5.3</span> Ensure temporal ordering for each
+Region/Purpose</a></li>
+<li><a
+href="#regionpurpose-combination-with-maximum-average-overnight-trips"
+id="toc-regionpurpose-combination-with-maximum-average-overnight-trips"><span
+class="toc-section-number">5.4</span> Region–Purpose combination with
+maximum average overnight trips</a></li>
+<li><a href="#total-trips-by-state-combining-region-and-purpose"
+id="toc-total-trips-by-state-combining-region-and-purpose"><span
+class="toc-section-number">5.5</span> Total trips by State (combining
+Region and Purpose)</a></li>
+</ul></li>
+<li><a
+href="#aus_arrivals-compare-arrivals-from-japan-nz-uk-us---just-for-fun"
+id="toc-aus_arrivals-compare-arrivals-from-japan-nz-uk-us---just-for-fun"><span
+class="toc-section-number">6</span> aus_arrivals: compare arrivals from
+Japan, NZ, UK, US - JUST FOR FUN</a></li>
+<li><a href="#aus_retail-sample-a-series-and-explore---just-for-fun"
+id="toc-aus_retail-sample-a-series-and-explore---just-for-fun"><span
+class="toc-section-number">7</span> aus_retail: sample a series and
+explore - JUST FOR FUN</a>
+<ul>
+<li><a href="#graphics-exploration" id="toc-graphics-exploration"><span
+class="toc-section-number">7.1</span> Graphics exploration</a></li>
+</ul></li>
+<li><a href="#explore-five-additional-series-with-common-graphics-acf"
+id="toc-explore-five-additional-series-with-common-graphics-acf"><span
+class="toc-section-number">8</span> Explore five additional series with
+common graphics + ACF</a></li>
+<li><a href="#match-time-plots-to-acf-plots---just-for-fun"
+id="toc-match-time-plots-to-acf-plots---just-for-fun"><span
+class="toc-section-number">9</span> Match time plots to ACF plots - JUST
+FOR FUN</a></li>
+<li><a
+href="#aus_livestock-pigs-in-victoria-19901995-autoplot-acf-compare-to-white-noise---just-for-fun"
+id="toc-aus_livestock-pigs-in-victoria-19901995-autoplot-acf-compare-to-white-noise---just-for-fun"><span
+class="toc-section-number">10</span> aus_livestock pigs in Victoria
+(1990–1995): autoplot + ACF; compare to white noise - JUST FOR
+FUN</a></li>
+<li><a
+href="#google-stock-daily-changes-re-indexing-differences-acf-assess-white-noise---just-for-fun"
+id="toc-google-stock-daily-changes-re-indexing-differences-acf-assess-white-noise---just-for-fun"><span
+class="toc-section-number">11</span> Google stock daily changes:
+re-indexing, differences, ACF; assess white noise - JUST FOR FUN</a>
+<ul>
+<li><a href="#why-re-index-the-tsibble"
+id="toc-why-re-index-the-tsibble"><span
+class="toc-section-number">11.1</span> Why re-index the
+tsibble?</a></li>
+<li><a href="#plot-differences-and-their-acf"
+id="toc-plot-differences-and-their-acf"><span
+class="toc-section-number">11.2</span> Plot differences and their
+ACF</a></li>
+<li><a href="#do-the-changes-look-like-white-noise"
+id="toc-do-the-changes-look-like-white-noise"><span
+class="toc-section-number">11.3</span> Do the changes look like white
+noise?</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="explore-four-time-series" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Explore four time
+series</h1>
+<p>Series explored:</p>
+<ul>
+<li><strong>Bricks</strong> from <code>aus_production</code></li>
+<li><strong>Lynx</strong> from <code>pelt</code></li>
+<li><strong>Close</strong> from <code>gafa_stock</code></li>
+<li><strong>Demand</strong> from <code>vic_elec</code></li>
+</ul>
+<div id="dataset-help-pages" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Dataset help
+pages</h2>
+<pre class="r"><code>?aus_production
+?pelt
+?gafa_stock
+?vic_elec</code></pre>
+</div>
+<div id="time-interval-of-each-series" class="section level2"
+number="1.2">
+<h2><span class="header-section-number">1.2</span> Time interval of each
+series</h2>
+<p>Below, I compute the interval from each tsibble index.</p>
+<pre class="r"><code>bricks_ts &lt;- aus_production |&gt; select(Quarter, Bricks)
+lynx_ts &lt;- pelt_long(pelt) |&gt; filter(Animal == &quot;Lynx&quot;)
+close_ts  &lt;- gafa_stock |&gt; select(Symbol, Date, Close)
+demand_ts &lt;- vic_elec |&gt; select(Time, Demand)
+
+bricks_interval &lt;- bricks_ts |&gt; tsibble::interval()
+lynx_interval   &lt;- lynx_ts   |&gt; tsibble::interval()
+close_interval  &lt;- close_ts  |&gt; tsibble::interval()
+demand_interval &lt;- demand_ts |&gt; tsibble::interval()
+
+bricks_interval</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1Q</code></pre>
+<pre class="r"><code>lynx_interval</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1Y</code></pre>
+<pre class="r"><code>close_interval</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] !</code></pre>
+<pre class="r"><code>demand_interval</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 30m</code></pre>
+<p><strong>Answer (interpretation):</strong></p>
+<ul>
+<li><code>aus_production</code> (<strong>Bricks</strong>) is
+<strong>quarterly</strong> (index is <code>yearquarter</code>).</li>
+<li><code>pelt</code> (<strong>Lynx</strong>) is <strong>annual</strong>
+(index is <code>year</code>).</li>
+<li><code>gafa_stock</code> (<strong>Close</strong>) is <strong>daily
+trading days</strong> (dates exist only on trading days, so the calendar
+is not strictly regular daily).</li>
+<li><code>vic_elec</code> (<strong>Demand</strong>) is
+<strong>half-hourly</strong> (sub-daily regular interval).</li>
+</ul>
+</div>
+<div id="time-plots-autoplot" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Time plots
+(autoplot)</h2>
+<pre class="r"><code># Bricks
+bricks_ts |&gt;
+  autoplot(Bricks) +
+  labs(title = &quot;Australian brick production&quot;, x = &quot;Quarter&quot;, y = &quot;Bricks&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/time-plots-autoplot-1.png" /><!-- --></p>
+<pre class="r"><code># Lynx
+lynx_ts |&gt;
+  autoplot(value) +
+  labs(title = &quot;Lynx pelts&quot;, x = &quot;Year&quot;, y = &quot;Pelts&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/time-plots-autoplot-2.png" /><!-- --></p>
+<pre class="r"><code># Close (all four stocks)
+gafa_stock |&gt;
+  autoplot(Close) +
+  labs(title = &quot;Daily closing prices: GAFA&quot;, x = &quot;Date&quot;, y = &quot;Close&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/time-plots-autoplot-3.png" /><!-- --></p>
+</div>
+<div id="demand-plot-with-modified-axis-labels-and-title"
+class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Demand plot with
+modified axis labels and title</h2>
+<pre class="r"><code>demand_ts |&gt;
+  autoplot(Demand) +
+  labs(
+    title = &quot;Victoria electricity demand (half-hourly)&quot;,
+    x = &quot;Time&quot;,
+    y = &quot;Demand (MW)&quot;
+  )</code></pre>
+<p><img
+src="homework1_files/figure-html/demand-plot-1.png" /><!-- --></p>
+</div>
+</div>
+<div id="peak-closing-price-days-for-each-gafa-stock"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Peak closing price
+day(s) for each GAFA stock</h1>
+<p>Find the trading day(s) (ties possible) corresponding to the maximum
+closing price for each of the four stocks.</p>
+<pre class="r"><code>gafa_peaks &lt;- gafa_stock |&gt;
+  group_by(Symbol) |&gt;
+  filter(Close == max(Close, na.rm = TRUE)) |&gt;
+  arrange(Symbol, Date) |&gt;
+  select(Symbol, Date, Close)
+
+gafa_peaks</code></pre>
+<pre><code>## # A tsibble: 4 x 3 [!]
+## # Key:       Symbol [4]
+## # Groups:    Symbol [4]
+##   Symbol Date       Close
+##   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt;
+## 1 AAPL   2018-10-03  232.
+## 2 AMZN   2018-09-04 2040.
+## 3 FB     2018-07-25  218.
+## 4 GOOG   2018-07-26 1268.</code></pre>
+<p><strong>Answer:</strong> The table above lists the peak closing
+date(s) and peak <code>Close</code> for each symbol.</p>
+</div>
+<div id="tute1.csv-import-tsibble-conversion-plots-and-faceting"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> tute1.csv: import,
+tsibble conversion, plots, and faceting</h1>
+<p><code>tute1.csv</code> contains quarterly series
+<strong>Sales</strong>, <strong>AdBudget</strong>, and
+<strong>GDP</strong> (inflation-adjusted).</p>
+<div id="download-and-read-the-data" class="section level2"
+number="3.1">
+<h2><span class="header-section-number">3.1</span> Download and read the
+data</h2>
+<pre class="r"><code>tute1_url &lt;- &quot;https://otexts.com/fpp3/extrafiles/tute1.csv&quot;
+tute1 &lt;- readr::read_csv(tute1_url)
+
+dplyr::glimpse(tute1)</code></pre>
+<pre><code>## Rows: 100
+## Columns: 4
+## $ Quarter  &lt;date&gt; 1981-03-01, 1981-06-01, 1981-09-01, 1981-12-01, 1982-03-01, …
+## $ Sales    &lt;dbl&gt; 1020.2, 889.2, 795.0, 1003.9, 1057.7, 944.4, 778.5, 932.5, 99…
+## $ AdBudget &lt;dbl&gt; 659.2, 589.0, 512.5, 614.1, 647.2, 602.0, 530.7, 608.4, 637.9…
+## $ GDP      &lt;dbl&gt; 251.8, 290.9, 290.8, 292.4, 279.1, 254.0, 295.6, 271.7, 259.6…</code></pre>
+</div>
+<div id="convert-to-a-quarterly-tsibble" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Convert to a
+quarterly tsibble</h2>
+<pre class="r"><code>mytimeseries &lt;- tute1 |&gt;
+  mutate(Quarter = yearquarter(Quarter)) |&gt;
+  as_tsibble(index = Quarter)
+
+mytimeseries</code></pre>
+<pre><code>## # A tsibble: 100 x 4 [1Q]
+##    Quarter Sales AdBudget   GDP
+##      &lt;qtr&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+##  1 1981 Q1 1020.     659.  252.
+##  2 1981 Q2  889.     589   291.
+##  3 1981 Q3  795      512.  291.
+##  4 1981 Q4 1004.     614.  292.
+##  5 1982 Q1 1058.     647.  279.
+##  6 1982 Q2  944.     602   254 
+##  7 1982 Q3  778.     531.  296.
+##  8 1982 Q4  932.     608.  272.
+##  9 1983 Q1  996.     638.  260.
+## 10 1983 Q2  908.     582.  280.
+## # ℹ 90 more rows</code></pre>
+</div>
+<div id="plot-all-three-series-with-facets" class="section level2"
+number="3.3">
+<h2><span class="header-section-number">3.3</span> Plot all three series
+with facets</h2>
+<pre class="r"><code>mytimeseries |&gt;
+  pivot_longer(-Quarter) |&gt;
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  facet_grid(name ~ ., scales = &quot;free_y&quot;) +
+  labs(title = &quot;Sales, AdBudget, and GDP (facetted)&quot;, x = &quot;Quarter&quot;, y = &quot;&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/three-with-facets-1.png" /><!-- --></p>
+</div>
+<div id="plot-without-facet_grid" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Plot without
+<code>facet_grid()</code></h2>
+<pre class="r"><code>mytimeseries |&gt;
+  pivot_longer(-Quarter) |&gt;
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  labs(title = &quot;Sales, AdBudget, and GDP (no faceting)&quot;, x = &quot;Quarter&quot;, y = &quot;&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/without-facetgrid-1.png" /><!-- --></p>
+<p><strong>Answer:</strong> Without faceting (and a shared y-axis), the
+largest-scale series visually dominates and the smaller-scale series
+become difficult to compare.</p>
+</div>
+</div>
+<div id="usgas-annual-natural-gas-consumption-by-state-new-england"
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> USgas: annual natural
+gas consumption by state (New England)</h1>
+<div id="create-a-tsibble-from-us_total-year-index-state-key"
+class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Create a tsibble from
+<code>us_total</code> (year index, state key)</h2>
+<pre class="r"><code>data(&quot;us_total&quot;, package = &quot;USgas&quot;)
+
+gas_ts &lt;- us_total |&gt;
+  as_tsibble(index = year, key = state)
+
+gas_ts</code></pre>
+<pre><code>## # A tsibble: 1,266 x 3 [1Y]
+## # Key:       state [53]
+##     year state        y
+##    &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1  1997 Alabama 324158
+##  2  1998 Alabama 329134
+##  3  1999 Alabama 337270
+##  4  2000 Alabama 353614
+##  5  2001 Alabama 332693
+##  6  2002 Alabama 379343
+##  7  2003 Alabama 350345
+##  8  2004 Alabama 382367
+##  9  2005 Alabama 353156
+## 10  2006 Alabama 391093
+## # ℹ 1,256 more rows</code></pre>
+</div>
+<div id="plot-new-england-states" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Plot New England
+states</h2>
+<p>New England = Maine, Vermont, New Hampshire, Massachusetts,
+Connecticut, Rhode Island.</p>
+<pre class="r"><code>new_england &lt;- c(&quot;Maine&quot;, &quot;Vermont&quot;, &quot;New Hampshire&quot;,
+                 &quot;Massachusetts&quot;, &quot;Connecticut&quot;, &quot;Rhode Island&quot;)
+
+gas_ts |&gt;
+  filter(state %in% new_england) |&gt;
+  autoplot(y) +
+  labs(
+    title = &quot;Annual natural gas consumption (New England states)&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;Consumption&quot;
+  )</code></pre>
+<p><img
+src="homework1_files/figure-html/plot-ne-states-1.png" /><!-- --></p>
+</div>
+</div>
+<div id="tourism.xlsx-recreate-tourism-tsibble-and-summaries"
+class="section level1" number="5">
+<h1><span class="header-section-number">5</span> tourism.xlsx: recreate
+<code>tourism</code> tsibble and summaries</h1>
+<div id="download-and-read-tourism.xlsx" class="section level2"
+number="5.1">
+<h2><span class="header-section-number">5.1</span> Download and read
+tourism.xlsx</h2>
+<pre class="r"><code>tourism_url &lt;- &quot;https://otexts.com/fpp3/extrafiles/tourism.xlsx&quot;
+tourism_file &lt;- tempfile(fileext = &quot;.xlsx&quot;)
+
+download.file(tourism_url, tourism_file, mode = &quot;wb&quot;)
+
+tourism_raw &lt;- readxl::read_excel(tourism_file)
+
+dplyr::glimpse(tourism_raw)</code></pre>
+<pre><code>## Rows: 24,320
+## Columns: 5
+## $ Quarter &lt;chr&gt; &quot;1998-01-01&quot;, &quot;1998-04-01&quot;, &quot;1998-07-01&quot;, &quot;1998-10-01&quot;, &quot;1999-…
+## $ Region  &lt;chr&gt; &quot;Adelaide&quot;, &quot;Adelaide&quot;, &quot;Adelaide&quot;, &quot;Adelaide&quot;, &quot;Adelaide&quot;, &quot;A…
+## $ State   &lt;chr&gt; &quot;South Australia&quot;, &quot;South Australia&quot;, &quot;South Australia&quot;, &quot;Sout…
+## $ Purpose &lt;chr&gt; &quot;Business&quot;, &quot;Business&quot;, &quot;Business&quot;, &quot;Business&quot;, &quot;Business&quot;, &quot;B…
+## $ Trips   &lt;dbl&gt; 135.0777, 109.9873, 166.0347, 127.1605, 137.4485, 199.9126, 16…</code></pre>
+</div>
+<div id="create-a-tsibble-identical-in-structure-to-tsibbletourism"
+class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Create a tsibble
+identical in structure to <code>tsibble::tourism</code></h2>
+<pre class="r"><code>tourism_ts &lt;- tourism_raw |&gt;
+  mutate(Quarter = yearquarter(Quarter)) |&gt;
+  as_tsibble(
+    index = Quarter,
+    key = c(State, Region, Purpose)
+  )
+
+tourism_ts</code></pre>
+<pre><code>## # A tsibble: 24,320 x 5 [1Q]
+## # Key:       State, Region, Purpose [304]
+##    Quarter Region   State Purpose  Trips
+##      &lt;qtr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;
+##  1 1998 Q1 Canberra ACT   Business 150. 
+##  2 1998 Q2 Canberra ACT   Business  99.9
+##  3 1998 Q3 Canberra ACT   Business 130. 
+##  4 1998 Q4 Canberra ACT   Business 102. 
+##  5 1999 Q1 Canberra ACT   Business  95.5
+##  6 1999 Q2 Canberra ACT   Business 229. 
+##  7 1999 Q3 Canberra ACT   Business 109. 
+##  8 1999 Q4 Canberra ACT   Business 159. 
+##  9 2000 Q1 Canberra ACT   Business 105. 
+## 10 2000 Q2 Canberra ACT   Business 202. 
+## # ℹ 24,310 more rows</code></pre>
+</div>
+<div id="ensure-temporal-ordering-for-each-regionpurpose"
+class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Ensure temporal
+ordering for each Region/Purpose</h2>
+<pre class="r"><code>tourism_ts &lt;- tourism_ts |&gt;
+  arrange(Region, Purpose, Quarter)</code></pre>
+</div>
+<div id="regionpurpose-combination-with-maximum-average-overnight-trips"
+class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Region–Purpose
+combination with maximum average overnight trips</h2>
+<pre class="r"><code>max_region_purpose &lt;- tourism_ts |&gt;
+  group_by(Region, Purpose) |&gt;
+  summarise(avg_trips = mean(Trips, na.rm = TRUE), .groups = &quot;drop&quot;) |&gt;
+  arrange(desc(avg_trips)) |&gt;
+  slice(1)
+
+max_region_purpose</code></pre>
+<pre><code>## # A tsibble: 1 x 4 [1Q]
+## # Key:       Region, Purpose [1]
+##   Region    Purpose  Quarter avg_trips
+##   &lt;chr&gt;     &lt;chr&gt;      &lt;qtr&gt;     &lt;dbl&gt;
+## 1 Melbourne Visiting 2017 Q4      985.</code></pre>
+<p><strong>Answer:</strong> The row above identifies the
+<code>(Region, Purpose)</code> combination with the greatest mean
+<code>Trips</code>.</p>
+</div>
+<div id="total-trips-by-state-combining-region-and-purpose"
+class="section level2" number="5.5">
+<h2><span class="header-section-number">5.5</span> Total trips by State
+(combining Region and Purpose)</h2>
+<pre class="r"><code>tourism_state_total &lt;- tourism_ts |&gt;
+  index_by(Quarter) |&gt;
+  group_by(State) |&gt;
+  summarise(Trips = sum(Trips, na.rm = TRUE)) |&gt;
+  as_tsibble(index = Quarter, key = State)
+
+tourism_state_total</code></pre>
+<pre><code>## # A tsibble: 640 x 3 [1Q]
+## # Key:       State [8]
+##    State Quarter Trips
+##    &lt;chr&gt;   &lt;qtr&gt; &lt;dbl&gt;
+##  1 ACT   1998 Q1  551.
+##  2 ACT   1998 Q2  416.
+##  3 ACT   1998 Q3  436.
+##  4 ACT   1998 Q4  450.
+##  5 ACT   1999 Q1  379.
+##  6 ACT   1999 Q2  558.
+##  7 ACT   1999 Q3  449.
+##  8 ACT   1999 Q4  595.
+##  9 ACT   2000 Q1  600.
+## 10 ACT   2000 Q2  557.
+## # ℹ 630 more rows</code></pre>
+<pre class="r"><code>tourism_state_total |&gt;
+  autoplot(Trips) +
+  labs(title = &quot;Total overnight trips by State&quot;, x = &quot;Quarter&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/tourism-state-total-1.png" /><!-- --></p>
+</div>
+</div>
+<div
+id="aus_arrivals-compare-arrivals-from-japan-nz-uk-us---just-for-fun"
+class="section level1" number="6">
+<h1><span class="header-section-number">6</span> aus_arrivals: compare
+arrivals from Japan, NZ, UK, US - JUST FOR FUN</h1>
+<p></p>
+<p>Use <code>autoplot()</code>, <code>gg_season()</code>, and
+<code>gg_subseries()</code>.</p>
+<pre class="r"><code>aus_arrivals |&gt;
+  autoplot(Arrivals) +
+  labs(title = &quot;International arrivals to Australia&quot;, x = &quot;Quarter&quot;, y = &quot;Arrivals&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/aus-arrivals-1.png" /><!-- --></p>
+<pre class="r"><code>aus_arrivals |&gt;
+  gg_season(Arrivals) +
+  labs(title = &quot;Seasonal plot: arrivals to Australia&quot;, y = &quot;Arrivals&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/aus-arrivals-2.png" /><!-- --></p>
+<pre class="r"><code>aus_arrivals |&gt;
+  gg_subseries(Arrivals) +
+  labs(title = &quot;Subseries plot: arrivals to Australia&quot;, y = &quot;Arrivals&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/aus-arrivals-3.png" /><!-- --></p>
+<p><strong>Answer (unusual observations):</strong><br />
+The subseries plot highlights deviations from the typical seasonal
+pattern by showing each quarter separately over time. Japan exhibits
+unusually low arrivals in Q2 and Q3 during later years, deviating
+sharply from its normally strong seasonal structure. The United States
+shows occasional Q3 spikes that exceed the typical seasonal range,
+indicating one-off surges rather than regular seasonality. The UK also
+displays increased variability in Q3 and Q4, with some years standing
+out as unusually high. In contrast, New Zealand arrivals remain
+relatively stable across all quarters, with no clear unusual
+observations.</p>
+</div>
+<div id="aus_retail-sample-a-series-and-explore---just-for-fun"
+class="section level1" number="7">
+<h1><span class="header-section-number">7</span> aus_retail: sample a
+series and explore - JUST FOR FUN</h1>
+<p></p>
+<pre class="r"><code>set.seed(67)
+myseries &lt;- aus_retail |&gt;
+  filter(`Series ID` == sample(aus_retail$`Series ID`, 1))
+
+myseries |&gt; dplyr::glimpse()</code></pre>
+<pre><code>## Rows: 441
+## Columns: 5
+## Key: State, Industry [1]
+## $ State       &lt;chr&gt; &quot;New South Wales&quot;, &quot;New South Wales&quot;, &quot;New South Wales&quot;, &quot;…
+## $ Industry    &lt;chr&gt; &quot;Department stores&quot;, &quot;Department stores&quot;, &quot;Department stor…
+## $ `Series ID` &lt;chr&gt; &quot;A3349790V&quot;, &quot;A3349790V&quot;, &quot;A3349790V&quot;, &quot;A3349790V&quot;, &quot;A3349…
+## $ Month       &lt;mth&gt; 1982 Apr, 1982 May, 1982 Jun, 1982 Jul, 1982 Aug, 1982 Sep…
+## $ Turnover    &lt;dbl&gt; 178.3, 202.8, 176.3, 172.6, 169.6, 181.4, 173.9, 206.6, 34…</code></pre>
+<div id="graphics-exploration" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Graphics
+exploration</h2>
+<pre class="r"><code>myseries |&gt;
+  autoplot(Turnover) +
+  labs(title = &quot;Selected retail turnover series&quot;, x = &quot;Month&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-1.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  gg_season(Turnover) +
+  labs(title = &quot;Seasonal plot: selected retail series&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-2.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  gg_subseries(Turnover) +
+  labs(title = &quot;Subseries plot: selected retail series&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-3.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  gg_lag(Turnover) +
+  labs(title = &quot;Lag plot: selected retail series&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-4.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  ACF(Turnover) |&gt;
+  autoplot() +
+  labs(title = &quot;ACF: selected retail series&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-5.png" /><!-- --></p>
+<p><strong>Answer (seasonality/cyclicity/trend):</strong><br />
+- <strong>Seasonality</strong> is indicated by repeating within-year
+patterns and ACF spikes at seasonal lags (e.g., 12 for monthly
+data).<br />
+- <strong>Trend</strong> appears as persistent long-run
+increase/decrease and often as slow ACF decay.<br />
+- <strong>Cyclicity</strong> shows as multi-year rises/falls not tied to
+a fixed seasonal frequency.<br />
+Use the plots above to describe what is present in <em>this specific
+sampled series</em>.</p>
+</div>
+</div>
+<div id="explore-five-additional-series-with-common-graphics-acf"
+class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Explore five additional
+series with common graphics + ACF</h1>
+<p>Series: - <strong>“Total Private” Employed</strong> from
+<code>us_employment</code> - <strong>Bricks</strong> from
+<code>aus_production</code> - <strong>Hare</strong> from
+<code>pelt</code> - <strong>“H02” Cost</strong> from <code>PBS</code> -
+<strong>Barrels</strong> from <code>us_gasoline</code></p>
+<pre class="r"><code>emp_private &lt;- us_employment |&gt;
+  filter(Title == &quot;Total Private&quot;) |&gt;
+  select(Month, Employed)
+
+bricks_ts &lt;- aus_production |&gt; select(Quarter, Bricks)
+
+hare_ts &lt;- pelt_long(pelt) |&gt; filter(Animal == &quot;Hare&quot;)
+
+pbs_keys &lt;- key_vars(PBS)
+
+pbs_h02 &lt;- PBS |&gt;
+  filter(ATC2 == &quot;H02&quot;) |&gt;
+  group_by(across(all_of(key_vars(PBS)))) |&gt;
+  filter(dplyr::cur_group_id() == 1) |&gt;
+  ungroup() |&gt;
+  select(Month, Cost)
+
+gas_barrels &lt;- us_gasoline |&gt; select(Week, Barrels)</code></pre>
+<p>Helper to run the same exploration:</p>
+<pre class="r"><code>explore_series &lt;- function(data, value_col, title_prefix = &quot;&quot;) {
+  list(
+    time = data |&gt; autoplot({{ value_col }}) +
+      labs(title = paste0(title_prefix, &quot; — time plot&quot;)),
+
+    season = tryCatch(
+      data |&gt; gg_season({{ value_col }}) + labs(title = paste0(title_prefix, &quot; — seasonal plot&quot;)),
+      error = function(e) NULL
+    ),
+
+    subseries = tryCatch(
+      data |&gt; gg_subseries({{ value_col }}) + labs(title = paste0(title_prefix, &quot; — subseries plot&quot;)),
+      error = function(e) NULL
+    ),
+
+    lag = tryCatch(
+      data |&gt; gg_lag({{ value_col }}) + labs(title = paste0(title_prefix, &quot; — lag plot&quot;)),
+      error = function(e) NULL
+    ),
+
+    acf = data |&gt; ACF({{ value_col }}) |&gt; autoplot() +
+      labs(title = paste0(title_prefix, &quot; — ACF&quot;))
+  )
+}</code></pre>
+<pre class="r"><code>plots_emp &lt;- explore_series(emp_private, Employed, &quot;US Employment (Total Private)&quot;)
+plots_emp$time; plots_emp$season; plots_emp$subseries; plots_emp$lag; plots_emp$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-1.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-2.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-3.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-4.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-5.png" /><!-- --></p>
+<pre class="r"><code>plots_bricks &lt;- explore_series(bricks_ts, Bricks, &quot;Australian Bricks Production&quot;)
+plots_bricks$time; plots_bricks$season; plots_bricks$subseries; plots_bricks$lag; plots_bricks$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-6.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-7.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-8.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-9.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-10.png" /><!-- --></p>
+<pre class="r"><code>plots_hare &lt;- explore_series(hare_ts, value, &quot;Hare Pelts&quot;)
+plots_hare$time; plots_hare$season; plots_hare$subseries; plots_hare$lag; plots_hare$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-11.png" /><!-- --></p>
+<pre><code>## NULL</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-12.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-13.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-14.png" /><!-- --></p>
+<pre class="r"><code>plots_pbs &lt;- explore_series(pbs_h02, Cost, &quot;PBS H02 Cost&quot;)
+plots_pbs$time; plots_pbs$season; plots_pbs$subseries; plots_pbs$lag; plots_pbs$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-15.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-16.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-17.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-18.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-19.png" /><!-- --></p>
+<pre class="r"><code>plots_gas &lt;- explore_series(gas_barrels, Barrels, &quot;US Gasoline Barrels&quot;)
+plots_gas$time; plots_gas$season; plots_gas$subseries; plots_gas$lag; plots_gas$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-20.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-21.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-22.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-23.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-24.png" /><!-- --></p>
+<p><strong>Answer (what we learn):</strong> - <strong>US Gasoline
+Barrels</strong> and <strong>PBS H02 Cost</strong> show clear
+<strong>seasonality</strong>: repeating within‑year patterns and ACF
+spikes at seasonal lags (and multiples). - <strong>US Employment (Total
+Private)</strong> shows a strong <strong>trend /
+nonstationarity</strong>: long‑run drift in the time plot and a slowly
+decaying ACF. - <strong>Hare Pelts</strong> shows
+<strong>cycles</strong> over multiple years: oscillations in the time
+plot with an ACF that alternates signs. - <strong>Australian Bricks
+Production</strong> shows <strong>unusual years/structural
+change</strong>: a sharp drop in the early 1980s followed by a sustained
+lower level and higher volatility from the early 1990s onward.</p>
+</div>
+<div id="match-time-plots-to-acf-plots---just-for-fun"
+class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Match time plots to ACF
+plots - JUST FOR FUN</h1>
+<p></p>
+<p>The book’s figure is included below for matching.</p>
+<pre class="r"><code>acf_url &lt;- &quot;https://otexts.com/fpp3/fpp_files/figure-html/acfguess-1.png&quot;
+acf_file &lt;- file.path(tempdir(), &quot;acfguess-1.png&quot;)
+
+download.file(acf_url, acf_file, mode = &quot;wb&quot;)
+
+knitr::include_graphics(acf_file)</code></pre>
+<p><img src="../../../../../../private/var/folders/z7/hslcs7d13097n9zmv9b992xr0000gn/T/RtmpkGeci7/acfguess-1.png" alt="" width="2361" /></p>
+<p><strong>Answer:</strong> Based on the figure: - <strong>Time plot
+A</strong> matches <strong>ACF B</strong> - <strong>Time plot B</strong>
+matches <strong>ACF A</strong> - <strong>Time plot C</strong> matches
+<strong>ACF D</strong> - <strong>Time plot D</strong> matches
+<strong>ACF C</strong></p>
+<p><strong>Justification (brief):</strong> - <strong>B → A:</strong>
+near‑zero, short‑memory ACF fits the cow temperature series. - <strong>A
+→ B:</strong> strong seasonal spikes (esp. lag 12) fit monthly
+accidental deaths. - <strong>D → C:</strong> high, slowly decaying ACF
+fits the trending air passengers series. - <strong>C → D:</strong>
+oscillating, alternating‑sign ACF fits mink trappings cycles.</p>
+</div>
+<div
+id="aus_livestock-pigs-in-victoria-19901995-autoplot-acf-compare-to-white-noise---just-for-fun"
+class="section level1" number="10">
+<h1><span class="header-section-number">10</span> aus_livestock pigs in
+Victoria (1990–1995): autoplot + ACF; compare to white noise - JUST FOR
+FUN</h1>
+<p></p>
+<pre class="r"><code>pigs_vic_9095 &lt;- aus_livestock |&gt;
+  filter(Animal == &quot;Pigs&quot;, State == &quot;Victoria&quot;) |&gt;
+  filter(year(Month) &gt;= 1990, year(Month) &lt;= 1995)
+
+pigs_vic_9095 |&gt;
+  autoplot(Count) +
+  labs(title = &quot;Pigs slaughtered in Victoria (1990–1995)&quot;, x = &quot;Month&quot;, y = &quot;Count&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/aus-livestock-pigs-1.png" /><!-- --></p>
+<pre class="r"><code>pigs_vic_9095 |&gt;
+  ACF(Count) |&gt;
+  autoplot() +
+  labs(title = &quot;ACF: Pigs slaughtered in Victoria (1990–1995)&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/aus-livestock-pigs-2.png" /><!-- --></p>
+<p>Compare to longer period:</p>
+<pre class="r"><code>pigs_vic_full &lt;- aus_livestock |&gt;
+  filter(Animal == &quot;Pigs&quot;, State == &quot;Victoria&quot;)
+
+pigs_vic_full |&gt;
+  ACF(Count) |&gt;
+  autoplot() +
+  labs(title = &quot;ACF: Pigs slaughtered in Victoria (Full series)&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/pigs-longer-period-1.png" /><!-- --></p>
+<p><strong>Answer:</strong><br />
+- Compared with <strong>white noise</strong>, this series shows
+<strong>structured autocorrelation</strong> (significant ACF spikes
+rather than hovering near zero), indicating dependence and often
+seasonality/persistence. - Using a <strong>longer period</strong>
+typically yields a <strong>more stable ACF estimate</strong> and can
+make seasonal and low-frequency structure clearer.</p>
+</div>
+<div
+id="google-stock-daily-changes-re-indexing-differences-acf-assess-white-noise---just-for-fun"
+class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Google stock daily
+changes: re-indexing, differences, ACF; assess white noise - JUST FOR
+FUN</h1>
+<p></p>
+<p>Compute daily changes in GOOG closing prices:</p>
+<pre class="r"><code>dgoog &lt;- gafa_stock |&gt;
+  filter(Symbol == &quot;GOOG&quot;, year(Date) &gt;= 2018) |&gt;
+  mutate(trading_day = row_number()) |&gt;
+  update_tsibble(index = trading_day, regular = TRUE) |&gt;
+  mutate(diff = difference(Close))
+
+dgoog |&gt; dplyr::glimpse()</code></pre>
+<pre><code>## Rows: 251
+## Columns: 10
+## Key: Symbol [1]
+## $ Symbol      &lt;chr&gt; &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;GOOG&quot;, &quot;G…
+## $ Date        &lt;date&gt; 2018-01-02, 2018-01-03, 2018-01-04, 2018-01-05, 2018-01-0…
+## $ Open        &lt;dbl&gt; 1048.34, 1064.31, 1088.00, 1094.00, 1102.23, 1109.40, 1097…
+## $ High        &lt;dbl&gt; 1066.940, 1086.290, 1093.570, 1104.250, 1111.270, 1110.570…
+## $ Low         &lt;dbl&gt; 1045.230, 1063.210, 1084.002, 1092.000, 1101.620, 1101.231…
+## $ Close       &lt;dbl&gt; 1065.00, 1082.48, 1086.40, 1102.23, 1106.94, 1106.26, 1102…
+## $ Adj_Close   &lt;dbl&gt; 1065.00, 1082.48, 1086.40, 1102.23, 1106.94, 1106.26, 1102…
+## $ Volume      &lt;dbl&gt; 1237600, 1430200, 1004600, 1279100, 1047600, 902500, 10428…
+## $ trading_day &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,…
+## $ diff        &lt;dbl&gt; NA, 17.479980, 3.920044, 15.829956, 4.709961, -0.679931, -…</code></pre>
+<div id="why-re-index-the-tsibble" class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Why re-index the
+tsibble?</h2>
+<p><strong>Answer:</strong> The <code>Date</code> index is not strictly
+regular because trading does not occur on weekends/holidays. Re-indexing
+by <code>trading_day</code> creates a <strong>regular</strong> index
+where each step is “next observed trading day,” so lag operations (and
+the ACF) align with equal steps.</p>
+</div>
+<div id="plot-differences-and-their-acf" class="section level2"
+number="11.2">
+<h2><span class="header-section-number">11.2</span> Plot differences and
+their ACF</h2>
+<pre class="r"><code>dgoog |&gt;
+  autoplot(diff) +
+  labs(title = &quot;Daily changes in GOOG closing price&quot;, x = &quot;Trading day index&quot;, y = &quot;Difference in Close&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/diff-and-acf-1.png" /><!-- --></p>
+<pre class="r"><code>dgoog |&gt;
+  ACF(diff) |&gt;
+  autoplot() +
+  labs(title = &quot;ACF: Daily changes in GOOG closing price&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/diff-and-acf-2.png" /><!-- --></p>
+</div>
+<div id="do-the-changes-look-like-white-noise" class="section level2"
+number="11.3">
+<h2><span class="header-section-number">11.3</span> Do the changes look
+like white noise?</h2>
+<p><strong>Answer:</strong> Price <strong>changes</strong> often show
+weak linear autocorrelation (ACF near zero at most lags), consistent
+with white noise in the mean. However, volatility clustering (periods of
+larger/smaller variability) can still appear in the time plot, so the
+series may not be i.i.d. white noise in a strict sense.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

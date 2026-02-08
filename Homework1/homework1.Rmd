@@ -1,0 +1,583 @@
+---
+title: "FPP3 Chapter 2 Graphics Exercise"
+author: "Randy Howk"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 4,
+  dpi = 96,
+  fig.retina = 1
+)
+
+fun_red <- function(text="(JUST FOR FUN)") {
+  if (knitr::is_html_output()) {
+    sprintf("<span style='color:red'>%s</span>", text)
+  } else if (knitr::is_latex_output()) {
+    sprintf("\\\\texorpdfstring{\\\\textcolor{red}{%s}}{%s}", text, text)
+  } else text
+}
+
+library(fpp3)
+library(readxl)
+library(USgas)
+library(bbplot)
+
+# Low-ink theme (FPP3-safe)
+theme_low_ink <- function(base_size = 11) {
+  theme_minimal(base_size = base_size) %+replace% theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "grey90", linewidth = 0.3),
+
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+
+    axis.text.y = element_text(size = base_size * 0.7),
+    axis.text.x = element_text(size = base_size * 0.8),
+
+    legend.title = element_blank(),
+    legend.position = "bottom",
+
+    plot.title.position = "plot",
+    plot.title = element_text(face = "bold", margin = margin(b = 6)),
+    plot.subtitle = element_text(margin = margin(b = 8))
+  )
+}
+
+theme_set(theme_low_ink())
+
+# Standardize pelt to long format (works for both wide and long versions)
+pelt_long <- function(pelt_df) {
+  if ("Animal" %in% names(pelt_df)) {
+    pelt_df
+  } else {
+    pelt_df |>
+      tidyr::pivot_longer(
+        -Year,
+        names_to = "Animal",
+        values_to = "value"
+      )
+  }
+}
+```
+
+# Explore four time series
+
+Series explored:
+
+- **Bricks** from `aus_production`
+- **Lynx** from `pelt`
+- **Close** from `gafa_stock`
+- **Demand** from `vic_elec`
+
+## Dataset help pages
+
+```{r help-pages}
+?aus_production
+?pelt
+?gafa_stock
+?vic_elec
+```
+
+## Time interval of each series
+
+Below, I compute the interval from each tsibble index.
+
+```{r time-interval-each-series}
+bricks_ts <- aus_production |> select(Quarter, Bricks)
+lynx_ts <- pelt_long(pelt) |> filter(Animal == "Lynx")
+close_ts  <- gafa_stock |> select(Symbol, Date, Close)
+demand_ts <- vic_elec |> select(Time, Demand)
+
+bricks_interval <- bricks_ts |> tsibble::interval()
+lynx_interval   <- lynx_ts   |> tsibble::interval()
+close_interval  <- close_ts  |> tsibble::interval()
+demand_interval <- demand_ts |> tsibble::interval()
+
+bricks_interval
+lynx_interval
+close_interval
+demand_interval
+```
+
+**Answer (interpretation):**
+
+- `aus_production` (**Bricks**) is **quarterly** (index is `yearquarter`).
+- `pelt` (**Lynx**) is **annual** (index is `year`).
+- `gafa_stock` (**Close**) is **daily trading days** (dates exist only on trading days, so the calendar is not strictly regular daily).
+- `vic_elec` (**Demand**) is **half-hourly** (sub-daily regular interval).
+
+## Time plots (autoplot)
+
+```{r time-plots-autoplot}
+# Bricks
+bricks_ts |>
+  autoplot(Bricks) +
+  labs(title = "Australian brick production", x = "Quarter", y = "Bricks")
+
+# Lynx
+lynx_ts |>
+  autoplot(value) +
+  labs(title = "Lynx pelts", x = "Year", y = "Pelts")
+
+# Close (all four stocks)
+gafa_stock |>
+  autoplot(Close) +
+  labs(title = "Daily closing prices: GAFA", x = "Date", y = "Close")
+```
+
+## Demand plot with modified axis labels and title
+
+```{r demand-plot}
+demand_ts |>
+  autoplot(Demand) +
+  labs(
+    title = "Victoria electricity demand (half-hourly)",
+    x = "Time",
+    y = "Demand (MW)"
+  )
+```
+
+# Peak closing price day(s) for each GAFA stock
+
+Find the trading day(s) (ties possible) corresponding to the maximum closing price for each of the four stocks.
+
+```{r peak-closing-price}
+gafa_peaks <- gafa_stock |>
+  group_by(Symbol) |>
+  filter(Close == max(Close, na.rm = TRUE)) |>
+  arrange(Symbol, Date) |>
+  select(Symbol, Date, Close)
+
+gafa_peaks
+```
+
+**Answer:** The table above lists the peak closing date(s) and peak `Close` for each symbol.
+
+# tute1.csv: import, tsibble conversion, plots, and faceting
+
+`tute1.csv` contains quarterly series **Sales**, **AdBudget**, and **GDP** (inflation-adjusted).
+
+## Download and read the data
+
+```{r read-tute-data}
+tute1_url <- "https://otexts.com/fpp3/extrafiles/tute1.csv"
+tute1 <- readr::read_csv(tute1_url)
+
+dplyr::glimpse(tute1)
+```
+
+## Convert to a quarterly tsibble
+
+```{r convert-quarterly-tsibble}
+mytimeseries <- tute1 |>
+  mutate(Quarter = yearquarter(Quarter)) |>
+  as_tsibble(index = Quarter)
+
+mytimeseries
+```
+
+## Plot all three series with facets
+
+```{r three-with-facets}
+mytimeseries |>
+  pivot_longer(-Quarter) |>
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  facet_grid(name ~ ., scales = "free_y") +
+  labs(title = "Sales, AdBudget, and GDP (facetted)", x = "Quarter", y = "")
+```
+
+## Plot without `facet_grid()`
+
+```{r without-facetgrid}
+mytimeseries |>
+  pivot_longer(-Quarter) |>
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  labs(title = "Sales, AdBudget, and GDP (no faceting)", x = "Quarter", y = "")
+```
+
+**Answer:** Without faceting (and a shared y-axis), the largest-scale series visually dominates and the smaller-scale series become difficult to compare.
+
+#  USgas: annual natural gas consumption by state (New England)
+
+## Create a tsibble from `us_total` (year index, state key)
+
+```{r us-total-tsibble}
+data("us_total", package = "USgas")
+
+gas_ts <- us_total |>
+  as_tsibble(index = year, key = state)
+
+gas_ts
+```
+
+## Plot New England states
+
+New England = Maine, Vermont, New Hampshire, Massachusetts, Connecticut, Rhode Island.
+
+```{r plot-ne-states}
+new_england <- c("Maine", "Vermont", "New Hampshire",
+                 "Massachusetts", "Connecticut", "Rhode Island")
+
+gas_ts |>
+  filter(state %in% new_england) |>
+  autoplot(y) +
+  labs(
+    title = "Annual natural gas consumption (New England states)",
+    x = "Year",
+    y = "Consumption"
+  )
+```
+
+# tourism.xlsx: recreate `tourism` tsibble and summaries
+
+## Download and read tourism.xlsx
+
+```{r read-tourism}
+tourism_url <- "https://otexts.com/fpp3/extrafiles/tourism.xlsx"
+tourism_file <- tempfile(fileext = ".xlsx")
+
+download.file(tourism_url, tourism_file, mode = "wb")
+
+tourism_raw <- readxl::read_excel(tourism_file)
+
+dplyr::glimpse(tourism_raw)
+```
+
+## Create a tsibble identical in structure to `tsibble::tourism`
+
+```{r tourism-tsibble}
+tourism_ts <- tourism_raw |>
+  mutate(Quarter = yearquarter(Quarter)) |>
+  as_tsibble(
+    index = Quarter,
+    key = c(State, Region, Purpose)
+  )
+
+tourism_ts
+```
+
+## Ensure temporal ordering for each Region/Purpose
+
+```{r tourism-sort-region-purpose-quarter}
+tourism_ts <- tourism_ts |>
+  arrange(Region, Purpose, Quarter)
+```
+
+## Region–Purpose combination with maximum average overnight trips
+
+```{r region-purpose-max-trips}
+max_region_purpose <- tourism_ts |>
+  group_by(Region, Purpose) |>
+  summarise(avg_trips = mean(Trips, na.rm = TRUE), .groups = "drop") |>
+  arrange(desc(avg_trips)) |>
+  slice(1)
+
+max_region_purpose
+```
+
+**Answer:** The row above identifies the `(Region, Purpose)` combination with the greatest mean `Trips`.
+
+## Total trips by State (combining Region and Purpose)
+
+```{r tourism-state-total}
+tourism_state_total <- tourism_ts |>
+  index_by(Quarter) |>
+  group_by(State) |>
+  summarise(Trips = sum(Trips, na.rm = TRUE)) |>
+  as_tsibble(index = Quarter, key = State)
+
+tourism_state_total
+
+tourism_state_total |>
+  autoplot(Trips) +
+  labs(title = "Total overnight trips by State", x = "Quarter", y = "Trips")
+```
+
+# aus_arrivals: compare arrivals from Japan, NZ, UK, US - JUST FOR FUN
+
+\textcolor{red}{(JUST FOR FUN)}
+
+Use `autoplot()`, `gg_season()`, and `gg_subseries()`.
+
+```{r aus-arrivals}
+aus_arrivals |>
+  autoplot(Arrivals) +
+  labs(title = "International arrivals to Australia", x = "Quarter", y = "Arrivals")
+
+aus_arrivals |>
+  gg_season(Arrivals) +
+  labs(title = "Seasonal plot: arrivals to Australia", y = "Arrivals")
+
+aus_arrivals |>
+  gg_subseries(Arrivals) +
+  labs(title = "Subseries plot: arrivals to Australia", y = "Arrivals")
+```
+
+**Answer (unusual observations):**  
+The subseries plot highlights deviations from the typical seasonal pattern by showing each quarter separately over time. Japan exhibits unusually low arrivals in Q2 and Q3 during later years, deviating sharply from its normally strong seasonal structure. The United States shows occasional Q3 spikes that exceed the typical seasonal range, indicating one-off surges rather than regular seasonality. The UK also displays increased variability in Q3 and Q4, with some years standing out as unusually high. In contrast, New Zealand arrivals remain relatively stable across all quarters, with no clear unusual observations.
+
+# aus_retail: sample a series and explore - JUST FOR FUN
+\textcolor{red}{(JUST FOR FUN)}
+
+```{r aus-retail-myseries}
+set.seed(67)
+myseries <- aus_retail |>
+  filter(`Series ID` == sample(aus_retail$`Series ID`, 1))
+
+myseries |> dplyr::glimpse()
+```
+
+## Graphics exploration
+
+```{r graphics-exploration}
+myseries |>
+  autoplot(Turnover) +
+  labs(title = "Selected retail turnover series", x = "Month", y = "Turnover")
+
+myseries |>
+  gg_season(Turnover) +
+  labs(title = "Seasonal plot: selected retail series", y = "Turnover")
+
+myseries |>
+  gg_subseries(Turnover) +
+  labs(title = "Subseries plot: selected retail series", y = "Turnover")
+
+myseries |>
+  gg_lag(Turnover) +
+  labs(title = "Lag plot: selected retail series", y = "Turnover")
+
+myseries |>
+  ACF(Turnover) |>
+  autoplot() +
+  labs(title = "ACF: selected retail series")
+```
+
+**Answer (seasonality/cyclicity/trend):**  
+- **Seasonality** is indicated by repeating within-year patterns and ACF spikes at seasonal lags (e.g., 12 for monthly data).  
+- **Trend** appears as persistent long-run increase/decrease and often as slow ACF decay.  
+- **Cyclicity** shows as multi-year rises/falls not tied to a fixed seasonal frequency.  
+Use the plots above to describe what is present in *this specific sampled series*.
+
+# Explore five additional series with common graphics + ACF
+
+Series:
+- **“Total Private” Employed** from `us_employment`
+- **Bricks** from `aus_production`
+- **Hare** from `pelt`
+- **“H02” Cost** from `PBS`
+- **Barrels** from `us_gasoline`
+
+```{r gas-barrels}
+emp_private <- us_employment |>
+  filter(Title == "Total Private") |>
+  select(Month, Employed)
+
+bricks_ts <- aus_production |> select(Quarter, Bricks)
+
+hare_ts <- pelt_long(pelt) |> filter(Animal == "Hare")
+
+pbs_keys <- key_vars(PBS)
+
+pbs_h02 <- PBS |>
+  filter(ATC2 == "H02") |>
+  group_by(across(all_of(key_vars(PBS)))) |>
+  filter(dplyr::cur_group_id() == 1) |>
+  ungroup() |>
+  select(Month, Cost)
+
+gas_barrels <- us_gasoline |> select(Week, Barrels)
+```
+
+Helper to run the same exploration:
+
+```{r helper-exploration}
+explore_series <- function(data, value_col, title_prefix = "") {
+  list(
+    time = data |> autoplot({{ value_col }}) +
+      labs(title = paste0(title_prefix, " — time plot")),
+
+    season = tryCatch(
+      data |> gg_season({{ value_col }}) + labs(title = paste0(title_prefix, " — seasonal plot")),
+      error = function(e) NULL
+    ),
+
+    subseries = tryCatch(
+      data |> gg_subseries({{ value_col }}) + labs(title = paste0(title_prefix, " — subseries plot")),
+      error = function(e) NULL
+    ),
+
+    lag = tryCatch(
+      data |> gg_lag({{ value_col }}) + labs(title = paste0(title_prefix, " — lag plot")),
+      error = function(e) NULL
+    ),
+
+    acf = data |> ACF({{ value_col }}) |> autoplot() +
+      labs(title = paste0(title_prefix, " — ACF"))
+  )
+}
+
+```
+
+```{r plots-gas-emp-hare-pbs-bricks}
+plots_emp <- explore_series(emp_private, Employed, "US Employment (Total Private)")
+plots_emp$time; plots_emp$season; plots_emp$subseries; plots_emp$lag; plots_emp$acf
+
+plots_bricks <- explore_series(bricks_ts, Bricks, "Australian Bricks Production")
+plots_bricks$time; plots_bricks$season; plots_bricks$subseries; plots_bricks$lag; plots_bricks$acf
+
+plots_hare <- explore_series(hare_ts, value, "Hare Pelts")
+plots_hare$time; plots_hare$season; plots_hare$subseries; plots_hare$lag; plots_hare$acf
+
+plots_pbs <- explore_series(pbs_h02, Cost, "PBS H02 Cost")
+plots_pbs$time; plots_pbs$season; plots_pbs$subseries; plots_pbs$lag; plots_pbs$acf
+
+plots_gas <- explore_series(gas_barrels, Barrels, "US Gasoline Barrels")
+plots_gas$time; plots_gas$season; plots_gas$subseries; plots_gas$lag; plots_gas$acf
+```
+
+**Answer (what we learn):**
+- **US Gasoline Barrels** and **PBS H02 Cost** show clear **seasonality**: repeating within‑year patterns and ACF spikes at seasonal lags (and multiples).
+- **US Employment (Total Private)** shows a strong **trend / nonstationarity**: long‑run drift in the time plot and a slowly decaying ACF.
+- **Hare Pelts** shows **cycles** over multiple years: oscillations in the time plot with an ACF that alternates signs.
+- **Australian Bricks Production** shows **unusual years/structural change**: a sharp drop in the early 1980s followed by a sustained lower level and higher volatility from the early 1990s onward.
+
+# Match time plots to ACF plots - JUST FOR FUN
+\textcolor{red}{(JUST FOR FUN)}
+
+The book’s figure is included below for matching.
+
+```{r acfguess-figure, message=FALSE, warning=FALSE}
+acf_url <- "https://otexts.com/fpp3/fpp_files/figure-html/acfguess-1.png"
+acf_file <- file.path(tempdir(), "acfguess-1.png")
+
+download.file(acf_url, acf_file, mode = "wb")
+
+knitr::include_graphics(acf_file)
+
+```
+
+**Answer:** Based on the figure:
+- **Time plot A** matches **ACF B**
+- **Time plot B** matches **ACF A**
+- **Time plot C** matches **ACF D**
+- **Time plot D** matches **ACF C**
+
+**Justification (brief):**
+- **B → A:** near‑zero, short‑memory ACF fits the cow temperature series.
+- **A → B:** strong seasonal spikes (esp. lag 12) fit monthly accidental deaths.
+- **D → C:** high, slowly decaying ACF fits the trending air passengers series.
+- **C → D:** oscillating, alternating‑sign ACF fits mink trappings cycles.
+
+
+# aus_livestock pigs in Victoria (1990–1995): autoplot + ACF; compare to white noise - JUST FOR FUN
+\textcolor{red}{(JUST FOR FUN)}
+
+```{r aus-livestock-pigs}
+pigs_vic_9095 <- aus_livestock |>
+  filter(Animal == "Pigs", State == "Victoria") |>
+  filter(year(Month) >= 1990, year(Month) <= 1995)
+
+pigs_vic_9095 |>
+  autoplot(Count) +
+  labs(title = "Pigs slaughtered in Victoria (1990–1995)", x = "Month", y = "Count")
+
+pigs_vic_9095 |>
+  ACF(Count) |>
+  autoplot() +
+  labs(title = "ACF: Pigs slaughtered in Victoria (1990–1995)")
+```
+
+Compare to longer period:
+
+```{r pigs-longer-period}
+pigs_vic_full <- aus_livestock |>
+  filter(Animal == "Pigs", State == "Victoria")
+
+pigs_vic_full |>
+  ACF(Count) |>
+  autoplot() +
+  labs(title = "ACF: Pigs slaughtered in Victoria (Full series)")
+```
+
+**Answer:**  
+- Compared with **white noise**, this series shows **structured autocorrelation** (significant ACF spikes rather than hovering near zero), indicating dependence and often seasonality/persistence.
+- Using a **longer period** typically yields a **more stable ACF estimate** and can make seasonal and low-frequency structure clearer.
+
+# Google stock daily changes: re-indexing, differences, ACF; assess white noise - JUST FOR FUN
+\textcolor{red}{(JUST FOR FUN)}
+
+Compute daily changes in GOOG closing prices:
+
+```{r goog-closing}
+dgoog <- gafa_stock |>
+  filter(Symbol == "GOOG", year(Date) >= 2018) |>
+  mutate(trading_day = row_number()) |>
+  update_tsibble(index = trading_day, regular = TRUE) |>
+  mutate(diff = difference(Close))
+
+dgoog |> dplyr::glimpse()
+```
+
+## Why re-index the tsibble?
+
+**Answer:** The `Date` index is not strictly regular because trading does not occur on weekends/holidays. Re-indexing by `trading_day` creates a **regular** index where each step is “next observed trading day,” so lag operations (and the ACF) align with equal steps.
+
+## Plot differences and their ACF
+
+```{r diff-and-acf}
+dgoog |>
+  autoplot(diff) +
+  labs(title = "Daily changes in GOOG closing price", x = "Trading day index", y = "Difference in Close")
+
+dgoog |>
+  ACF(diff) |>
+  autoplot() +
+  labs(title = "ACF: Daily changes in GOOG closing price")
+```
+
+## Do the changes look like white noise?
+
+**Answer:** Price **changes** often show weak linear autocorrelation (ACF near zero at most lags), consistent with white noise in the mean. However, volatility clustering (periods of larger/smaller variability) can still appear in the time plot, so the series may not be i.i.d. white noise in a strict sense.
