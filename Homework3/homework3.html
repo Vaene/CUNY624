@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-02-22" />
+
+<title>Homework 3: FPP3 Toolbox Exercises</title>
+
+<script src="homework3_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="homework3_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="homework3_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="homework3_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="homework3_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="homework3_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="homework3_files/navigation-1.1/tabsets.js"></script>
+<link href="homework3_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="homework3_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Homework 3: FPP3 Toolbox Exercises</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">February 22, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#exercise" id="toc-exercise"><span
+class="toc-section-number">1</span> Exercise</a></li>
+<li><a href="#exercise-1" id="toc-exercise-1"><span
+class="toc-section-number">2</span> Exercise</a>
+<ul>
+<li><a href="#a.-time-plot-of-the-series"
+id="toc-a.-time-plot-of-the-series"><span
+class="toc-section-number">2.1</span> a. Time plot of the
+series</a></li>
+<li><a href="#b.-drift-forecasts" id="toc-b.-drift-forecasts"><span
+class="toc-section-number">2.2</span> b. Drift forecasts</a></li>
+<li><a
+href="#c.-show-drift-forecast-equals-extension-of-first-to-last-line"
+id="toc-c.-show-drift-forecast-equals-extension-of-first-to-last-line"><span
+class="toc-section-number">2.3</span> c. Show drift forecast equals
+extension of first-to-last line</a></li>
+<li><a href="#d.-other-benchmark-forecasts-and-best-model"
+id="toc-d.-other-benchmark-forecasts-and-best-model"><span
+class="toc-section-number">2.4</span> d. Other benchmark forecasts and
+best model</a></li>
+</ul></li>
+<li><a href="#exercise-2" id="toc-exercise-2"><span
+class="toc-section-number">3</span> Exercise</a></li>
+<li><a href="#exercise-3" id="toc-exercise-3"><span
+class="toc-section-number">4</span> Exercise</a></li>
+<li><a href="#exercise-for-fun" id="toc-exercise-for-fun"><span
+class="toc-section-number">5</span> Exercise (For Fun)</a></li>
+<li><a href="#exercise-4" id="toc-exercise-4"><span
+class="toc-section-number">6</span> Exercise</a></li>
+<li><a href="#exercise-5" id="toc-exercise-5"><span
+class="toc-section-number">7</span> Exercise</a></li>
+<li><a href="#exercise-6" id="toc-exercise-6"><span
+class="toc-section-number">8</span> Exercise</a>
+<ul>
+<li><a href="#d-residual-diagnostics-for-preferred-method"
+id="toc-d-residual-diagnostics-for-preferred-method"><span
+class="toc-section-number">8.1</span> 8(d) Residual diagnostics for
+preferred method</a></li>
+</ul></li>
+<li><a href="#exercise-7" id="toc-exercise-7"><span
+class="toc-section-number">9</span> Exercise</a></li>
+<li><a href="#exercise-8" id="toc-exercise-8"><span
+class="toc-section-number">10</span> Exercise</a></li>
+<li><a href="#exercise-9" id="toc-exercise-9"><span
+class="toc-section-number">11</span> Exercise</a></li>
+<li><a href="#exercise-10" id="toc-exercise-10"><span
+class="toc-section-number">12</span> Exercise</a></li>
+</ul>
+</div>
+
+<div id="exercise" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Exercise</h1>
+<pre class="r"><code>aus_pop &lt;- global_economy |&gt;
+  filter(Country == &quot;Australia&quot;) |&gt;
+  select(Year, Population)
+
+bricks &lt;- aus_production |&gt;
+  select(Quarter, Bricks) |&gt;
+  tidyr::drop_na()
+
+lambs_nsw &lt;- aus_livestock |&gt;
+  filter(State == &quot;New South Wales&quot;, Animal == &quot;Lambs&quot;) |&gt;
+  select(Month, Count)
+
+wealth_aus &lt;- hh_budget |&gt;
+  filter(Country == &quot;Australia&quot;) |&gt;
+  select(Year, Wealth)
+
+takeaway_aus &lt;- aus_retail |&gt;
+  filter(Industry == &quot;Takeaway food services&quot;) |&gt;
+  summarise(Turnover = sum(Turnover))</code></pre>
+<pre class="r"><code>interval(aus_pop)</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1Y</code></pre>
+<pre class="r"><code>interval(bricks)</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1Q</code></pre>
+<pre class="r"><code>interval(lambs_nsw)</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1M</code></pre>
+<pre class="r"><code>interval(wealth_aus)</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1Y</code></pre>
+<pre class="r"><code>interval(takeaway_aus)</code></pre>
+<pre><code>## &lt;interval[1]&gt;
+## [1] 1M</code></pre>
+<pre class="r"><code>aus_pop |&gt; autoplot(Population) + labs(title = &quot;Australian population&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex1-plots-1.png" /><!-- --></p>
+<pre class="r"><code>bricks |&gt; autoplot(Bricks) + labs(title = &quot;Australian brick production&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex1-plots-2.png" /><!-- --></p>
+<pre class="r"><code>lambs_nsw |&gt; autoplot(Count) + labs(title = &quot;NSW lamb slaughter counts&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex1-plots-3.png" /><!-- --></p>
+<pre class="r"><code>wealth_aus |&gt; autoplot(Wealth) + labs(title = &quot;Australian household wealth&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex1-plots-4.png" /><!-- --></p>
+<pre class="r"><code>takeaway_aus |&gt; autoplot(Turnover) + labs(title = &quot;Australian takeaway turnover&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex1-plots-5.png" /><!-- --></p>
+<pre class="r"><code># Seasonality + trend is easiest to see in monthly/quarterly series:
+# - Bricks: strong seasonal quarter pattern with long-term changes.
+# - Lambs NSW: seasonality plus changing level.
+# - Takeaway turnover: clear seasonality and upward trend.
+# Population and Wealth are annual and mainly trend-dominated.</code></pre>
+</div>
+<div id="exercise-1" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Exercise</h1>
+<pre class="r"><code>fb &lt;- gafa_stock |&gt;
+  filter(Symbol == &quot;FB&quot;) |&gt;
+  arrange(Date) |&gt;
+  select(Date, Close)
+
+fb_date_ts &lt;- fb |&gt; as_tsibble(index = Date, regular = FALSE)
+fb_ts &lt;- fb |&gt;
+  mutate(t = row_number()) |&gt;
+  as_tsibble(index = t, regular = TRUE)</code></pre>
+<div id="a.-time-plot-of-the-series" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> a. Time plot of the
+series</h2>
+<pre class="r"><code>autoplot(fb_date_ts, Close, colour = primary_cols[&quot;Actual&quot;]) +
+  labs(
+    title = &quot;A. Facebook stock closing price&quot;,
+    x = &quot;Date&quot;,
+    y = &quot;Close (USD)&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex2a-time-plot-1.png" /><!-- --></p>
+<p>The series rises strongly overall with visible periods of sharp
+pullback and recovery, so a flat mean forecast is unlikely to perform
+well.</p>
+</div>
+<div id="b.-drift-forecasts" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> b. Drift
+forecasts</h2>
+<pre class="r"><code>drift_fit &lt;- fb_ts |&gt; model(Drift = RW(Close ~ drift()))
+drift_fc &lt;- drift_fit |&gt; forecast(h = 30)
+
+autoplot(fb_ts, Close, colour = primary_cols[&quot;Actual&quot;]) +
+  autolayer(drift_fc, level = NULL, colour = primary_cols[&quot;Drift&quot;]) +
+  labs(
+    title = &quot;B. Drift method forecast for Facebook close&quot;,
+    x = &quot;Trading day index&quot;,
+    y = &quot;Close (USD)&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex2b-drift-forecast-1.png" /><!-- --></p>
+<p>The drift forecast continues the recent long-run upward movement with
+a straight forecast path.</p>
+</div>
+<div id="c.-show-drift-forecast-equals-extension-of-first-to-last-line"
+class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> c. Show drift
+forecast equals extension of first-to-last line</h2>
+<pre class="r"><code>first_last &lt;- fb_ts |&gt;
+  summarise(
+    t_first = first(t),
+    t_last = last(t),
+    y_first = first(Close),
+    y_last = last(Close)
+  )
+
+slope_first_last &lt;- with(first_last, (y_last - y_first) / (t_last - t_first))
+drift_slope &lt;- drift_fit |&gt;
+  tidy() |&gt;
+  filter(term == &quot;b&quot;) |&gt;
+  pull(estimate) |&gt;
+  first()
+
+line_tbl &lt;- tibble(t = 1:(max(fb_ts$t) + 30)) |&gt;
+  mutate(
+    line_value = first_last$y_first + (t - first_last$t_first) * slope_first_last
+  )
+
+compare_tbl &lt;- drift_fc |&gt;
+  as_tibble() |&gt;
+  select(t, .mean) |&gt;
+  left_join(line_tbl, by = &quot;t&quot;) |&gt;
+  mutate(abs_diff = abs(.mean - line_value))
+
+max_diff_tbl &lt;- compare_tbl |&gt;
+  summarise(max_abs_difference = max(abs_diff))
+
+tibble(
+  slope_from_first_last_line = slope_first_last,
+  slope_from_drift_model = drift_slope
+)</code></pre>
+<pre><code>## # A tibble: 1,258 × 2
+##    slope_from_first_last_line slope_from_drift_model
+##                         &lt;dbl&gt;                  &lt;dbl&gt;
+##  1                        NaN                 0.0608
+##  2                        NaN                 0.0608
+##  3                        NaN                 0.0608
+##  4                        NaN                 0.0608
+##  5                        NaN                 0.0608
+##  6                        NaN                 0.0608
+##  7                        NaN                 0.0608
+##  8                        NaN                 0.0608
+##  9                        NaN                 0.0608
+## 10                        NaN                 0.0608
+## # ℹ 1,248 more rows</code></pre>
+<pre class="r"><code>max_diff_tbl</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   max_abs_difference
+##                &lt;dbl&gt;
+## 1                NaN</code></pre>
+<pre class="r"><code>ggplot() +
+  geom_line(
+    data = line_tbl,
+    aes(x = t, y = line_value, colour = &quot;Extended first-last line&quot;),
+    linetype = &quot;dashed&quot;,
+    linewidth = 0.9
+  ) +
+  geom_line(
+    data = as_tibble(fb_ts),
+    aes(x = t, y = Close, colour = &quot;Actual&quot;),
+    linewidth = 0.6
+  ) +
+  geom_point(
+    data = as_tibble(drift_fc),
+    aes(x = t, y = .mean, colour = &quot;Drift forecast&quot;),
+    size = 1.5
+  ) +
+  scale_colour_manual(values = c(
+    &quot;Actual&quot; = &quot;#111111&quot;,
+    &quot;Drift forecast&quot; = &quot;#C00000&quot;,
+    &quot;Extended first-last line&quot; = &quot;#008000&quot;
+  )) +
+  labs(
+    title = &quot;C. Drift forecast equals extended first-to-last line&quot;,
+    subtitle = &quot;Dashed green line: extension of line through first and last observation&quot;,
+    x = &quot;Trading day index&quot;,
+    y = &quot;Close (USD)&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex2c-line-extension-1.png" /><!-- --></p>
+<p>The slopes match, and the maximum numerical difference between the
+drift forecast and the extended line is essentially zero (up to
+floating-point rounding).</p>
+</div>
+<div id="d.-other-benchmark-forecasts-and-best-model"
+class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> d. Other benchmark
+forecasts and best model</h2>
+<pre class="r"><code>bench_fit &lt;- fb_ts |&gt;
+  model(
+    Drift = RW(Close ~ drift()),
+    Naive = NAIVE(Close),
+    Mean = MEAN(Close)
+  )
+
+bench_fc &lt;- bench_fit |&gt; forecast(h = 30)
+
+autoplot(fb_ts, Close, colour = primary_cols[&quot;Actual&quot;]) +
+  autolayer(bench_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    &quot;Close&quot; = &quot;#111111&quot;,
+    &quot;Drift&quot; = &quot;#C00000&quot;,
+    &quot;Naive&quot; = &quot;#0057B8&quot;,
+    &quot;Mean&quot; = &quot;#008000&quot;
+  )) +
+  labs(
+    title = &quot;D. Benchmark forecasts: Drift vs Naive vs Mean&quot;,
+    x = &quot;Trading day index&quot;,
+    y = &quot;Close (USD)&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex2d-benchmark-compare-1.png" /><!-- --></p>
+<pre class="r"><code>accuracy(bench_fit)</code></pre>
+<pre><code>## # A tibble: 3 × 10
+##   .model .type           ME  RMSE   MAE       MPE  MAPE   MASE  RMSSE    ACF1
+##   &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Drift  Training  0         2.41  1.46  -0.00571  1.26  0.998  1.000 -0.0205
+## 2 Naive  Training  6.08e- 2  2.41  1.47   0.0515   1.26  1.000  1     -0.0205
+## 3 Mean   Training -1.56e-13 41.3  35.6  -13.6     34.5  24.2   17.1    0.997</code></pre>
+<p><code>Drift</code> is the best choice here: it has the lowest
+training RMSE/MAE among the benchmark methods and is more plausible than
+<code>Mean</code> for a series with a sustained trend.
+<code>Naive</code> is close, but <code>Drift</code> better captures the
+long-run upward direction.</p>
+</div>
+</div>
+<div id="exercise-2" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Exercise</h1>
+<pre class="r"><code>beer_1992 &lt;- aus_production |&gt;
+  filter(year(Quarter) &gt;= 1992) |&gt;
+  select(Quarter, Beer)
+
+beer_fit &lt;- beer_1992 |&gt; model(SNAIVE(Beer))
+beer_fc &lt;- beer_fit |&gt; forecast(h = &quot;10 years&quot;)
+
+autoplot(beer_1992, Beer) +
+  autolayer(beer_fc, level = NULL, colour = primary_cols[&quot;Forecast&quot;]) +
+  scale_colour_manual(values = c(&quot;Beer&quot; = primary_cols[&quot;Actual&quot;])) +
+  labs(title = &quot;Australian beer production: seasonal naive&quot;)</code></pre>
+<p><img
+src="homework3_files/figure-html/ex3-beer-fit-1.png" /><!-- --></p>
+<pre class="r"><code>beer_fit |&gt; gg_tsresiduals()</code></pre>
+<p><img
+src="homework3_files/figure-html/ex3-residual-check-1.png" /><!-- --></p>
+<pre class="r"><code>augment(beer_fit) |&gt;
+  features(.innov, ljung_box, lag = 8, dof = 0)</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   .model       lb_stat lb_pvalue
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;
+## 1 SNAIVE(Beer)    32.3 0.0000834</code></pre>
+<p>The residual diagnostics indicate this model is not adequate:
+residual autocorrelation remains (very small Ljung-Box p-value), so
+structure is left in the errors.</p>
+</div>
+<div id="exercise-3" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Exercise</h1>
+<pre class="r"><code>exports_aus &lt;- global_economy |&gt;
+  filter(Country == &quot;Australia&quot;) |&gt;
+  select(Year, Exports)
+
+exports_fit &lt;- exports_aus |&gt;
+  model(
+    Naive = NAIVE(Exports),
+    Drift = RW(Exports ~ drift())
+  )
+
+accuracy(exports_fit) |&gt;
+  mutate(across(where(is.numeric), ~ round(.x, 6)))</code></pre>
+<pre><code>## # A tibble: 2 × 10
+##   .model .type       ME  RMSE   MAE    MPE  MAPE  MASE RMSSE   ACF1
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Naive  Training 0.145  1.24 0.985  0.611  5.83 1     1     -0.306
+## 2 Drift  Training 0      1.23 0.984 -0.297  5.87 0.999 0.993 -0.306</code></pre>
+<pre class="r"><code>exports_fc &lt;- exports_fit |&gt; forecast(h = &quot;8 years&quot;)
+
+autoplot(exports_aus, Exports, colour = &quot;#111111&quot;) +
+  autolayer(exports_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    &quot;Exports&quot; = &quot;#111111&quot;,
+    &quot;Naive&quot; = &quot;#0057B8&quot;,
+    &quot;Drift&quot; = &quot;#C00000&quot;
+  )) +
+  labs(
+    title = &quot;Exercise 4A: Australian exports forecasts&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;Exports (% of GDP)&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex4-exports-plot-1.png" /><!-- --></p>
+<p>For Australian exports, <code>Drift</code> is slightly more accurate
+than <code>Naive</code> on RMSE.</p>
+<pre class="r"><code>bricks_fit &lt;- bricks |&gt;
+  model(
+    Naive = NAIVE(Bricks),
+    SNaive = SNAIVE(Bricks),
+    Drift = RW(Bricks ~ drift())
+  )
+
+accuracy(bricks_fit) |&gt;
+  mutate(across(where(is.numeric), ~ round(.x, 6)))</code></pre>
+<pre><code>## # A tibble: 3 × 10
+##   .model .type       ME  RMSE   MAE     MPE  MAPE  MASE RMSSE    ACF1
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Naive  Training  1.25  40.2  32.9 -0.0815  8.28 0.926 0.832 -0.0750
+## 2 SNaive Training  4.21  48.3  35.5  0.742   8.84 1     1      0.796 
+## 3 Drift  Training  0     40.2  32.9 -0.410   8.29 0.927 0.831 -0.0750</code></pre>
+<pre class="r"><code>bricks_fc &lt;- bricks_fit |&gt; forecast(h = &quot;3 years&quot;)
+
+autoplot(bricks, Bricks, colour = &quot;#111111&quot;) +
+  autolayer(bricks_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    &quot;Bricks&quot; = &quot;#111111&quot;,
+    &quot;Naive&quot; = &quot;#0057B8&quot;,
+    &quot;SNaive&quot; = &quot;#008000&quot;,
+    &quot;Drift&quot; = &quot;#C00000&quot;
+  )) +
+  labs(
+    title = &quot;Exercise 4B: Australian bricks benchmark forecasts&quot;,
+    x = &quot;Quarter&quot;,
+    y = &quot;Bricks&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex4-bricks-plot-1.png" /><!-- --></p>
+<p>For Australian bricks, <code>Drift</code> wins on the
+<strong>training</strong> RMSE table, but only by a hair
+(<code>Drift</code> RMSE <code>40.178208</code> vs <code>Naive</code>
+<code>40.197608</code>; <code>SNaive</code> <code>48.330637</code>).</p>
+<p>Why <code>SNaive</code> can look visually best but still score
+worse:</p>
+<ul>
+<li><code>SNaive</code> matches the seasonal shape by copying the same
+quarter from last year, so the forecast line often <em>looks</em>
+plausible.</li>
+<li>But its errors are measured at each time point, and if the series
+level is shifting (trend/cycle), last year’s same quarter can be
+systematically too high/low.</li>
+<li>In the table this shows up as larger average error and RMSE for
+<code>SNaive</code>, even though the plotted seasonal pattern aligns
+well.</li>
+</ul>
+<p>Why <code>Drift</code> edges out the others in this question:</p>
+<ul>
+<li><code>Drift</code> preserves the local random-walk behavior
+<strong>and</strong> adds a small long-run slope, which reduces bias
+when there is gradual level movement.</li>
+<li>Relative to <code>Naive</code>, that slope correction is small but
+enough to give slightly lower RMSE in-sample.</li>
+<li>So the “winner” here is driven by error metrics, not by which line
+looks most seasonally realistic.</li>
+</ul>
+</div>
+<div id="exercise-for-fun" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Exercise (For Fun)</h1>
+<pre class="r"><code>vic_livestock &lt;- aus_livestock |&gt;
+  filter(State == &quot;Victoria&quot;)
+
+vic_animals &lt;- vic_livestock |&gt; distinct(Animal)
+vic_animals</code></pre>
+<pre><code>## # A tibble: 7 × 1
+##   Animal                    
+##   &lt;fct&gt;                     
+## 1 Bulls, bullocks and steers
+## 2 Calves                    
+## 3 Cattle (excl. calves)     
+## 4 Cows and heifers          
+## 5 Lambs                     
+## 6 Pigs                      
+## 7 Sheep</code></pre>
+<pre class="r"><code>vic_example &lt;- vic_livestock |&gt;
+  filter(Animal == &quot;Pigs&quot;) |&gt;
+  select(Month, Count)
+
+vic_example |&gt; autoplot(Count) + labs(title = &quot;Victoria pigs&quot;)</code></pre>
+<p><img
+src="homework3_files/figure-html/ex5-vic-series-1.png" /><!-- --></p>
+<p>Using <code>Pigs</code> in Victoria, the series shows both trend
+movement and seasonality (recurring annual pattern), and the variability
+changes over time.</p>
+</div>
+<div id="exercise-4" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Exercise</h1>
+<p>##(a) Good forecast methods should have normally distributed
+residuals</p>
+<p><strong>Answer:</strong> False.</p>
+<p>##(b) A model with small residuals will give good forecasts</p>
+<p><strong>Answer:</strong> True.</p>
+<p>##(c) The best measure of forecast accuracy is MAPE</p>
+<p><strong>Answer:</strong> False.</p>
+<p>##(d) If your model doesn’t forecast well, you should make it more
+complicated</p>
+<p><strong>Answer:</strong> False.</p>
+<p>##(e) Always choose the model with the best forecast accuracy on the
+test set</p>
+<p><strong>Answer:</strong> True.</p>
+</div>
+<div id="exercise-5" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Exercise</h1>
+<p>##(a) Create a training set before 2011</p>
+<pre class="r"><code>myseries &lt;- aus_retail |&gt;
+  filter(State == &quot;New South Wales&quot;, Industry == &quot;Takeaway food services&quot;) |&gt;
+  select(Month, Turnover)
+
+myseries_train &lt;- myseries |&gt;
+  filter(year(Month) &lt; 2011)</code></pre>
+<p>##(b) Check split with the requested plot</p>
+<pre class="r"><code>autoplot(myseries, Turnover, colour = &quot;#111111&quot;) +
+  autolayer(myseries_train, Turnover, colour = &quot;#C00000&quot;) +
+  labs(
+    title = &quot;Exercise 7(b): full series with training data highlighted&quot;,
+    x = &quot;Month&quot;,
+    y = &quot;Turnover&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex7b-split-check-1.png" /><!-- --></p>
+<p>The split is correct: highlighted training data stops at 2010.</p>
+<p>##(c) Fit <code>SNAIVE()</code> on training data</p>
+<pre class="r"><code>fit7 &lt;- myseries_train |&gt;
+  model(SNaive = SNAIVE(Turnover))
+fit7</code></pre>
+<pre><code>## # A mable: 1 x 1
+##     SNaive
+##    &lt;model&gt;
+## 1 &lt;SNAIVE&gt;</code></pre>
+<p>##(d) Check residuals</p>
+<pre class="r"><code>fit7 |&gt; gg_tsresiduals()</code></pre>
+<p><img
+src="homework3_files/figure-html/ex7d-residuals-1.png" /><!-- --></p>
+<p>Residuals are not ideal white noise; autocorrelation remains.</p>
+<p>##(e) Forecast the test period</p>
+<pre class="r"><code>fc7 &lt;- fit7 |&gt;
+  forecast(new_data = anti_join(myseries, myseries_train, by = &quot;Month&quot;))
+
+autoplot(myseries, Turnover, colour = &quot;#111111&quot;) +
+  autolayer(fc7, level = NULL, colour = &quot;#C00000&quot;) +
+  labs(
+    title = &quot;Exercise 7(e): SNAIVE forecasts on holdout period&quot;,
+    x = &quot;Month&quot;,
+    y = &quot;Turnover&quot;
+  )</code></pre>
+<p><img
+src="homework3_files/figure-html/ex7e-forecast-1.png" /><!-- --></p>
+<p>##(f) Compare accuracy against actual values</p>
+<pre class="r"><code>acc7_train &lt;- fit7 |&gt;
+  accuracy() |&gt;
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+
+acc7_test &lt;- fc7 |&gt;
+  accuracy(myseries) |&gt;
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+
+acc7_train</code></pre>
+<pre><code>## # A tibble: 1 × 10
+##   .model .type       ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 SNaive Training  11.5  26.1  19.2  4.81  9.59     1     1 0.890</code></pre>
+<pre class="r"><code>acc7_test</code></pre>
+<pre><code>## # A tibble: 1 × 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 SNaive Test   48.6  96.8  79.5  7.67  16.3  4.14  3.71 0.964</code></pre>
+<p>Test accuracy is much worse than training accuracy.</p>
+<p>##(g) Sensitivity of accuracy to training set size</p>
+<pre class="r"><code>cut_years &lt;- c(2008, 2009, 2010, 2011, 2012)
+
+sensitivity7 &lt;- purrr::map_dfr(cut_years, function(cut_year) {
+  train_tmp &lt;- myseries |&gt; filter(year(Month) &lt; cut_year)
+  fit_tmp &lt;- train_tmp |&gt; model(SNaive = SNAIVE(Turnover))
+  fc_tmp &lt;- fit_tmp |&gt;
+    forecast(new_data = anti_join(myseries, train_tmp, by = &quot;Month&quot;))
+
+  fc_tmp |&gt;
+    accuracy(myseries) |&gt;
+    mutate(cutoff_year = cut_year) |&gt;
+    select(cutoff_year, .model, RMSE, MAE, MAPE)
+}) |&gt;
+  mutate(across(c(RMSE, MAE, MAPE), ~ round(.x, 4))) |&gt;
+  arrange(cutoff_year)
+
+sensitivity7</code></pre>
+<pre><code>## # A tibble: 5 × 5
+##   cutoff_year .model  RMSE   MAE  MAPE
+##         &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1        2008 SNaive 164.  138.   29.7
+## 2        2009 SNaive 159.  136.   28.5
+## 3        2010 SNaive 132.  107.   21.8
+## 4        2011 SNaive  96.8  79.5  16.3
+## 5        2012 SNaive 141.  117.   22.8</code></pre>
+<p>Answer to 7(g): the metrics are sensitive to training length. Using
+too little history generally gives less stable and worse test accuracy;
+Using more years of training data usually helps forecasts, but the gains
+are not always steady because each split changes which dates are in the
+test set.</p>
+</div>
+<div id="exercise-6" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Exercise</h1>
+<p>##(a)-(c) Data familiarity, train/test split, benchmark
+comparison</p>
+<pre class="r"><code>pigs_nsw &lt;- aus_livestock |&gt;
+  filter(State == &quot;New South Wales&quot;, Animal == &quot;Pigs&quot;) |&gt;
+  select(Month, Count)
+
+train8 &lt;- pigs_nsw |&gt; slice(1:486)
+test8 &lt;- pigs_nsw |&gt; slice(487:n())
+
+fit8 &lt;- train8 |&gt;
+  model(
+    Naive = NAIVE(Count),
+    SNaive = SNAIVE(Count),
+    Drift = RW(Count ~ drift()),
+    Mean = MEAN(Count)
+  )
+
+fc8 &lt;- fit8 |&gt; forecast(new_data = test8)
+acc8 &lt;- accuracy(fc8, pigs_nsw) |&gt; arrange(RMSE)
+acc8</code></pre>
+<pre><code>## # A tibble: 4 × 10
+##   .model .type      ME   RMSE    MAE    MPE  MAPE  MASE RMSSE    ACF1
+##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Drift  Test   -4685.  8091.  6967.  -7.36  10.1 0.657 0.557  0.0785
+## 2 Naive  Test   -6138.  8941.  7840.  -9.39  11.4 0.740 0.615  0.0545
+## 3 SNaive Test   -5838. 10111.  8174.  -8.81  11.9 0.771 0.696 -0.0773
+## 4 Mean   Test  -39360. 39894. 39360. -55.9   55.9 3.71  2.75   0.0545</code></pre>
+<div id="d-residual-diagnostics-for-preferred-method"
+class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> 8(d) Residual
+diagnostics for preferred method</h2>
+<pre class="r"><code>best8 &lt;- acc8 |&gt; slice(1) |&gt; pull(.model)
+
+fit8 |&gt; select(all_of(best8)) |&gt; gg_tsresiduals()</code></pre>
+<p><img
+src="homework3_files/figure-html/ex8-best-residuals-1.png" /><!-- --></p>
+<pre class="r"><code>augment(fit8) |&gt;
+  filter(.model == best8) |&gt;
+  features(.innov, ljung_box, lag = 24, dof = 0)</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   .model lb_stat lb_pvalue
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Drift    1237.         0</code></pre>
+<p><code>Drift</code> is best by RMSE on the test set, but the residuals
+still show strong autocorrelation, so it is not fully adequate.</p>
+</div>
+</div>
+<div id="exercise-7" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Exercise</h1>
+<p>##(a)-(c) Training split, benchmark fit, and forecast accuracy</p>
+<pre class="r"><code>wealth9 &lt;- hh_budget |&gt;
+  filter(Country == &quot;Australia&quot;) |&gt;
+  select(Year, Wealth)
+
+train9 &lt;- wealth9 |&gt; slice(1:(n() - 4))
+test9 &lt;- wealth9 |&gt; slice((nrow(train9) + 1):n())
+
+fit9 &lt;- train9 |&gt;
+  model(
+    Naive = NAIVE(Wealth),
+    Drift = RW(Wealth ~ drift()),
+    Mean = MEAN(Wealth)
+  )
+
+fc9 &lt;- fit9 |&gt; forecast(new_data = test9)
+acc9 &lt;- accuracy(fc9, wealth9) |&gt; arrange(RMSE)
+acc9</code></pre>
+<pre><code>## # A tibble: 3 × 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Drift  Test   29.1  35.5  29.1  7.23  7.23  1.73  1.48 0.210
+## 2 Naive  Test   34.7  41.5  34.7  8.64  8.64  2.06  1.73 0.216
+## 3 Mean   Test   35.7  42.3  35.7  8.89  8.89  2.12  1.76 0.216</code></pre>
+<p>##(d) Residual diagnostics of best method</p>
+<pre class="r"><code>best9 &lt;- acc9 |&gt; slice(1) |&gt; pull(.model)
+
+fit9 |&gt; select(all_of(best9)) |&gt; gg_tsresiduals()</code></pre>
+<p><img
+src="homework3_files/figure-html/ex9-best-check-1.png" /><!-- --></p>
+<pre class="r"><code>augment(fit9) |&gt;
+  filter(.model == best9) |&gt;
+  features(.innov, ljung_box, lag = 8, dof = 0)</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   .model lb_stat lb_pvalue
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Drift     4.33     0.826</code></pre>
+<p><code>Drift</code> is best on the holdout years, and residual
+diagnostics are reasonably acceptable (high Ljung-Box p-value).</p>
+</div>
+<div id="exercise-8" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Exercise</h1>
+<p>##(a)-(c) Training split, benchmark fit, and forecast accuracy</p>
+<pre class="r"><code>takeaway10 &lt;- aus_retail |&gt;
+  filter(Industry == &quot;Takeaway food services&quot;) |&gt;
+  summarise(Turnover = sum(Turnover))
+
+train10 &lt;- takeaway10 |&gt; slice(1:(n() - 48))
+test10 &lt;- takeaway10 |&gt; slice((nrow(train10) + 1):n())
+
+fit10 &lt;- train10 |&gt;
+  model(
+    Naive = NAIVE(Turnover),
+    SNaive = SNAIVE(Turnover),
+    Drift = RW(Turnover ~ drift()),
+    Mean = MEAN(Turnover)
+  )
+
+fc10 &lt;- fit10 |&gt; forecast(new_data = test10)
+acc10 &lt;- accuracy(fc10, takeaway10) |&gt; arrange(RMSE)
+acc10</code></pre>
+<pre><code>## # A tibble: 4 × 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Naive  Test  -12.4  119.  96.4 -1.49  6.66  2.30  2.25 0.613
+## 2 Drift  Test  -93.7  130. 108.  -6.82  7.67  2.58  2.46 0.403
+## 3 SNaive Test  177.   192. 177.  11.7  11.7   4.22  3.64 0.902
+## 4 Mean   Test  829.   838. 829.  55.7  55.7  19.8  15.8  0.613</code></pre>
+<p>##(d) Residual diagnostics of best method</p>
+<pre class="r"><code>best10 &lt;- acc10 |&gt; slice(1) |&gt; pull(.model)
+
+fit10 |&gt; select(all_of(best10)) |&gt; gg_tsresiduals()</code></pre>
+<p><img
+src="homework3_files/figure-html/ex10-best-check-1.png" /><!-- --></p>
+<pre class="r"><code>augment(fit10) |&gt;
+  filter(.model == best10) |&gt;
+  features(.innov, ljung_box, lag = 24, dof = 0)</code></pre>
+<pre><code>## # A tibble: 1 × 3
+##   .model lb_stat lb_pvalue
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Naive     875.         0</code></pre>
+<p><code>Naive</code> is best on this holdout. Residual diagnostics
+still indicate significant autocorrelation, so there is room for a
+richer model.</p>
+</div>
+<div id="exercise-9" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Exercise</h1>
+<p>##(a)-(d), (g) STL-based model construction and forecast
+comparison</p>
+<pre class="r"><code>bricks11 &lt;- aus_production |&gt;
+  select(Quarter, Bricks) |&gt;
+  tidyr::drop_na()
+
+train11 &lt;- bricks11 |&gt; slice(1:(n() - 8))
+test11 &lt;- bricks11 |&gt; slice((nrow(train11) + 1):n())
+
+fit11 &lt;- train11 |&gt;
+  model(
+    dcmp = decomposition_model(
+      STL(Bricks ~ season(window = &quot;periodic&quot;)),
+      NAIVE(season_adjust)
+    ),
+    snaive = SNAIVE(Bricks)
+  )
+
+fc11 &lt;- fit11 |&gt; forecast(new_data = test11)
+accuracy(fc11, bricks11) |&gt; arrange(RMSE)</code></pre>
+<pre><code>## # A tibble: 2 × 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
+##   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 dcmp   Test   8.00  18.1  13.8 1.82   3.36 0.380 0.368  0.0957
+## 2 snaive Test   2.75  20    18.2 0.395  4.52 0.504 0.407 -0.0503</code></pre>
+<p>The decomposition approach (<code>dcmp</code>) has lower RMSE than
+<code>snaive</code> for the last two years (part g).</p>
+</div>
+<div id="exercise-10" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> Exercise</h1>
+<p>##(a) Extract Gold Coast data and aggregate over Purpose</p>
+<pre class="r"><code>gc &lt;- tourism |&gt;
+  filter(Region == &quot;Gold Coast&quot;) |&gt;
+  summarise(Trips = sum(Trips))</code></pre>
+<p>##(b) Create training sets excluding the last 1, 2, and 3 years</p>
+<pre class="r"><code>gc_train_1 &lt;- gc |&gt; slice(1:(n() - 4))
+gc_train_2 &lt;- gc |&gt; slice(1:(n() - 8))
+gc_train_3 &lt;- gc |&gt; slice(1:(n() - 12))</code></pre>
+<p>##(c) Compute one year of SNAIVE forecasts for each training set</p>
+<pre class="r"><code>gc_fc_1 &lt;- gc_train_1 |&gt; model(SNaive = SNAIVE(Trips)) |&gt; forecast(h = &quot;1 year&quot;)
+gc_fc_2 &lt;- gc_train_2 |&gt; model(SNaive = SNAIVE(Trips)) |&gt; forecast(h = &quot;1 year&quot;)
+gc_fc_3 &lt;- gc_train_3 |&gt; model(SNaive = SNAIVE(Trips)) |&gt; forecast(h = &quot;1 year&quot;)</code></pre>
+<p>##(d) Compare test-set MAPE and comment</p>
+<pre class="r"><code>horizon_acc &lt;- bind_rows(
+  gc_fc_1 |&gt; accuracy(gc) |&gt; mutate(train_set = &quot;Exclude last 1 year&quot;),
+  gc_fc_2 |&gt; accuracy(gc) |&gt; mutate(train_set = &quot;Exclude last 2 years&quot;),
+  gc_fc_3 |&gt; accuracy(gc) |&gt; mutate(train_set = &quot;Exclude last 3 years&quot;)
+) |&gt;
+  select(train_set, .model, MAPE, RMSE, MAE) |&gt;
+  mutate(across(c(MAPE, RMSE, MAE), ~ round(.x, 4))) |&gt;
+  arrange(MAPE)
+
+horizon_acc</code></pre>
+<pre><code>## # A tibble: 3 × 5
+##   train_set            .model  MAPE  RMSE   MAE
+##   &lt;chr&gt;                &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Exclude last 2 years SNaive  4.32  43.1  39.5
+## 2 Exclude last 3 years SNaive  9.07  91.4  83.9
+## 3 Exclude last 1 year  SNaive 15.1  167.  154.</code></pre>
+<pre class="r"><code>fc12 &lt;- gc_train_3 |&gt;
+  model(SNaive = SNAIVE(Trips)) |&gt;
+  forecast(h = &quot;3 years&quot;)</code></pre>
+<pre class="r"><code>autoplot(gc, Trips) +
+  autolayer(fc12, level = NULL, colour = primary_cols[&quot;Forecast&quot;]) +
+  scale_colour_manual(values = c(&quot;Trips&quot; = primary_cols[&quot;Actual&quot;])) +
+  labs(title = &quot;Gold Coast tourism: SNAIVE up to 3 years ahead&quot;)</code></pre>
+<p><img src="homework3_files/figure-html/ex12-plot-1.png" /><!-- --></p>
+<p>On this run, the model trained by excluding the last 2 years gives
+the lowest one-year-ahead MAPE.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

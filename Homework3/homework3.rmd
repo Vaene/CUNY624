@@ -1,0 +1,725 @@
+---
+title: "Homework 3: FPP3 Toolbox Exercises"
+author: "Randy Howk"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8.5,
+  fig.height = 4.8,
+  dpi = 96,
+  fig.retina = 1
+)
+
+library(fpp3)
+library(USgas)
+
+theme_low_ink <- function(base_size = 11) {
+  theme_classic(base_size = base_size) %+replace% theme(
+    plot.background = element_rect(fill = "white", colour = NA),
+    panel.background = element_rect(fill = "white", colour = NA),
+    legend.background = element_rect(fill = "white", colour = NA),
+    legend.key = element_rect(fill = "white", colour = NA),
+    panel.border = element_blank(),
+    axis.line = element_line(colour = "black", linewidth = 0.35),
+    axis.ticks = element_line(colour = "black", linewidth = 0.3),
+    axis.text = element_text(colour = "black"),
+    axis.title = element_text(colour = "black"),
+    plot.title = element_text(face = "bold", colour = "black"),
+    plot.subtitle = element_text(colour = "black"),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+}
+
+theme_set(theme_low_ink())
+
+primary_cols <- c(
+  "Actual" = "#0057B8",
+  "Forecast" = "#C00000",
+  "Drift" = "#C00000",
+  "Naive" = "#0057B8",
+  "Mean" = "#008000",
+  "SNaive" = "#C00000"
+)
+```
+
+# Exercise
+
+```{r ex1-series}
+aus_pop <- global_economy |>
+  filter(Country == "Australia") |>
+  select(Year, Population)
+
+bricks <- aus_production |>
+  select(Quarter, Bricks) |>
+  tidyr::drop_na()
+
+lambs_nsw <- aus_livestock |>
+  filter(State == "New South Wales", Animal == "Lambs") |>
+  select(Month, Count)
+
+wealth_aus <- hh_budget |>
+  filter(Country == "Australia") |>
+  select(Year, Wealth)
+
+takeaway_aus <- aus_retail |>
+  filter(Industry == "Takeaway food services") |>
+  summarise(Turnover = sum(Turnover))
+```
+
+```{r ex1-intervals}
+interval(aus_pop)
+interval(bricks)
+interval(lambs_nsw)
+interval(wealth_aus)
+interval(takeaway_aus)
+```
+
+```{r ex1-plots}
+aus_pop |> autoplot(Population) + labs(title = "Australian population")
+
+bricks |> autoplot(Bricks) + labs(title = "Australian brick production")
+
+lambs_nsw |> autoplot(Count) + labs(title = "NSW lamb slaughter counts")
+
+wealth_aus |> autoplot(Wealth) + labs(title = "Australian household wealth")
+
+takeaway_aus |> autoplot(Turnover) + labs(title = "Australian takeaway turnover")
+```
+
+```{r ex1-patterns}
+# Seasonality + trend is easiest to see in monthly/quarterly series:
+# - Bricks: strong seasonal quarter pattern with long-term changes.
+# - Lambs NSW: seasonality plus changing level.
+# - Takeaway turnover: clear seasonality and upward trend.
+# Population and Wealth are annual and mainly trend-dominated.
+```
+
+# Exercise
+
+```{r ex2-facebook-data}
+fb <- gafa_stock |>
+  filter(Symbol == "FB") |>
+  arrange(Date) |>
+  select(Date, Close)
+
+fb_date_ts <- fb |> as_tsibble(index = Date, regular = FALSE)
+fb_ts <- fb |>
+  mutate(t = row_number()) |>
+  as_tsibble(index = t, regular = TRUE)
+```
+
+## a. Time plot of the series
+
+```{r ex2a-time-plot, fig.width=10, fig.height=5.2}
+autoplot(fb_date_ts, Close, colour = primary_cols["Actual"]) +
+  labs(
+    title = "A. Facebook stock closing price",
+    x = "Date",
+    y = "Close (USD)"
+  )
+```
+
+The series rises strongly overall with visible periods of sharp pullback and recovery, so a flat mean forecast is unlikely to perform well.
+
+## b. Drift forecasts
+
+```{r ex2b-drift-forecast, fig.width=10, fig.height=5.4}
+drift_fit <- fb_ts |> model(Drift = RW(Close ~ drift()))
+drift_fc <- drift_fit |> forecast(h = 30)
+
+autoplot(fb_ts, Close, colour = primary_cols["Actual"]) +
+  autolayer(drift_fc, level = NULL, colour = primary_cols["Drift"]) +
+  labs(
+    title = "B. Drift method forecast for Facebook close",
+    x = "Trading day index",
+    y = "Close (USD)"
+  )
+```
+
+The drift forecast continues the recent long-run upward movement with a straight forecast path.
+
+## c. Show drift forecast equals extension of first-to-last line
+
+```{r ex2c-line-extension, fig.width=10.5, fig.height=6}
+first_last <- fb_ts |>
+  summarise(
+    t_first = first(t),
+    t_last = last(t),
+    y_first = first(Close),
+    y_last = last(Close)
+  )
+
+slope_first_last <- with(first_last, (y_last - y_first) / (t_last - t_first))
+drift_slope <- drift_fit |>
+  tidy() |>
+  filter(term == "b") |>
+  pull(estimate) |>
+  first()
+
+line_tbl <- tibble(t = 1:(max(fb_ts$t) + 30)) |>
+  mutate(
+    line_value = first_last$y_first + (t - first_last$t_first) * slope_first_last
+  )
+
+compare_tbl <- drift_fc |>
+  as_tibble() |>
+  select(t, .mean) |>
+  left_join(line_tbl, by = "t") |>
+  mutate(abs_diff = abs(.mean - line_value))
+
+max_diff_tbl <- compare_tbl |>
+  summarise(max_abs_difference = max(abs_diff))
+
+tibble(
+  slope_from_first_last_line = slope_first_last,
+  slope_from_drift_model = drift_slope
+)
+max_diff_tbl
+
+ggplot() +
+  geom_line(
+    data = line_tbl,
+    aes(x = t, y = line_value, colour = "Extended first-last line"),
+    linetype = "dashed",
+    linewidth = 0.9
+  ) +
+  geom_line(
+    data = as_tibble(fb_ts),
+    aes(x = t, y = Close, colour = "Actual"),
+    linewidth = 0.6
+  ) +
+  geom_point(
+    data = as_tibble(drift_fc),
+    aes(x = t, y = .mean, colour = "Drift forecast"),
+    size = 1.5
+  ) +
+  scale_colour_manual(values = c(
+    "Actual" = "#111111",
+    "Drift forecast" = "#C00000",
+    "Extended first-last line" = "#008000"
+  )) +
+  labs(
+    title = "C. Drift forecast equals extended first-to-last line",
+    subtitle = "Dashed green line: extension of line through first and last observation",
+    x = "Trading day index",
+    y = "Close (USD)"
+  )
+```
+
+The slopes match, and the maximum numerical difference between the drift forecast and the extended line is essentially zero (up to floating-point rounding).
+
+## d. Other benchmark forecasts and best model
+
+```{r ex2d-benchmark-compare, fig.width=10.5, fig.height=5.8}
+bench_fit <- fb_ts |>
+  model(
+    Drift = RW(Close ~ drift()),
+    Naive = NAIVE(Close),
+    Mean = MEAN(Close)
+  )
+
+bench_fc <- bench_fit |> forecast(h = 30)
+
+autoplot(fb_ts, Close, colour = primary_cols["Actual"]) +
+  autolayer(bench_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    "Close" = "#111111",
+    "Drift" = "#C00000",
+    "Naive" = "#0057B8",
+    "Mean" = "#008000"
+  )) +
+  labs(
+    title = "D. Benchmark forecasts: Drift vs Naive vs Mean",
+    x = "Trading day index",
+    y = "Close (USD)"
+  )
+```
+
+```{r ex2d-accuracy}
+accuracy(bench_fit)
+```
+
+`Drift` is the best choice here: it has the lowest training RMSE/MAE among the benchmark methods and is more plausible than `Mean` for a series with a sustained trend. `Naive` is close, but `Drift` better captures the long-run upward direction.
+
+# Exercise
+
+```{r ex3-beer-fit, fig.width=9.5, fig.height=5.2}
+beer_1992 <- aus_production |>
+  filter(year(Quarter) >= 1992) |>
+  select(Quarter, Beer)
+
+beer_fit <- beer_1992 |> model(SNAIVE(Beer))
+beer_fc <- beer_fit |> forecast(h = "10 years")
+
+autoplot(beer_1992, Beer) +
+  autolayer(beer_fc, level = NULL, colour = primary_cols["Forecast"]) +
+  scale_colour_manual(values = c("Beer" = primary_cols["Actual"])) +
+  labs(title = "Australian beer production: seasonal naive")
+```
+
+```{r ex3-residual-check, fig.width=10, fig.height=6}
+beer_fit |> gg_tsresiduals()
+
+augment(beer_fit) |>
+  features(.innov, ljung_box, lag = 8, dof = 0)
+```
+
+The residual diagnostics indicate this model is not adequate: residual autocorrelation remains (very small Ljung-Box p-value), so structure is left in the errors.
+
+# Exercise
+
+```{r ex4-exports}
+exports_aus <- global_economy |>
+  filter(Country == "Australia") |>
+  select(Year, Exports)
+
+exports_fit <- exports_aus |>
+  model(
+    Naive = NAIVE(Exports),
+    Drift = RW(Exports ~ drift())
+  )
+
+accuracy(exports_fit) |>
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+```
+
+```{r ex4-exports-plot, fig.width=10, fig.height=5.4}
+exports_fc <- exports_fit |> forecast(h = "8 years")
+
+autoplot(exports_aus, Exports, colour = "#111111") +
+  autolayer(exports_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    "Exports" = "#111111",
+    "Naive" = "#0057B8",
+    "Drift" = "#C00000"
+  )) +
+  labs(
+    title = "Exercise 4A: Australian exports forecasts",
+    x = "Year",
+    y = "Exports (% of GDP)"
+  )
+```
+
+For Australian exports, `Drift` is slightly more accurate than `Naive` on RMSE.
+
+```{r ex4-bricks}
+bricks_fit <- bricks |>
+  model(
+    Naive = NAIVE(Bricks),
+    SNaive = SNAIVE(Bricks),
+    Drift = RW(Bricks ~ drift())
+  )
+
+accuracy(bricks_fit) |>
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+```
+
+```{r ex4-bricks-plot, fig.width=10, fig.height=5.6}
+bricks_fc <- bricks_fit |> forecast(h = "3 years")
+
+autoplot(bricks, Bricks, colour = "#111111") +
+  autolayer(bricks_fc, level = NULL) +
+  scale_colour_manual(values = c(
+    "Bricks" = "#111111",
+    "Naive" = "#0057B8",
+    "SNaive" = "#008000",
+    "Drift" = "#C00000"
+  )) +
+  labs(
+    title = "Exercise 4B: Australian bricks benchmark forecasts",
+    x = "Quarter",
+    y = "Bricks"
+  )
+```
+
+For Australian bricks, `Drift` wins on the **training** RMSE table, but only by a hair (`Drift` RMSE `40.178208` vs `Naive` `40.197608`; `SNaive` `48.330637`).  
+
+Why `SNaive` can look visually best but still score worse:
+
+- `SNaive` matches the seasonal shape by copying the same quarter from last year, so the forecast line often *looks* plausible.
+- But its errors are measured at each time point, and if the series level is shifting (trend/cycle), last year's same quarter can be systematically too high/low.
+- In the table this shows up as larger average error and RMSE for `SNaive`, even though the plotted seasonal pattern aligns well.
+
+Why `Drift` edges out the others in this question:
+
+- `Drift` preserves the local random-walk behavior **and** adds a small long-run slope, which reduces bias when there is gradual level movement.
+- Relative to `Naive`, that slope correction is small but enough to give slightly lower RMSE in-sample.
+- So the “winner” here is driven by error metrics, not by which line looks most seasonally realistic.
+
+# Exercise (For Fun)
+
+```{r ex5-vic-series}
+vic_livestock <- aus_livestock |>
+  filter(State == "Victoria")
+
+vic_animals <- vic_livestock |> distinct(Animal)
+vic_animals
+
+vic_example <- vic_livestock |>
+  filter(Animal == "Pigs") |>
+  select(Month, Count)
+
+vic_example |> autoplot(Count) + labs(title = "Victoria pigs")
+```
+
+Using `Pigs` in Victoria, the series shows both trend movement and seasonality (recurring annual pattern), and the variability changes over time.
+
+# Exercise
+
+##(a) Good forecast methods should have normally distributed residuals
+
+**Answer:** False.
+
+##(b) A model with small residuals will give good forecasts
+
+**Answer:** True.
+
+##(c) The best measure of forecast accuracy is MAPE
+
+**Answer:** False.
+
+##(d) If your model doesn’t forecast well, you should make it more complicated
+
+**Answer:** False.
+
+##(e) Always choose the model with the best forecast accuracy on the test set
+
+**Answer:** True.
+
+# Exercise 
+
+##(a) Create a training set before 2011
+
+```{r ex7a-data}
+myseries <- aus_retail |>
+  filter(State == "New South Wales", Industry == "Takeaway food services") |>
+  select(Month, Turnover)
+
+myseries_train <- myseries |>
+  filter(year(Month) < 2011)
+```
+
+##(b) Check split with the requested plot
+
+```{r ex7b-split-check, fig.width=10, fig.height=5.4}
+autoplot(myseries, Turnover, colour = "#111111") +
+  autolayer(myseries_train, Turnover, colour = "#C00000") +
+  labs(
+    title = "Exercise 7(b): full series with training data highlighted",
+    x = "Month",
+    y = "Turnover"
+  )
+```
+
+The split is correct: highlighted training data stops at 2010.
+
+##(c) Fit `SNAIVE()` on training data
+
+```{r ex7c-fit}
+fit7 <- myseries_train |>
+  model(SNaive = SNAIVE(Turnover))
+fit7
+```
+
+##(d) Check residuals
+
+```{r ex7d-residuals, fig.width=10, fig.height=6}
+fit7 |> gg_tsresiduals()
+```
+
+Residuals are not ideal white noise; autocorrelation remains.
+
+##(e) Forecast the test period
+
+```{r ex7e-forecast, fig.width=10, fig.height=5.6}
+fc7 <- fit7 |>
+  forecast(new_data = anti_join(myseries, myseries_train, by = "Month"))
+
+autoplot(myseries, Turnover, colour = "#111111") +
+  autolayer(fc7, level = NULL, colour = "#C00000") +
+  labs(
+    title = "Exercise 7(e): SNAIVE forecasts on holdout period",
+    x = "Month",
+    y = "Turnover"
+  )
+```
+
+##(f) Compare accuracy against actual values
+
+```{r ex7f-accuracy}
+acc7_train <- fit7 |>
+  accuracy() |>
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+
+acc7_test <- fc7 |>
+  accuracy(myseries) |>
+  mutate(across(where(is.numeric), ~ round(.x, 6)))
+
+acc7_train
+acc7_test
+```
+
+Test accuracy is much worse than training accuracy.
+
+##(g) Sensitivity of accuracy to training set size
+
+```{r ex7g-sensitivity}
+cut_years <- c(2008, 2009, 2010, 2011, 2012)
+
+sensitivity7 <- purrr::map_dfr(cut_years, function(cut_year) {
+  train_tmp <- myseries |> filter(year(Month) < cut_year)
+  fit_tmp <- train_tmp |> model(SNaive = SNAIVE(Turnover))
+  fc_tmp <- fit_tmp |>
+    forecast(new_data = anti_join(myseries, train_tmp, by = "Month"))
+
+  fc_tmp |>
+    accuracy(myseries) |>
+    mutate(cutoff_year = cut_year) |>
+    select(cutoff_year, .model, RMSE, MAE, MAPE)
+}) |>
+  mutate(across(c(RMSE, MAE, MAPE), ~ round(.x, 4))) |>
+  arrange(cutoff_year)
+
+sensitivity7
+```
+
+Answer to 7(g): the metrics are sensitive to training length. Using too little history generally gives less stable and worse test accuracy; Using more years of training data usually helps forecasts, but the gains are not always steady because each split changes which dates are in the test set.
+
+# Exercise
+
+##(a)-(c) Data familiarity, train/test split, benchmark comparison
+
+```{r ex8-split}
+pigs_nsw <- aus_livestock |>
+  filter(State == "New South Wales", Animal == "Pigs") |>
+  select(Month, Count)
+
+train8 <- pigs_nsw |> slice(1:486)
+test8 <- pigs_nsw |> slice(487:n())
+
+fit8 <- train8 |>
+  model(
+    Naive = NAIVE(Count),
+    SNaive = SNAIVE(Count),
+    Drift = RW(Count ~ drift()),
+    Mean = MEAN(Count)
+  )
+
+fc8 <- fit8 |> forecast(new_data = test8)
+acc8 <- accuracy(fc8, pigs_nsw) |> arrange(RMSE)
+acc8
+```
+
+## 8(d) Residual diagnostics for preferred method
+
+```{r ex8-best-residuals, fig.width=10, fig.height=6}
+best8 <- acc8 |> slice(1) |> pull(.model)
+
+fit8 |> select(all_of(best8)) |> gg_tsresiduals()
+
+augment(fit8) |>
+  filter(.model == best8) |>
+  features(.innov, ljung_box, lag = 24, dof = 0)
+```
+
+`Drift` is best by RMSE on the test set, but the residuals still show strong autocorrelation, so it is not fully adequate.
+
+# Exercise
+
+##(a)-(c) Training split, benchmark fit, and forecast accuracy
+
+```{r ex9-split-and-fit}
+wealth9 <- hh_budget |>
+  filter(Country == "Australia") |>
+  select(Year, Wealth)
+
+train9 <- wealth9 |> slice(1:(n() - 4))
+test9 <- wealth9 |> slice((nrow(train9) + 1):n())
+
+fit9 <- train9 |>
+  model(
+    Naive = NAIVE(Wealth),
+    Drift = RW(Wealth ~ drift()),
+    Mean = MEAN(Wealth)
+  )
+
+fc9 <- fit9 |> forecast(new_data = test9)
+acc9 <- accuracy(fc9, wealth9) |> arrange(RMSE)
+acc9
+```
+
+##(d) Residual diagnostics of best method
+
+```{r ex9-best-check, fig.width=10, fig.height=6}
+best9 <- acc9 |> slice(1) |> pull(.model)
+
+fit9 |> select(all_of(best9)) |> gg_tsresiduals()
+
+augment(fit9) |>
+  filter(.model == best9) |>
+  features(.innov, ljung_box, lag = 8, dof = 0)
+```
+
+`Drift` is best on the holdout years, and residual diagnostics are reasonably acceptable (high Ljung-Box p-value).
+
+# Exercise
+
+##(a)-(c) Training split, benchmark fit, and forecast accuracy
+
+```{r ex10-data-split-fit}
+takeaway10 <- aus_retail |>
+  filter(Industry == "Takeaway food services") |>
+  summarise(Turnover = sum(Turnover))
+
+train10 <- takeaway10 |> slice(1:(n() - 48))
+test10 <- takeaway10 |> slice((nrow(train10) + 1):n())
+
+fit10 <- train10 |>
+  model(
+    Naive = NAIVE(Turnover),
+    SNaive = SNAIVE(Turnover),
+    Drift = RW(Turnover ~ drift()),
+    Mean = MEAN(Turnover)
+  )
+
+fc10 <- fit10 |> forecast(new_data = test10)
+acc10 <- accuracy(fc10, takeaway10) |> arrange(RMSE)
+acc10
+```
+
+##(d) Residual diagnostics of best method
+
+```{r ex10-best-check, fig.width=10, fig.height=6}
+best10 <- acc10 |> slice(1) |> pull(.model)
+
+fit10 |> select(all_of(best10)) |> gg_tsresiduals()
+
+augment(fit10) |>
+  filter(.model == best10) |>
+  features(.innov, ljung_box, lag = 24, dof = 0)
+```
+
+`Naive` is best on this holdout. Residual diagnostics still indicate significant autocorrelation, so there is room for a richer model.
+
+# Exercise
+
+##(a)-(d), (g) STL-based model construction and forecast comparison
+
+```{r ex11-fit-compare}
+bricks11 <- aus_production |>
+  select(Quarter, Bricks) |>
+  tidyr::drop_na()
+
+train11 <- bricks11 |> slice(1:(n() - 8))
+test11 <- bricks11 |> slice((nrow(train11) + 1):n())
+
+fit11 <- train11 |>
+  model(
+    dcmp = decomposition_model(
+      STL(Bricks ~ season(window = "periodic")),
+      NAIVE(season_adjust)
+    ),
+    snaive = SNAIVE(Bricks)
+  )
+
+fc11 <- fit11 |> forecast(new_data = test11)
+accuracy(fc11, bricks11) |> arrange(RMSE)
+```
+
+The decomposition approach (`dcmp`) has lower RMSE than `snaive` for the last two years (part g).
+
+# Exercise
+
+##(a) Extract Gold Coast data and aggregate over Purpose
+
+```{r ex12a-gold-coast}
+gc <- tourism |>
+  filter(Region == "Gold Coast") |>
+  summarise(Trips = sum(Trips))
+```
+
+##(b) Create training sets excluding the last 1, 2, and 3 years
+
+```{r ex12b-training-sets}
+gc_train_1 <- gc |> slice(1:(n() - 4))
+gc_train_2 <- gc |> slice(1:(n() - 8))
+gc_train_3 <- gc |> slice(1:(n() - 12))
+```
+
+##(c) Compute one year of SNAIVE forecasts for each training set
+
+```{r ex12c-forecasts}
+gc_fc_1 <- gc_train_1 |> model(SNaive = SNAIVE(Trips)) |> forecast(h = "1 year")
+gc_fc_2 <- gc_train_2 |> model(SNaive = SNAIVE(Trips)) |> forecast(h = "1 year")
+gc_fc_3 <- gc_train_3 |> model(SNaive = SNAIVE(Trips)) |> forecast(h = "1 year")
+```
+
+##(d) Compare test-set MAPE and comment
+
+```{r ex12d-accuracy}
+horizon_acc <- bind_rows(
+  gc_fc_1 |> accuracy(gc) |> mutate(train_set = "Exclude last 1 year"),
+  gc_fc_2 |> accuracy(gc) |> mutate(train_set = "Exclude last 2 years"),
+  gc_fc_3 |> accuracy(gc) |> mutate(train_set = "Exclude last 3 years")
+) |>
+  select(train_set, .model, MAPE, RMSE, MAE) |>
+  mutate(across(c(MAPE, RMSE, MAE), ~ round(.x, 4))) |>
+  arrange(MAPE)
+
+horizon_acc
+```
+
+```{r ex12-combined-forecast}
+fc12 <- gc_train_3 |>
+  model(SNaive = SNAIVE(Trips)) |>
+  forecast(h = "3 years")
+```
+
+```{r ex12-plot, fig.width=10, fig.height=5.6}
+autoplot(gc, Trips) +
+  autolayer(fc12, level = NULL, colour = primary_cols["Forecast"]) +
+  scale_colour_manual(values = c("Trips" = primary_cols["Actual"])) +
+  labs(title = "Gold Coast tourism: SNAIVE up to 3 years ahead")
+```
+
+On this run, the model trained by excluding the last 2 years gives the lowest one-year-ahead MAPE.

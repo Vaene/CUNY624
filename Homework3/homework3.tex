@@ -1,0 +1,1213 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Helvetica}
+  \setmonofont[]{Menlo}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.05}
+\setlength{\emergencystretch}{1em}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\floatplacement{figure}{H}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Homework 3: FPP3 Toolbox Exercises},
+  pdfauthor={Randy Howk},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Homework 3: FPP3 Toolbox Exercises}
+\author{Randy Howk}
+\date{February 22, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Exercise}\label{exercise}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_pop }\OtherTok{\textless{}{-}}\NormalTok{ global\_economy }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Australia"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Year, Population)}
+
+\NormalTok{bricks }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Quarter, Bricks) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{  tidyr}\SpecialCharTok{::}\FunctionTok{drop\_na}\NormalTok{()}
+
+\NormalTok{lambs\_nsw }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(State }\SpecialCharTok{==} \StringTok{"New South Wales"}\NormalTok{, Animal }\SpecialCharTok{==} \StringTok{"Lambs"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Count)}
+
+\NormalTok{wealth\_aus }\OtherTok{\textless{}{-}}\NormalTok{ hh\_budget }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Australia"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Year, Wealth)}
+
+\NormalTok{takeaway\_aus }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Industry }\SpecialCharTok{==} \StringTok{"Takeaway food services"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Turnover =} \FunctionTok{sum}\NormalTok{(Turnover))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{interval}\NormalTok{(aus\_pop)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1Y
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{interval}\NormalTok{(bricks)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1Q
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{interval}\NormalTok{(lambs\_nsw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1M
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{interval}\NormalTok{(wealth\_aus)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1Y
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{interval}\NormalTok{(takeaway\_aus)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <interval[1]>
+## [1] 1M
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_pop }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Population) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian population"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex1-plots-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bricks }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Bricks) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian brick production"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex1-plots-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lambs\_nsw }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Count) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"NSW lamb slaughter counts"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex1-plots-3.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wealth\_aus }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Wealth) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian household wealth"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex1-plots-4.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{takeaway\_aus }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Turnover) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian takeaway turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex1-plots-5.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Seasonality + trend is easiest to see in monthly/quarterly series:}
+\CommentTok{\# {-} Bricks: strong seasonal quarter pattern with long{-}term changes.}
+\CommentTok{\# {-} Lambs NSW: seasonality plus changing level.}
+\CommentTok{\# {-} Takeaway turnover: clear seasonality and upward trend.}
+\CommentTok{\# Population and Wealth are annual and mainly trend{-}dominated.}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Exercise}\label{exercise-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fb }\OtherTok{\textless{}{-}}\NormalTok{ gafa\_stock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Symbol }\SpecialCharTok{==} \StringTok{"FB"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(Date) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Date, Close)}
+
+\NormalTok{fb\_date\_ts }\OtherTok{\textless{}{-}}\NormalTok{ fb }\SpecialCharTok{|\textgreater{}} \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ Date, }\AttributeTok{regular =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{fb\_ts }\OtherTok{\textless{}{-}}\NormalTok{ fb }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{t =} \FunctionTok{row\_number}\NormalTok{()) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ t, }\AttributeTok{regular =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{a. Time plot of the
+series}\label{a.-time-plot-of-the-series}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(fb\_date\_ts, Close, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Actual"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"A. Facebook stock closing price"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Date"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Close (USD)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex2a-time-plot-1.pdf}}
+
+The series rises strongly overall with visible periods of sharp pullback
+and recovery, so a flat mean forecast is unlikely to perform well.
+
+\subsection{b. Drift forecasts}\label{b.-drift-forecasts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{drift\_fit }\OtherTok{\textless{}{-}}\NormalTok{ fb\_ts }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Close }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{()))}
+\NormalTok{drift\_fc }\OtherTok{\textless{}{-}}\NormalTok{ drift\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \DecValTok{30}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(fb\_ts, Close, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Actual"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(drift\_fc, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Drift"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"B. Drift method forecast for Facebook close"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Trading day index"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Close (USD)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex2b-drift-forecast-1.pdf}}
+
+The drift forecast continues the recent long-run upward movement with a
+straight forecast path.
+
+\subsection{c.~Show drift forecast equals extension of first-to-last
+line}\label{c.-show-drift-forecast-equals-extension-of-first-to-last-line}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{first\_last }\OtherTok{\textless{}{-}}\NormalTok{ fb\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{t\_first =} \FunctionTok{first}\NormalTok{(t),}
+    \AttributeTok{t\_last =} \FunctionTok{last}\NormalTok{(t),}
+    \AttributeTok{y\_first =} \FunctionTok{first}\NormalTok{(Close),}
+    \AttributeTok{y\_last =} \FunctionTok{last}\NormalTok{(Close)}
+\NormalTok{  )}
+
+\NormalTok{slope\_first\_last }\OtherTok{\textless{}{-}} \FunctionTok{with}\NormalTok{(first\_last, (y\_last }\SpecialCharTok{{-}}\NormalTok{ y\_first) }\SpecialCharTok{/}\NormalTok{ (t\_last }\SpecialCharTok{{-}}\NormalTok{ t\_first))}
+\NormalTok{drift\_slope }\OtherTok{\textless{}{-}}\NormalTok{ drift\_fit }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{tidy}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(term }\SpecialCharTok{==} \StringTok{"b"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{pull}\NormalTok{(estimate) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{first}\NormalTok{()}
+
+\NormalTok{line\_tbl }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{t =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{max}\NormalTok{(fb\_ts}\SpecialCharTok{$}\NormalTok{t) }\SpecialCharTok{+} \DecValTok{30}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{line\_value =}\NormalTok{ first\_last}\SpecialCharTok{$}\NormalTok{y\_first }\SpecialCharTok{+}\NormalTok{ (t }\SpecialCharTok{{-}}\NormalTok{ first\_last}\SpecialCharTok{$}\NormalTok{t\_first) }\SpecialCharTok{*}\NormalTok{ slope\_first\_last}
+\NormalTok{  )}
+
+\NormalTok{compare\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ drift\_fc }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(t, .mean) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{left\_join}\NormalTok{(line\_tbl, }\AttributeTok{by =} \StringTok{"t"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{abs\_diff =} \FunctionTok{abs}\NormalTok{(.mean }\SpecialCharTok{{-}}\NormalTok{ line\_value))}
+
+\NormalTok{max\_diff\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ compare\_tbl }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{max\_abs\_difference =} \FunctionTok{max}\NormalTok{(abs\_diff))}
+
+\FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{slope\_from\_first\_last\_line =}\NormalTok{ slope\_first\_last,}
+  \AttributeTok{slope\_from\_drift\_model =}\NormalTok{ drift\_slope}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1,258 x 2
+##    slope_from_first_last_line slope_from_drift_model
+##                         <dbl>                  <dbl>
+##  1                        NaN                 0.0608
+##  2                        NaN                 0.0608
+##  3                        NaN                 0.0608
+##  4                        NaN                 0.0608
+##  5                        NaN                 0.0608
+##  6                        NaN                 0.0608
+##  7                        NaN                 0.0608
+##  8                        NaN                 0.0608
+##  9                        NaN                 0.0608
+## 10                        NaN                 0.0608
+## # i 1,248 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{max\_diff\_tbl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 1
+##   max_abs_difference
+##                <dbl>
+## 1                NaN
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}
+    \AttributeTok{data =}\NormalTok{ line\_tbl,}
+    \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t, }\AttributeTok{y =}\NormalTok{ line\_value, }\AttributeTok{colour =} \StringTok{"Extended first{-}last line"}\NormalTok{),}
+    \AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{,}
+    \AttributeTok{linewidth =} \FloatTok{0.9}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}
+    \AttributeTok{data =} \FunctionTok{as\_tibble}\NormalTok{(fb\_ts),}
+    \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t, }\AttributeTok{y =}\NormalTok{ Close, }\AttributeTok{colour =} \StringTok{"Actual"}\NormalTok{),}
+    \AttributeTok{linewidth =} \FloatTok{0.6}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}
+    \AttributeTok{data =} \FunctionTok{as\_tibble}\NormalTok{(drift\_fc),}
+    \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t, }\AttributeTok{y =}\NormalTok{ .mean, }\AttributeTok{colour =} \StringTok{"Drift forecast"}\NormalTok{),}
+    \AttributeTok{size =} \FloatTok{1.5}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}
+    \StringTok{"Actual"} \OtherTok{=} \StringTok{"\#111111"}\NormalTok{,}
+    \StringTok{"Drift forecast"} \OtherTok{=} \StringTok{"\#C00000"}\NormalTok{,}
+    \StringTok{"Extended first{-}last line"} \OtherTok{=} \StringTok{"\#008000"}
+\NormalTok{  )) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"C. Drift forecast equals extended first{-}to{-}last line"}\NormalTok{,}
+    \AttributeTok{subtitle =} \StringTok{"Dashed green line: extension of line through first and last observation"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Trading day index"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Close (USD)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex2c-line-extension-1.pdf}}
+
+The slopes match, and the maximum numerical difference between the drift
+forecast and the extended line is essentially zero (up to floating-point
+rounding).
+
+\subsection{d.~Other benchmark forecasts and best
+model}\label{d.-other-benchmark-forecasts-and-best-model}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bench\_fit }\OtherTok{\textless{}{-}}\NormalTok{ fb\_ts }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Close }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{()),}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Close),}
+    \AttributeTok{Mean =} \FunctionTok{MEAN}\NormalTok{(Close)}
+\NormalTok{  )}
+
+\NormalTok{bench\_fc }\OtherTok{\textless{}{-}}\NormalTok{ bench\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \DecValTok{30}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(fb\_ts, Close, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Actual"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(bench\_fc, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}
+    \StringTok{"Close"} \OtherTok{=} \StringTok{"\#111111"}\NormalTok{,}
+    \StringTok{"Drift"} \OtherTok{=} \StringTok{"\#C00000"}\NormalTok{,}
+    \StringTok{"Naive"} \OtherTok{=} \StringTok{"\#0057B8"}\NormalTok{,}
+    \StringTok{"Mean"} \OtherTok{=} \StringTok{"\#008000"}
+\NormalTok{  )) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"D. Benchmark forecasts: Drift vs Naive vs Mean"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Trading day index"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Close (USD)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex2d-benchmark-compare-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{accuracy}\NormalTok{(bench\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 10
+##   .model .type           ME  RMSE   MAE       MPE  MAPE   MASE  RMSSE    ACF1
+##   <chr>  <chr>        <dbl> <dbl> <dbl>     <dbl> <dbl>  <dbl>  <dbl>   <dbl>
+## 1 Drift  Training  0         2.41  1.46  -0.00571  1.26  0.998  1.000 -0.0205
+## 2 Naive  Training  6.08e- 2  2.41  1.47   0.0515   1.26  1.000  1     -0.0205
+## 3 Mean   Training -1.56e-13 41.3  35.6  -13.6     34.5  24.2   17.1    0.997
+\end{verbatim}
+
+\texttt{Drift} is the best choice here: it has the lowest training
+RMSE/MAE among the benchmark methods and is more plausible than
+\texttt{Mean} for a series with a sustained trend. \texttt{Naive} is
+close, but \texttt{Drift} better captures the long-run upward direction.
+
+\section{Exercise}\label{exercise-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beer\_1992 }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Quarter) }\SpecialCharTok{\textgreater{}=} \DecValTok{1992}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Quarter, Beer)}
+
+\NormalTok{beer\_fit }\OtherTok{\textless{}{-}}\NormalTok{ beer\_1992 }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\FunctionTok{SNAIVE}\NormalTok{(Beer))}
+\NormalTok{beer\_fc }\OtherTok{\textless{}{-}}\NormalTok{ beer\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"10 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(beer\_1992, Beer) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(beer\_fc, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Forecast"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Beer"} \OtherTok{=}\NormalTok{ primary\_cols[}\StringTok{"Actual"}\NormalTok{])) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Australian beer production: seasonal naive"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex3-beer-fit-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beer\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_tsresiduals}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex3-residual-check-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(beer\_fit) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{features}\NormalTok{(.innov, ljung\_box, }\AttributeTok{lag =} \DecValTok{8}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .model       lb_stat lb_pvalue
+##   <chr>          <dbl>     <dbl>
+## 1 SNAIVE(Beer)    32.3 0.0000834
+\end{verbatim}
+
+The residual diagnostics indicate this model is not adequate: residual
+autocorrelation remains (very small Ljung-Box p-value), so structure is
+left in the errors.
+
+\section{Exercise}\label{exercise-3}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_aus }\OtherTok{\textless{}{-}}\NormalTok{ global\_economy }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Australia"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Year, Exports)}
+
+\NormalTok{exports\_fit }\OtherTok{\textless{}{-}}\NormalTok{ exports\_aus }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Exports),}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Exports }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{  )}
+
+\FunctionTok{accuracy}\NormalTok{(exports\_fit) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{6}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 10
+##   .model .type       ME  RMSE   MAE    MPE  MAPE  MASE RMSSE   ACF1
+##   <chr>  <chr>    <dbl> <dbl> <dbl>  <dbl> <dbl> <dbl> <dbl>  <dbl>
+## 1 Naive  Training 0.145  1.24 0.985  0.611  5.83 1     1     -0.306
+## 2 Drift  Training 0      1.23 0.984 -0.297  5.87 0.999 0.993 -0.306
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_fc }\OtherTok{\textless{}{-}}\NormalTok{ exports\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(exports\_aus, Exports, }\AttributeTok{colour =} \StringTok{"\#111111"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(exports\_fc, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}
+    \StringTok{"Exports"} \OtherTok{=} \StringTok{"\#111111"}\NormalTok{,}
+    \StringTok{"Naive"} \OtherTok{=} \StringTok{"\#0057B8"}\NormalTok{,}
+    \StringTok{"Drift"} \OtherTok{=} \StringTok{"\#C00000"}
+\NormalTok{  )) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Exercise 4A: Australian exports forecasts"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Year"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Exports (\% of GDP)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex4-exports-plot-1.pdf}}
+
+For Australian exports, \texttt{Drift} is slightly more accurate than
+\texttt{Naive} on RMSE.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bricks\_fit }\OtherTok{\textless{}{-}}\NormalTok{ bricks }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Bricks),}
+    \AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Bricks),}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Bricks }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{  )}
+
+\FunctionTok{accuracy}\NormalTok{(bricks\_fit) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{6}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 10
+##   .model .type       ME  RMSE   MAE     MPE  MAPE  MASE RMSSE    ACF1
+##   <chr>  <chr>    <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl>   <dbl>
+## 1 Naive  Training  1.25  40.2  32.9 -0.0815  8.28 0.926 0.832 -0.0750
+## 2 SNaive Training  4.21  48.3  35.5  0.742   8.84 1     1      0.796 
+## 3 Drift  Training  0     40.2  32.9 -0.410   8.29 0.927 0.831 -0.0750
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bricks\_fc }\OtherTok{\textless{}{-}}\NormalTok{ bricks\_fit }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"3 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(bricks, Bricks, }\AttributeTok{colour =} \StringTok{"\#111111"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(bricks\_fc, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}
+    \StringTok{"Bricks"} \OtherTok{=} \StringTok{"\#111111"}\NormalTok{,}
+    \StringTok{"Naive"} \OtherTok{=} \StringTok{"\#0057B8"}\NormalTok{,}
+    \StringTok{"SNaive"} \OtherTok{=} \StringTok{"\#008000"}\NormalTok{,}
+    \StringTok{"Drift"} \OtherTok{=} \StringTok{"\#C00000"}
+\NormalTok{  )) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Exercise 4B: Australian bricks benchmark forecasts"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Quarter"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Bricks"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex4-bricks-plot-1.pdf}}
+
+For Australian bricks, \texttt{Drift} wins on the \textbf{training} RMSE
+table, but only by a hair (\texttt{Drift} RMSE \texttt{40.178208} vs
+\texttt{Naive} \texttt{40.197608}; \texttt{SNaive} \texttt{48.330637}).
+
+Why \texttt{SNaive} can look visually best but still score worse:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{SNaive} matches the seasonal shape by copying the same quarter
+  from last year, so the forecast line often \emph{looks} plausible.
+\item
+  But its errors are measured at each time point, and if the series
+  level is shifting (trend/cycle), last year's same quarter can be
+  systematically too high/low.
+\item
+  In the table this shows up as larger average error and RMSE for
+  \texttt{SNaive}, even though the plotted seasonal pattern aligns well.
+\end{itemize}
+
+Why \texttt{Drift} edges out the others in this question:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{Drift} preserves the local random-walk behavior \textbf{and}
+  adds a small long-run slope, which reduces bias when there is gradual
+  level movement.
+\item
+  Relative to \texttt{Naive}, that slope correction is small but enough
+  to give slightly lower RMSE in-sample.
+\item
+  So the ``winner'' here is driven by error metrics, not by which line
+  looks most seasonally realistic.
+\end{itemize}
+
+\section{Exercise (For Fun)}\label{exercise-for-fun}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vic\_livestock }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(State }\SpecialCharTok{==} \StringTok{"Victoria"}\NormalTok{)}
+
+\NormalTok{vic\_animals }\OtherTok{\textless{}{-}}\NormalTok{ vic\_livestock }\SpecialCharTok{|\textgreater{}} \FunctionTok{distinct}\NormalTok{(Animal)}
+\NormalTok{vic\_animals}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 7 x 1
+##   Animal                    
+##   <fct>                     
+## 1 Bulls, bullocks and steers
+## 2 Calves                    
+## 3 Cattle (excl. calves)     
+## 4 Cows and heifers          
+## 5 Lambs                     
+## 6 Pigs                      
+## 7 Sheep
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vic\_example }\OtherTok{\textless{}{-}}\NormalTok{ vic\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Pigs"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Count)}
+
+\NormalTok{vic\_example }\SpecialCharTok{|\textgreater{}} \FunctionTok{autoplot}\NormalTok{(Count) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Victoria pigs"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex5-vic-series-1.pdf}}
+
+Using \texttt{Pigs} in Victoria, the series shows both trend movement
+and seasonality (recurring annual pattern), and the variability changes
+over time.
+
+\section{Exercise}\label{exercise-4}
+
+\#\#(a) Good forecast methods should have normally distributed residuals
+
+\textbf{Answer:} False.
+
+\#\#(b) A model with small residuals will give good forecasts
+
+\textbf{Answer:} True.
+
+\#\#(c) The best measure of forecast accuracy is MAPE
+
+\textbf{Answer:} False.
+
+\#\#(d) If your model doesn't forecast well, you should make it more
+complicated
+
+\textbf{Answer:} False.
+
+\#\#(e) Always choose the model with the best forecast accuracy on the
+test set
+
+\textbf{Answer:} True.
+
+\section{Exercise}\label{exercise-5}
+
+\#\#(a) Create a training set before 2011
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myseries }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(State }\SpecialCharTok{==} \StringTok{"New South Wales"}\NormalTok{, Industry }\SpecialCharTok{==} \StringTok{"Takeaway food services"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Turnover)}
+
+\NormalTok{myseries\_train }\OtherTok{\textless{}{-}}\NormalTok{ myseries }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textless{}} \DecValTok{2011}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#(b) Check split with the requested plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(myseries, Turnover, }\AttributeTok{colour =} \StringTok{"\#111111"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(myseries\_train, Turnover, }\AttributeTok{colour =} \StringTok{"\#C00000"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Exercise 7(b): full series with training data highlighted"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Month"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Turnover"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex7b-split-check-1.pdf}}
+
+The split is correct: highlighted training data stops at 2010.
+
+\#\#(c) Fit \texttt{SNAIVE()} on training data
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit7 }\OtherTok{\textless{}{-}}\NormalTok{ myseries\_train }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Turnover))}
+\NormalTok{fit7}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A mable: 1 x 1
+##     SNaive
+##    <model>
+## 1 <SNAIVE>
+\end{verbatim}
+
+\#\#(d) Check residuals
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit7 }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_tsresiduals}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex7d-residuals-1.pdf}}
+
+Residuals are not ideal white noise; autocorrelation remains.
+
+\#\#(e) Forecast the test period
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fc7 }\OtherTok{\textless{}{-}}\NormalTok{ fit7 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =} \FunctionTok{anti\_join}\NormalTok{(myseries, myseries\_train, }\AttributeTok{by =} \StringTok{"Month"}\NormalTok{))}
+
+\FunctionTok{autoplot}\NormalTok{(myseries, Turnover, }\AttributeTok{colour =} \StringTok{"\#111111"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(fc7, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#C00000"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Exercise 7(e): SNAIVE forecasts on holdout period"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Month"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Turnover"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex7e-forecast-1.pdf}}
+
+\#\#(f) Compare accuracy against actual values
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{acc7\_train }\OtherTok{\textless{}{-}}\NormalTok{ fit7 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{accuracy}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{6}\NormalTok{)))}
+
+\NormalTok{acc7\_test }\OtherTok{\textless{}{-}}\NormalTok{ fc7 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{accuracy}\NormalTok{(myseries) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{6}\NormalTok{)))}
+
+\NormalTok{acc7\_train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 10
+##   .model .type       ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 SNaive Training  11.5  26.1  19.2  4.81  9.59     1     1 0.890
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{acc7\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 SNaive Test   48.6  96.8  79.5  7.67  16.3  4.14  3.71 0.964
+\end{verbatim}
+
+Test accuracy is much worse than training accuracy.
+
+\#\#(g) Sensitivity of accuracy to training set size
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cut\_years }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2008}\NormalTok{, }\DecValTok{2009}\NormalTok{, }\DecValTok{2010}\NormalTok{, }\DecValTok{2011}\NormalTok{, }\DecValTok{2012}\NormalTok{)}
+
+\NormalTok{sensitivity7 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dfr}\NormalTok{(cut\_years, }\ControlFlowTok{function}\NormalTok{(cut\_year) \{}
+\NormalTok{  train\_tmp }\OtherTok{\textless{}{-}}\NormalTok{ myseries }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textless{}}\NormalTok{ cut\_year)}
+\NormalTok{  fit\_tmp }\OtherTok{\textless{}{-}}\NormalTok{ train\_tmp }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Turnover))}
+\NormalTok{  fc\_tmp }\OtherTok{\textless{}{-}}\NormalTok{ fit\_tmp }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =} \FunctionTok{anti\_join}\NormalTok{(myseries, train\_tmp, }\AttributeTok{by =} \StringTok{"Month"}\NormalTok{))}
+
+\NormalTok{  fc\_tmp }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{accuracy}\NormalTok{(myseries) }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{cutoff\_year =}\NormalTok{ cut\_year) }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{select}\NormalTok{(cutoff\_year, .model, RMSE, MAE, MAPE)}
+\NormalTok{\}) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{c}\NormalTok{(RMSE, MAE, MAPE), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{4}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(cutoff\_year)}
+
+\NormalTok{sensitivity7}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 5
+##   cutoff_year .model  RMSE   MAE  MAPE
+##         <dbl> <chr>  <dbl> <dbl> <dbl>
+## 1        2008 SNaive 164.  138.   29.7
+## 2        2009 SNaive 159.  136.   28.5
+## 3        2010 SNaive 132.  107.   21.8
+## 4        2011 SNaive  96.8  79.5  16.3
+## 5        2012 SNaive 141.  117.   22.8
+\end{verbatim}
+
+Answer to 7(g): the metrics are sensitive to training length. Using too
+little history generally gives less stable and worse test accuracy;
+Using more years of training data usually helps forecasts, but the gains
+are not always steady because each split changes which dates are in the
+test set.
+
+\section{Exercise}\label{exercise-6}
+
+\#\#(a)-(c) Data familiarity, train/test split, benchmark comparison
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_nsw }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(State }\SpecialCharTok{==} \StringTok{"New South Wales"}\NormalTok{, Animal }\SpecialCharTok{==} \StringTok{"Pigs"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Month, Count)}
+
+\NormalTok{train8 }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_nsw }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{486}\NormalTok{)}
+\NormalTok{test8 }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_nsw }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{487}\SpecialCharTok{:}\FunctionTok{n}\NormalTok{())}
+
+\NormalTok{fit8 }\OtherTok{\textless{}{-}}\NormalTok{ train8 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Count),}
+    \AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Count),}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Count }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{()),}
+    \AttributeTok{Mean =} \FunctionTok{MEAN}\NormalTok{(Count)}
+\NormalTok{  )}
+
+\NormalTok{fc8 }\OtherTok{\textless{}{-}}\NormalTok{ fit8 }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =}\NormalTok{ test8)}
+\NormalTok{acc8 }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(fc8, pigs\_nsw) }\SpecialCharTok{|\textgreater{}} \FunctionTok{arrange}\NormalTok{(RMSE)}
+\NormalTok{acc8}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 10
+##   .model .type      ME   RMSE    MAE    MPE  MAPE  MASE RMSSE    ACF1
+##   <chr>  <chr>   <dbl>  <dbl>  <dbl>  <dbl> <dbl> <dbl> <dbl>   <dbl>
+## 1 Drift  Test   -4685.  8091.  6967.  -7.36  10.1 0.657 0.557  0.0785
+## 2 Naive  Test   -6138.  8941.  7840.  -9.39  11.4 0.740 0.615  0.0545
+## 3 SNaive Test   -5838. 10111.  8174.  -8.81  11.9 0.771 0.696 -0.0773
+## 4 Mean   Test  -39360. 39894. 39360. -55.9   55.9 3.71  2.75   0.0545
+\end{verbatim}
+
+\subsection{8(d) Residual diagnostics for preferred
+method}\label{d-residual-diagnostics-for-preferred-method}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best8 }\OtherTok{\textless{}{-}}\NormalTok{ acc8 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(.model)}
+
+\NormalTok{fit8 }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(best8)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_tsresiduals}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex8-best-residuals-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(fit8) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==}\NormalTok{ best8) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{features}\NormalTok{(.innov, ljung\_box, }\AttributeTok{lag =} \DecValTok{24}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .model lb_stat lb_pvalue
+##   <chr>    <dbl>     <dbl>
+## 1 Drift    1237.         0
+\end{verbatim}
+
+\texttt{Drift} is best by RMSE on the test set, but the residuals still
+show strong autocorrelation, so it is not fully adequate.
+
+\section{Exercise}\label{exercise-7}
+
+\#\#(a)-(c) Training split, benchmark fit, and forecast accuracy
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wealth9 }\OtherTok{\textless{}{-}}\NormalTok{ hh\_budget }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Australia"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Year, Wealth)}
+
+\NormalTok{train9 }\OtherTok{\textless{}{-}}\NormalTok{ wealth9 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{4}\NormalTok{))}
+\NormalTok{test9 }\OtherTok{\textless{}{-}}\NormalTok{ wealth9 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{((}\FunctionTok{nrow}\NormalTok{(train9) }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}\SpecialCharTok{:}\FunctionTok{n}\NormalTok{())}
+
+\NormalTok{fit9 }\OtherTok{\textless{}{-}}\NormalTok{ train9 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Wealth),}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Wealth }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{()),}
+    \AttributeTok{Mean =} \FunctionTok{MEAN}\NormalTok{(Wealth)}
+\NormalTok{  )}
+
+\NormalTok{fc9 }\OtherTok{\textless{}{-}}\NormalTok{ fit9 }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =}\NormalTok{ test9)}
+\NormalTok{acc9 }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(fc9, wealth9) }\SpecialCharTok{|\textgreater{}} \FunctionTok{arrange}\NormalTok{(RMSE)}
+\NormalTok{acc9}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 Drift  Test   29.1  35.5  29.1  7.23  7.23  1.73  1.48 0.210
+## 2 Naive  Test   34.7  41.5  34.7  8.64  8.64  2.06  1.73 0.216
+## 3 Mean   Test   35.7  42.3  35.7  8.89  8.89  2.12  1.76 0.216
+\end{verbatim}
+
+\#\#(d) Residual diagnostics of best method
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best9 }\OtherTok{\textless{}{-}}\NormalTok{ acc9 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(.model)}
+
+\NormalTok{fit9 }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(best9)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_tsresiduals}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex9-best-check-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(fit9) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==}\NormalTok{ best9) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{features}\NormalTok{(.innov, ljung\_box, }\AttributeTok{lag =} \DecValTok{8}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .model lb_stat lb_pvalue
+##   <chr>    <dbl>     <dbl>
+## 1 Drift     4.33     0.826
+\end{verbatim}
+
+\texttt{Drift} is best on the holdout years, and residual diagnostics
+are reasonably acceptable (high Ljung-Box p-value).
+
+\section{Exercise}\label{exercise-8}
+
+\#\#(a)-(c) Training split, benchmark fit, and forecast accuracy
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{takeaway10 }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Industry }\SpecialCharTok{==} \StringTok{"Takeaway food services"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Turnover =} \FunctionTok{sum}\NormalTok{(Turnover))}
+
+\NormalTok{train10 }\OtherTok{\textless{}{-}}\NormalTok{ takeaway10 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{48}\NormalTok{))}
+\NormalTok{test10 }\OtherTok{\textless{}{-}}\NormalTok{ takeaway10 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{((}\FunctionTok{nrow}\NormalTok{(train10) }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}\SpecialCharTok{:}\FunctionTok{n}\NormalTok{())}
+
+\NormalTok{fit10 }\OtherTok{\textless{}{-}}\NormalTok{ train10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Naive =} \FunctionTok{NAIVE}\NormalTok{(Turnover),}
+    \AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Turnover),}
+    \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{()),}
+    \AttributeTok{Mean =} \FunctionTok{MEAN}\NormalTok{(Turnover)}
+\NormalTok{  )}
+
+\NormalTok{fc10 }\OtherTok{\textless{}{-}}\NormalTok{ fit10 }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =}\NormalTok{ test10)}
+\NormalTok{acc10 }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(fc10, takeaway10) }\SpecialCharTok{|\textgreater{}} \FunctionTok{arrange}\NormalTok{(RMSE)}
+\NormalTok{acc10}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 Naive  Test  -12.4  119.  96.4 -1.49  6.66  2.30  2.25 0.613
+## 2 Drift  Test  -93.7  130. 108.  -6.82  7.67  2.58  2.46 0.403
+## 3 SNaive Test  177.   192. 177.  11.7  11.7   4.22  3.64 0.902
+## 4 Mean   Test  829.   838. 829.  55.7  55.7  19.8  15.8  0.613
+\end{verbatim}
+
+\#\#(d) Residual diagnostics of best method
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best10 }\OtherTok{\textless{}{-}}\NormalTok{ acc10 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(.model)}
+
+\NormalTok{fit10 }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(best10)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{gg\_tsresiduals}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex10-best-check-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(fit10) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==}\NormalTok{ best10) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{features}\NormalTok{(.innov, ljung\_box, }\AttributeTok{lag =} \DecValTok{24}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .model lb_stat lb_pvalue
+##   <chr>    <dbl>     <dbl>
+## 1 Naive     875.         0
+\end{verbatim}
+
+\texttt{Naive} is best on this holdout. Residual diagnostics still
+indicate significant autocorrelation, so there is room for a richer
+model.
+
+\section{Exercise}\label{exercise-9}
+
+\#\#(a)-(d), (g) STL-based model construction and forecast comparison
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bricks11 }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(Quarter, Bricks) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{  tidyr}\SpecialCharTok{::}\FunctionTok{drop\_na}\NormalTok{()}
+
+\NormalTok{train11 }\OtherTok{\textless{}{-}}\NormalTok{ bricks11 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{8}\NormalTok{))}
+\NormalTok{test11 }\OtherTok{\textless{}{-}}\NormalTok{ bricks11 }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{((}\FunctionTok{nrow}\NormalTok{(train11) }\SpecialCharTok{+} \DecValTok{1}\NormalTok{)}\SpecialCharTok{:}\FunctionTok{n}\NormalTok{())}
+
+\NormalTok{fit11 }\OtherTok{\textless{}{-}}\NormalTok{ train11 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{dcmp =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(Bricks }\SpecialCharTok{\textasciitilde{}} \FunctionTok{season}\NormalTok{(}\AttributeTok{window =} \StringTok{"periodic"}\NormalTok{)),}
+      \FunctionTok{NAIVE}\NormalTok{(season\_adjust)}
+\NormalTok{    ),}
+    \AttributeTok{snaive =} \FunctionTok{SNAIVE}\NormalTok{(Bricks)}
+\NormalTok{  )}
+
+\NormalTok{fc11 }\OtherTok{\textless{}{-}}\NormalTok{ fit11 }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{new\_data =}\NormalTok{ test11)}
+\FunctionTok{accuracy}\NormalTok{(fc11, bricks11) }\SpecialCharTok{|\textgreater{}} \FunctionTok{arrange}\NormalTok{(RMSE)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 10
+##   .model .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
+##   <chr>  <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl>
+## 1 dcmp   Test   8.00  18.1  13.8 1.82   3.36 0.380 0.368  0.0957
+## 2 snaive Test   2.75  20    18.2 0.395  4.52 0.504 0.407 -0.0503
+\end{verbatim}
+
+The decomposition approach (\texttt{dcmp}) has lower RMSE than
+\texttt{snaive} for the last two years (part g).
+
+\section{Exercise}\label{exercise-10}
+
+\#\#(a) Extract Gold Coast data and aggregate over Purpose
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gc }\OtherTok{\textless{}{-}}\NormalTok{ tourism }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(Region }\SpecialCharTok{==} \StringTok{"Gold Coast"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Trips =} \FunctionTok{sum}\NormalTok{(Trips))}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#(b) Create training sets excluding the last 1, 2, and 3 years
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gc\_train\_1 }\OtherTok{\textless{}{-}}\NormalTok{ gc }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{4}\NormalTok{))}
+\NormalTok{gc\_train\_2 }\OtherTok{\textless{}{-}}\NormalTok{ gc }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{8}\NormalTok{))}
+\NormalTok{gc\_train\_3 }\OtherTok{\textless{}{-}}\NormalTok{ gc }\SpecialCharTok{|\textgreater{}} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(}\FunctionTok{n}\NormalTok{() }\SpecialCharTok{{-}} \DecValTok{12}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#(c) Compute one year of SNAIVE forecasts for each training set
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gc\_fc\_1 }\OtherTok{\textless{}{-}}\NormalTok{ gc\_train\_1 }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Trips)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"1 year"}\NormalTok{)}
+\NormalTok{gc\_fc\_2 }\OtherTok{\textless{}{-}}\NormalTok{ gc\_train\_2 }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Trips)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"1 year"}\NormalTok{)}
+\NormalTok{gc\_fc\_3 }\OtherTok{\textless{}{-}}\NormalTok{ gc\_train\_3 }\SpecialCharTok{|\textgreater{}} \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Trips)) }\SpecialCharTok{|\textgreater{}} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"1 year"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#(d) Compare test-set MAPE and comment
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{horizon\_acc }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}
+\NormalTok{  gc\_fc\_1 }\SpecialCharTok{|\textgreater{}} \FunctionTok{accuracy}\NormalTok{(gc) }\SpecialCharTok{|\textgreater{}} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{train\_set =} \StringTok{"Exclude last 1 year"}\NormalTok{),}
+\NormalTok{  gc\_fc\_2 }\SpecialCharTok{|\textgreater{}} \FunctionTok{accuracy}\NormalTok{(gc) }\SpecialCharTok{|\textgreater{}} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{train\_set =} \StringTok{"Exclude last 2 years"}\NormalTok{),}
+\NormalTok{  gc\_fc\_3 }\SpecialCharTok{|\textgreater{}} \FunctionTok{accuracy}\NormalTok{(gc) }\SpecialCharTok{|\textgreater{}} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{train\_set =} \StringTok{"Exclude last 3 years"}\NormalTok{)}
+\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(train\_set, .model, MAPE, RMSE, MAE) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{c}\NormalTok{(MAPE, RMSE, MAE), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{4}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(MAPE)}
+
+\NormalTok{horizon\_acc}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 5
+##   train_set            .model  MAPE  RMSE   MAE
+##   <chr>                <chr>  <dbl> <dbl> <dbl>
+## 1 Exclude last 2 years SNaive  4.32  43.1  39.5
+## 2 Exclude last 3 years SNaive  9.07  91.4  83.9
+## 3 Exclude last 1 year  SNaive 15.1  167.  154.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fc12 }\OtherTok{\textless{}{-}}\NormalTok{ gc\_train\_3 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{SNaive =} \FunctionTok{SNAIVE}\NormalTok{(Trips)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"3 years"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(gc, Trips) }\SpecialCharTok{+}
+  \FunctionTok{autolayer}\NormalTok{(fc12, }\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{colour =}\NormalTok{ primary\_cols[}\StringTok{"Forecast"}\NormalTok{]) }\SpecialCharTok{+}
+  \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Trips"} \OtherTok{=}\NormalTok{ primary\_cols[}\StringTok{"Actual"}\NormalTok{])) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Gold Coast tourism: SNAIVE up to 3 years ahead"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{homework3_files/figure-latex/ex12-plot-1.pdf}}
+
+On this run, the model trained by excluding the last 2 years gives the
+lowest one-year-ahead MAPE.
+
+\end{document}
