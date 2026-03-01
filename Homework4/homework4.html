@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-02-27" />
+
+<title>Homework 4: Data Pre-processing</title>
+
+<script src="homework4_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="homework4_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="homework4_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="homework4_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="homework4_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="homework4_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="homework4_files/navigation-1.1/tabsets.js"></script>
+<link href="homework4_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="homework4_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Homework 4: Data Pre-processing</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">February 27, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#exercise-3.1-glass" id="toc-exercise-3.1-glass"><span
+class="toc-section-number">1</span> Exercise 3.1 (Glass)</a>
+<ul>
+<li><a href="#a-explore-predictor-distributions-and-relationships"
+id="toc-a-explore-predictor-distributions-and-relationships"><span
+class="toc-section-number">1.1</span> (a) Explore predictor
+distributions and relationships</a></li>
+<li><a href="#b-outliers-and-skewness"
+id="toc-b-outliers-and-skewness"><span
+class="toc-section-number">1.2</span> (b) Outliers and skewness</a></li>
+<li><a href="#c-relevant-transformations"
+id="toc-c-relevant-transformations"><span
+class="toc-section-number">1.3</span> (c) Relevant
+transformations</a></li>
+</ul></li>
+<li><a href="#exercise-3.2-soybean" id="toc-exercise-3.2-soybean"><span
+class="toc-section-number">2</span> Exercise 3.2 (Soybean)</a>
+<ul>
+<li><a href="#a-frequency-distributions-and-degenerate-predictors"
+id="toc-a-frequency-distributions-and-degenerate-predictors"><span
+class="toc-section-number">2.1</span> (a) Frequency distributions and
+degenerate predictors</a></li>
+<li><a href="#b-missingness-by-predictor-and-relation-to-class"
+id="toc-b-missingness-by-predictor-and-relation-to-class"><span
+class="toc-section-number">2.2</span> (b) Missingness by predictor and
+relation to class</a></li>
+<li><a href="#c-strategy-for-missing-data"
+id="toc-c-strategy-for-missing-data"><span
+class="toc-section-number">2.3</span> (c) Strategy for missing
+data</a></li>
+</ul></li>
+<li><a href="#exercise-3.3-bloodbrain"
+id="toc-exercise-3.3-bloodbrain"><span
+class="toc-section-number">3</span> Exercise 3.3 (BloodBrain)</a>
+<ul>
+<li><a href="#a-load-data" id="toc-a-load-data"><span
+class="toc-section-number">3.1</span> (a) Load data</a></li>
+<li><a href="#b-degenerate-individual-predictors"
+id="toc-b-degenerate-individual-predictors"><span
+class="toc-section-number">3.2</span> (b) Degenerate individual
+predictors</a></li>
+<li><a href="#c-predictor-relationships-and-correlation-filtering"
+id="toc-c-predictor-relationships-and-correlation-filtering"><span
+class="toc-section-number">3.3</span> (c) Predictor relationships and
+correlation filtering</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="exercise-3.1-glass" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Exercise 3.1
+(Glass)</h1>
+<pre class="r"><code>data(Glass)
+str(Glass)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    214 obs. of  10 variables:
+##  $ RI  : num  1.52 1.52 1.52 1.52 1.52 ...
+##  $ Na  : num  13.6 13.9 13.5 13.2 13.3 ...
+##  $ Mg  : num  4.49 3.6 3.55 3.69 3.62 3.61 3.6 3.61 3.58 3.6 ...
+##  $ Al  : num  1.1 1.36 1.54 1.29 1.24 1.62 1.14 1.05 1.37 1.36 ...
+##  $ Si  : num  71.8 72.7 73 72.6 73.1 ...
+##  $ K   : num  0.06 0.48 0.39 0.57 0.55 0.64 0.58 0.57 0.56 0.57 ...
+##  $ Ca  : num  8.75 7.83 7.78 8.22 8.07 8.07 8.17 8.24 8.3 8.4 ...
+##  $ Ba  : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Fe  : num  0 0 0 0 0 0.26 0 0 0 0.11 ...
+##  $ Type: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;5&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>glass_num &lt;- Glass |&gt; select(-Type)</code></pre>
+<div id="a-explore-predictor-distributions-and-relationships"
+class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> (a) Explore predictor
+distributions and relationships</h2>
+<pre class="r"><code>Glass |&gt;
+  pivot_longer(cols = -Type, names_to = &quot;Predictor&quot;, values_to = &quot;Value&quot;) |&gt;
+  ggplot(aes(x = Value)) +
+  geom_histogram(bins = 30, fill = &quot;#4C78A8&quot;, color = &quot;white&quot;) +
+  facet_wrap(~ Predictor, scales = &quot;free&quot;, ncol = 3) +
+  labs(title = &quot;Glass predictors: univariate distributions&quot;)</code></pre>
+<p><img
+src="homework4_files/figure-html/ex31a-hist-1.png" /><!-- --></p>
+<pre class="r"><code>glass_cor &lt;- cor(glass_num)
+glass_cor_long &lt;- as.data.frame(as.table(glass_cor)) |&gt;
+  rename(var1 = Var1, var2 = Var2, corr = Freq)
+
+ggplot(glass_cor_long, aes(var1, var2, fill = corr)) +
+  geom_tile() +
+  scale_fill_gradient2(low = &quot;#B2182B&quot;, mid = &quot;white&quot;, high = &quot;#2166AC&quot;, midpoint = 0) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = &quot;Glass predictors: correlation structure&quot;, x = NULL, y = NULL)</code></pre>
+<p><img
+src="homework4_files/figure-html/ex31a-corr-1.png" /><!-- --></p>
+<p>The distributions are not uniformly well-behaved: several predictors
+are concentrated near small values with long right tails, and at least
+one pair (RI and Ca) is strongly correlated.</p>
+</div>
+<div id="b-outliers-and-skewness" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> (b) Outliers and
+skewness</h2>
+<pre class="r"><code>outlier_counts &lt;- sapply(glass_num, function(x) {
+  q &lt;- quantile(x, c(0.25, 0.75), na.rm = TRUE)
+  iqr &lt;- q[2] - q[1]
+  lo &lt;- q[1] - 1.5 * iqr
+  hi &lt;- q[2] + 1.5 * iqr
+  sum(x &lt; lo | x &gt; hi, na.rm = TRUE)
+})
+
+skew_tbl &lt;- tibble(
+  predictor = names(glass_num),
+  skewness = sapply(glass_num, sample_skewness),
+  outliers_iqr = as.integer(outlier_counts)
+) |&gt;
+  arrange(desc(abs(skewness)))
+
+skew_tbl</code></pre>
+<pre><code>## # A tibble: 9 x 3
+##   predictor skewness outliers_iqr
+##   &lt;chr&gt;        &lt;dbl&gt;        &lt;int&gt;
+## 1 K            6.49             7
+## 2 Ba           3.38            38
+## 3 Ca           2.03            26
+## 4 Fe           1.74            12
+## 5 RI           1.61            17
+## 6 Mg          -1.14             0
+## 7 Al           0.899           18
+## 8 Si          -0.724           12
+## 9 Na           0.450            7</code></pre>
+<p>Yes. There are clear outliers (especially for <code>Ba</code>,
+<code>Ca</code>, and <code>Al</code>) and multiple skewed predictors
+(most notably <code>K</code>, <code>Ba</code>, <code>Ca</code>,
+<code>Fe</code>, and <code>RI</code>).</p>
+</div>
+<div id="c-relevant-transformations" class="section level2"
+number="1.3">
+<h2><span class="header-section-number">1.3</span> (c) Relevant
+transformations</h2>
+<pre class="r"><code>pp_glass &lt;- preProcess(glass_num, method = c(&quot;YeoJohnson&quot;, &quot;center&quot;, &quot;scale&quot;))
+glass_trans &lt;- predict(pp_glass, glass_num)
+
+before_after_skew &lt;- tibble(
+  predictor = names(glass_num),
+  skew_before = sapply(glass_num, sample_skewness),
+  skew_after = sapply(glass_trans, sample_skewness)
+) |&gt;
+  mutate(abs_reduction = abs(skew_before) - abs(skew_after)) |&gt;
+  arrange(desc(abs_reduction))
+
+head(before_after_skew, 9)</code></pre>
+<pre><code>## # A tibble: 9 x 4
+##   predictor skew_before skew_after abs_reduction
+##   &lt;chr&gt;           &lt;dbl&gt;      &lt;dbl&gt;         &lt;dbl&gt;
+## 1 K               6.49   -0.0712        6.42e+ 0
+## 2 Ca              2.03   -0.207         1.82e+ 0
+## 3 Al              0.899   0.000214      8.99e- 1
+## 4 Na              0.450  -0.00889       4.41e- 1
+## 5 Mg             -1.14   -0.881         2.61e- 1
+## 6 Si             -0.724  -0.724        -3.33e-15
+## 7 Fe              1.74    1.74         -5.77e-15
+## 8 Ba              3.38    3.38         -7.55e-15
+## 9 RI              1.61    1.61         -8.73e-14</code></pre>
+<p>A practical preprocessing plan is Yeo-Johnson transformation (to
+reduce skew/outlier leverage) plus centering/scaling. This should
+improve many distance-based and linear classifiers.</p>
+</div>
+</div>
+<div id="exercise-3.2-soybean" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Exercise 3.2
+(Soybean)</h1>
+<pre class="r"><code>data(Soybean)
+str(Soybean)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    683 obs. of  36 variables:
+##  $ Class          : Factor w/ 19 levels &quot;2-4-d-injury&quot;,..: 11 11 11 11 11 11 11 11 11 11 ...
+##  $ date           : Factor w/ 7 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,..: 7 5 4 4 7 6 6 5 7 5 ...
+##  $ plant.stand    : Ord.factor w/ 2 levels &quot;0&quot;&lt;&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ precip         : Ord.factor w/ 3 levels &quot;0&quot;&lt;&quot;1&quot;&lt;&quot;2&quot;: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ temp           : Ord.factor w/ 3 levels &quot;0&quot;&lt;&quot;1&quot;&lt;&quot;2&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ hail           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 2 1 1 ...
+##  $ crop.hist      : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 2 3 2 2 3 4 3 2 4 3 ...
+##  $ area.dam       : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 2 1 1 1 1 1 1 1 1 1 ...
+##  $ sever          : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 2 3 3 3 2 2 2 2 2 3 ...
+##  $ seed.tmt       : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 1 2 2 1 1 1 2 1 2 1 ...
+##  $ germ           : Ord.factor w/ 3 levels &quot;0&quot;&lt;&quot;1&quot;&lt;&quot;2&quot;: 1 2 3 2 3 2 1 3 2 3 ...
+##  $ plant.growth   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ leaves         : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ leaf.halo      : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ leaf.marg      : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ leaf.size      : Ord.factor w/ 3 levels &quot;0&quot;&lt;&quot;1&quot;&lt;&quot;2&quot;: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ leaf.shread    : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ leaf.malf      : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ leaf.mild      : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ stem           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ lodging        : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 1 1 1 2 1 1 1 ...
+##  $ stem.cankers   : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 4 4 4 4 4 4 4 4 4 4 ...
+##  $ canker.lesion  : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 2 2 1 1 2 1 2 2 2 2 ...
+##  $ fruiting.bodies: Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ ext.decay      : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ mycelium       : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ int.discolor   : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ sclerotia      : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ fruit.pods     : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ fruit.spots    : Factor w/ 4 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;4&quot;: 4 4 4 4 4 4 4 4 4 4 ...
+##  $ seed           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ mold.growth    : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ seed.discolor  : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ seed.size      : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ shriveling     : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ roots          : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>soy_x &lt;- Soybean |&gt; select(-Class)</code></pre>
+<div id="a-frequency-distributions-and-degenerate-predictors"
+class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> (a) Frequency
+distributions and degenerate predictors</h2>
+<pre class="r"><code>soy_nzv &lt;- nearZeroVar(soy_x, saveMetrics = TRUE)
+soy_nzv |&gt;
+  tibble::rownames_to_column(&quot;predictor&quot;) |&gt;
+  arrange(desc(nzv), desc(freqRatio)) |&gt;
+  select(predictor, nzv, zeroVar, freqRatio, percentUnique) |&gt;
+  head(15)</code></pre>
+<pre><code>##          predictor   nzv zeroVar  freqRatio percentUnique
+## 1         mycelium  TRUE   FALSE 106.500000     0.2928258
+## 2        sclerotia  TRUE   FALSE  31.250000     0.2928258
+## 3        leaf.mild  TRUE   FALSE  26.750000     0.4392387
+## 4       shriveling FALSE   FALSE  14.184211     0.2928258
+## 5     int.discolor FALSE   FALSE  13.204545     0.4392387
+## 6          lodging FALSE   FALSE  12.380952     0.2928258
+## 7        leaf.malf FALSE   FALSE  12.311111     0.2928258
+## 8        seed.size FALSE   FALSE   9.016949     0.2928258
+## 9    seed.discolor FALSE   FALSE   8.015625     0.2928258
+## 10          leaves FALSE   FALSE   7.870130     0.2928258
+## 11     mold.growth FALSE   FALSE   7.820896     0.2928258
+## 12           roots FALSE   FALSE   6.406977     0.4392387
+## 13     leaf.shread FALSE   FALSE   5.072917     0.2928258
+## 14 fruiting.bodies FALSE   FALSE   4.548077     0.2928258
+## 15            seed FALSE   FALSE   4.139130     0.2928258</code></pre>
+<p>Some predictors are highly imbalanced (very large
+<code>freqRatio</code>) and a subset are flagged as near-zero-variance,
+which matches the chapter’s degenerate-distribution warning.</p>
+</div>
+<div id="b-missingness-by-predictor-and-relation-to-class"
+class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> (b) Missingness by
+predictor and relation to class</h2>
+<pre class="r"><code>missing_by_predictor &lt;- colSums(is.na(soy_x)) |&gt;
+  sort(decreasing = TRUE)
+head(missing_by_predictor, 12)</code></pre>
+<pre><code>##            hail           sever        seed.tmt         lodging            germ 
+##             121             121             121             121             112 
+##       leaf.mild fruiting.bodies     fruit.spots   seed.discolor      shriveling 
+##             108             106             106             106             106 
+##     leaf.shread            seed 
+##             100              92</code></pre>
+<pre class="r"><code>missing_by_class &lt;- Soybean |&gt;
+  mutate(missing_count = rowSums(is.na(across(-Class)))) |&gt;
+  group_by(Class) |&gt;
+  summarise(
+    n = n(),
+    mean_missing_predictors = mean(missing_count),
+    pct_rows_with_any_missing = mean(missing_count &gt; 0) * 100,
+    .groups = &quot;drop&quot;
+  ) |&gt;
+  arrange(desc(mean_missing_predictors))
+
+missing_by_class</code></pre>
+<pre><code>## # A tibble: 19 x 4
+##    Class                         n mean_missing_predict~1 pct_rows_with_any_mi~2
+##    &lt;fct&gt;                     &lt;int&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
+##  1 2-4-d-injury                 16                   28.1                  100  
+##  2 cyst-nematode                14                   24                    100  
+##  3 herbicide-injury              8                   20                    100  
+##  4 phytophthora-rot             88                   13.8                   77.3
+##  5 diaporthe-pod-&amp;-stem-bli~    15                   11.8                  100  
+##  6 alternarialeaf-spot          91                    0                      0  
+##  7 anthracnose                  44                    0                      0  
+##  8 bacterial-blight             20                    0                      0  
+##  9 bacterial-pustule            20                    0                      0  
+## 10 brown-spot                   92                    0                      0  
+## 11 brown-stem-rot               44                    0                      0  
+## 12 charcoal-rot                 20                    0                      0  
+## 13 diaporthe-stem-canker        20                    0                      0  
+## 14 downy-mildew                 20                    0                      0  
+## 15 frog-eye-leaf-spot           91                    0                      0  
+## 16 phyllosticta-leaf-spot       20                    0                      0  
+## 17 powdery-mildew               20                    0                      0  
+## 18 purple-seed-stain            20                    0                      0  
+## 19 rhizoctonia-root-rot         20                    0                      0  
+## # i abbreviated names: 1: mean_missing_predictors, 2: pct_rows_with_any_missing</code></pre>
+<p>Missingness is not uniform. Some predictors have many missing values,
+and certain classes have substantially more missing fields per row than
+others, indicating class-related missingness patterns.</p>
+</div>
+<div id="c-strategy-for-missing-data" class="section level2"
+number="2.3">
+<h2><span class="header-section-number">2.3</span> (c) Strategy for
+missing data</h2>
+<pre class="r"><code># Step 1: remove predictors with very high missingness
+missing_prop &lt;- colMeans(is.na(soy_x))
+cutoff &lt;- 0.25
+keep_vars &lt;- names(missing_prop[missing_prop &lt;= cutoff])
+soy_reduced &lt;- soy_x[, keep_vars, drop = FALSE]
+
+# Step 2: mode-impute remaining categorical missing values
+soy_imputed &lt;- soy_reduced |&gt;
+  mutate(across(everything(), mode_impute))
+
+strategy_summary &lt;- tibble(
+  original_predictors = ncol(soy_x),
+  predictors_after_filter = ncol(soy_reduced),
+  total_missing_before = sum(is.na(soy_x)),
+  total_missing_after = sum(is.na(soy_imputed)),
+  missing_cutoff_used = cutoff
+)
+
+strategy_summary</code></pre>
+<pre><code>## # A tibble: 1 x 5
+##   original_predictors predictors_after_filter total_missing_before
+##                 &lt;int&gt;                   &lt;int&gt;                &lt;int&gt;
+## 1                  35                      35                 2337
+## # i 2 more variables: total_missing_after &lt;int&gt;, missing_cutoff_used &lt;dbl&gt;</code></pre>
+<p>I would use this two-step approach: filter predictors with very high
+missingness first, then mode-impute the rest. This preserves most
+information while avoiding very sparse predictors.</p>
+</div>
+</div>
+<div id="exercise-3.3-bloodbrain" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Exercise 3.3
+(BloodBrain)</h1>
+<div id="a-load-data" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> (a) Load data</h2>
+<pre class="r"><code>data(BloodBrain)
+
+length(logBBB)</code></pre>
+<pre><code>## [1] 208</code></pre>
+<pre class="r"><code>dim(bbbDescr)</code></pre>
+<pre><code>## [1] 208 134</code></pre>
+</div>
+<div id="b-degenerate-individual-predictors" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> (b) Degenerate
+individual predictors</h2>
+<pre class="r"><code>bbb_nzv &lt;- nearZeroVar(bbbDescr, saveMetrics = TRUE)
+
+bbb_nzv |&gt;
+  tibble::rownames_to_column(&quot;predictor&quot;) |&gt;
+  filter(nzv | zeroVar) |&gt;
+  arrange(desc(zeroVar), desc(freqRatio))</code></pre>
+<pre><code>##      predictor freqRatio percentUnique zeroVar  nzv
+## 1     negative 207.00000     0.9615385   FALSE TRUE
+## 2        alert 103.00000     0.9615385   FALSE TRUE
+## 3 frac.anion7.  47.75000     5.7692308   FALSE TRUE
+## 4       a_acid  33.50000     1.4423077   FALSE TRUE
+## 5     vsa_acid  33.50000     1.4423077   FALSE TRUE
+## 6 peoe_vsa.2.1  25.57143     5.7692308   FALSE TRUE
+## 7 peoe_vsa.3.1  21.00000     7.2115385   FALSE TRUE</code></pre>
+<p>Yes. There are multiple near-zero-variance predictors (but no exact
+zero-variance predictors), so removing these before modeling is
+reasonable.</p>
+</div>
+<div id="c-predictor-relationships-and-correlation-filtering"
+class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> (c) Predictor
+relationships and correlation filtering</h2>
+<pre class="r"><code>bbb_cor &lt;- cor(bbbDescr, use = &quot;pairwise.complete.obs&quot;)
+
+num_pairs_gt_075 &lt;- sum(abs(bbb_cor[upper.tri(bbb_cor)]) &gt; 0.75)
+num_pairs_gt_090 &lt;- sum(abs(bbb_cor[upper.tri(bbb_cor)]) &gt; 0.90)
+
+remove_075 &lt;- findCorrelation(bbb_cor, cutoff = 0.75)
+remove_090 &lt;- findCorrelation(bbb_cor, cutoff = 0.90)
+
+tibble(
+  total_predictors = ncol(bbbDescr),
+  pairs_abs_corr_gt_075 = num_pairs_gt_075,
+  pairs_abs_corr_gt_090 = num_pairs_gt_090,
+  remove_at_075 = length(remove_075),
+  remain_at_075 = ncol(bbbDescr) - length(remove_075),
+  remove_at_090 = length(remove_090),
+  remain_at_090 = ncol(bbbDescr) - length(remove_090)
+)</code></pre>
+<pre><code>## # A tibble: 1 x 7
+##   total_predictors pairs_abs_corr_gt_075 pairs_abs_corr_gt_090 remove_at_075
+##              &lt;int&gt;                 &lt;int&gt;                 &lt;int&gt;         &lt;int&gt;
+## 1              134                   321                    73            66
+## # i 3 more variables: remain_at_075 &lt;int&gt;, remove_at_090 &lt;int&gt;,
+## #   remain_at_090 &lt;int&gt;</code></pre>
+<p>There are strong correlations among descriptors. Correlation
+filtering can substantially reduce dimensionality (especially at cutoff
+0.75), so this has a meaningful effect on how many predictors remain for
+modeling.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

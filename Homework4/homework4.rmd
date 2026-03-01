@@ -1,0 +1,280 @@
+---
+title: "Homework 4: Data Pre-processing"
+author: "Randy Howk"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8.5,
+  fig.height = 4.8,
+  dpi = 96,
+  fig.retina = 1
+)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(mlbench)
+library(caret)
+
+theme_set(
+  theme_classic(base_size = 11) %+replace% theme(
+    axis.line = element_line(colour = "black", linewidth = 0.35),
+    axis.ticks = element_line(colour = "black", linewidth = 0.3),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+)
+
+sample_skewness <- function(x) {
+  x <- x[is.finite(x)]
+  n <- length(x)
+  if (n < 3) return(NA_real_)
+  s <- sd(x)
+  if (s == 0) return(NA_real_)
+  m <- mean(x)
+  sum((x - m)^3) / ((n - 1) * s^3)
+}
+
+mode_impute <- function(x) {
+  if (!is.factor(x)) return(x)
+  if (!anyNA(x)) return(x)
+  tab <- table(x, useNA = "no")
+  top <- names(tab)[which.max(tab)]
+  x[is.na(x)] <- top
+  x
+}
+```
+
+# Exercise 3.1 (Glass)
+
+```{r ex31-load}
+data(Glass)
+str(Glass)
+
+glass_num <- Glass |> select(-Type)
+```
+
+## (a) Explore predictor distributions and relationships
+
+```{r ex31a-hist, fig.width=10, fig.height=7}
+Glass |>
+  pivot_longer(cols = -Type, names_to = "Predictor", values_to = "Value") |>
+  ggplot(aes(x = Value)) +
+  geom_histogram(bins = 30, fill = "#4C78A8", color = "white") +
+  facet_wrap(~ Predictor, scales = "free", ncol = 3) +
+  labs(title = "Glass predictors: univariate distributions")
+```
+
+```{r ex31a-corr, fig.width=8.5, fig.height=7}
+glass_cor <- cor(glass_num)
+glass_cor_long <- as.data.frame(as.table(glass_cor)) |>
+  rename(var1 = Var1, var2 = Var2, corr = Freq)
+
+ggplot(glass_cor_long, aes(var1, var2, fill = corr)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "#B2182B", mid = "white", high = "#2166AC", midpoint = 0) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Glass predictors: correlation structure", x = NULL, y = NULL)
+```
+
+The distributions are not uniformly well-behaved: several predictors are concentrated near small values with long right tails, and at least one pair (RI and Ca) is strongly correlated.
+
+## (b) Outliers and skewness
+
+```{r ex31b-outliers-skew}
+outlier_counts <- sapply(glass_num, function(x) {
+  q <- quantile(x, c(0.25, 0.75), na.rm = TRUE)
+  iqr <- q[2] - q[1]
+  lo <- q[1] - 1.5 * iqr
+  hi <- q[2] + 1.5 * iqr
+  sum(x < lo | x > hi, na.rm = TRUE)
+})
+
+skew_tbl <- tibble(
+  predictor = names(glass_num),
+  skewness = sapply(glass_num, sample_skewness),
+  outliers_iqr = as.integer(outlier_counts)
+) |>
+  arrange(desc(abs(skewness)))
+
+skew_tbl
+```
+
+Yes. There are clear outliers (especially for `Ba`, `Ca`, and `Al`) and multiple skewed predictors (most notably `K`, `Ba`, `Ca`, `Fe`, and `RI`).
+
+## (c) Relevant transformations
+
+```{r ex31c-transform}
+pp_glass <- preProcess(glass_num, method = c("YeoJohnson", "center", "scale"))
+glass_trans <- predict(pp_glass, glass_num)
+
+before_after_skew <- tibble(
+  predictor = names(glass_num),
+  skew_before = sapply(glass_num, sample_skewness),
+  skew_after = sapply(glass_trans, sample_skewness)
+) |>
+  mutate(abs_reduction = abs(skew_before) - abs(skew_after)) |>
+  arrange(desc(abs_reduction))
+
+head(before_after_skew, 9)
+```
+
+A practical preprocessing plan is Yeo-Johnson transformation (to reduce skew/outlier leverage) plus centering/scaling. This should improve many distance-based and linear classifiers.
+
+# Exercise 3.2 (Soybean)
+
+```{r ex32-load}
+data(Soybean)
+str(Soybean)
+
+soy_x <- Soybean |> select(-Class)
+```
+
+## (a) Frequency distributions and degenerate predictors
+
+```{r ex32a-nzv}
+soy_nzv <- nearZeroVar(soy_x, saveMetrics = TRUE)
+soy_nzv |>
+  tibble::rownames_to_column("predictor") |>
+  arrange(desc(nzv), desc(freqRatio)) |>
+  select(predictor, nzv, zeroVar, freqRatio, percentUnique) |>
+  head(15)
+```
+
+Some predictors are highly imbalanced (very large `freqRatio`) and a subset are flagged as near-zero-variance, which matches the chapter's degenerate-distribution warning.
+
+## (b) Missingness by predictor and relation to class
+
+```{r ex32b-missing}
+missing_by_predictor <- colSums(is.na(soy_x)) |>
+  sort(decreasing = TRUE)
+head(missing_by_predictor, 12)
+
+missing_by_class <- Soybean |>
+  mutate(missing_count = rowSums(is.na(across(-Class)))) |>
+  group_by(Class) |>
+  summarise(
+    n = n(),
+    mean_missing_predictors = mean(missing_count),
+    pct_rows_with_any_missing = mean(missing_count > 0) * 100,
+    .groups = "drop"
+  ) |>
+  arrange(desc(mean_missing_predictors))
+
+missing_by_class
+```
+
+Missingness is not uniform. Some predictors have many missing values, and certain classes have substantially more missing fields per row than others, indicating class-related missingness patterns.
+
+## (c) Strategy for missing data
+
+```{r ex32c-strategy}
+# Step 1: remove predictors with very high missingness
+missing_prop <- colMeans(is.na(soy_x))
+cutoff <- 0.25
+keep_vars <- names(missing_prop[missing_prop <= cutoff])
+soy_reduced <- soy_x[, keep_vars, drop = FALSE]
+
+# Step 2: mode-impute remaining categorical missing values
+soy_imputed <- soy_reduced |>
+  mutate(across(everything(), mode_impute))
+
+strategy_summary <- tibble(
+  original_predictors = ncol(soy_x),
+  predictors_after_filter = ncol(soy_reduced),
+  total_missing_before = sum(is.na(soy_x)),
+  total_missing_after = sum(is.na(soy_imputed)),
+  missing_cutoff_used = cutoff
+)
+
+strategy_summary
+```
+
+I would use this two-step approach: filter predictors with very high missingness first, then mode-impute the rest. This preserves most information while avoiding very sparse predictors.
+
+# Exercise 3.3 (BloodBrain)
+
+## (a) Load data
+
+```{r ex33a-load}
+data(BloodBrain)
+
+length(logBBB)
+dim(bbbDescr)
+```
+
+## (b) Degenerate individual predictors
+
+```{r ex33b-degenerate}
+bbb_nzv <- nearZeroVar(bbbDescr, saveMetrics = TRUE)
+
+bbb_nzv |>
+  tibble::rownames_to_column("predictor") |>
+  filter(nzv | zeroVar) |>
+  arrange(desc(zeroVar), desc(freqRatio))
+```
+
+Yes. There are multiple near-zero-variance predictors (but no exact zero-variance predictors), so removing these before modeling is reasonable.
+
+## (c) Predictor relationships and correlation filtering
+
+```{r ex33c-correlation}
+bbb_cor <- cor(bbbDescr, use = "pairwise.complete.obs")
+
+num_pairs_gt_075 <- sum(abs(bbb_cor[upper.tri(bbb_cor)]) > 0.75)
+num_pairs_gt_090 <- sum(abs(bbb_cor[upper.tri(bbb_cor)]) > 0.90)
+
+remove_075 <- findCorrelation(bbb_cor, cutoff = 0.75)
+remove_090 <- findCorrelation(bbb_cor, cutoff = 0.90)
+
+tibble(
+  total_predictors = ncol(bbbDescr),
+  pairs_abs_corr_gt_075 = num_pairs_gt_075,
+  pairs_abs_corr_gt_090 = num_pairs_gt_090,
+  remove_at_075 = length(remove_075),
+  remain_at_075 = ncol(bbbDescr) - length(remove_075),
+  remove_at_090 = length(remove_090),
+  remain_at_090 = ncol(bbbDescr) - length(remove_090)
+)
+```
+
+There are strong correlations among descriptors. Correlation filtering can substantially reduce dimensionality (especially at cutoff 0.75), so this has a meaningful effect on how many predictors remain for modeling.
