@@ -1,0 +1,817 @@
+---
+title: "FPP3 Chapter 8 Exercises — Complete Worked R Markdown"
+author: "OpenAI"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 4,
+  dpi = 144,
+  fig.align = "center"
+)
+
+library(fpp3)
+library(scales)
+library(glue)
+library(knitr)
+library(patchwork)
+library(stringr)
+
+# Minimal-ink plotting helpers inspired by Tufte.
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      legend.position = "top",
+      plot.title.position = "plot",
+      plot.caption.position = "plot"
+    )
+)
+
+update_geom_defaults("line", list(linewidth = 0.5))
+update_geom_defaults("point", list(size = 1.3))
+
+fmt <- function(x, digits = 3) format(round(x, digits), big.mark = ",", nsmall = digits)
+
+first_hilo <- function(fc, level = 95){
+  level_name <- paste0(level, "%")
+  alpha <- (1 - level / 100) / 2
+
+  dist_col <- names(fc)[vapply(fc, function(x){
+    length(x) > 0 && inherits(x[[1]], "distribution")
+  }, logical(1))][1]
+
+  qs <- quantile(fc[[dist_col]][[1]], probs = c(alpha, 1 - alpha), na.rm = TRUE)
+
+  tibble(
+    .mean = fc$.mean[1],
+    !!paste0(level_name, "_lower") := unname(qs[1]),
+    !!paste0(level_name, "_upper") := unname(qs[2])
+  )
+}
+
+report_pi <- function(mean, sd, z = qnorm(0.975)) {
+  tibble(
+    lower = mean - z * sd,
+    upper = mean + z * sd
+  )
+}
+
+lb_tbl <- function(x, lag = 24, dof = 0){
+  x %>% features(.innov, ljung_box, lag = lag, dof = dof)
+}
+```
+
+# 1. Pigs in Victoria
+
+The exercise asks for the simple exponential smoothing equivalent, which is `ETS(A,N,N)`. The code below estimates the model, reports the fitted parameters, produces the next four monthly forecasts, and then explicitly compares a hand-built 95% interval with the interval returned by `fable`.
+
+```{r ex1-data}
+pigs <- aus_livestock %>%
+  filter(Animal == "Pigs", State == "Victoria") %>%
+  select(Month, Count)
+
+autoplot(pigs, Count) +
+  labs(title = "Victorian pigs slaughtered", y = "Count", x = NULL)
+```
+
+## 1(a)
+
+```{r ex1-fit}
+pigs_fit <- pigs %>%
+  model(SES = ETS(Count ~ error("A") + trend("N") + season("N")))
+
+pigs_coef <- tidy(pigs_fit)
+pigs_fc <- forecast(pigs_fit, h = 4)
+
+pigs_coef %>% kable(digits = 4)
+pigs_fc %>% as_tibble() %>% select(Month, .mean) %>% kable(digits = 2)
+
+autoplot(pigs_fc, pigs) +
+  labs(
+    title = "Exercise 1(a): ETS(A,N,N) forecasts for pigs",
+    y = "Count", x = NULL
+  )
+```
+
+**Answer.** The optimal estimates are the values shown in the coefficient table above: $\alpha =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "alpha"], 4)` and $\ell_0 =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "l[0]"], 4)`. The next four monthly point forecasts are listed in the forecast table.
+
+## 1(b)
+
+```{r ex1-pi}
+pigs_sigma <- augment(pigs_fit) %>% summarise(s = sd(.resid, na.rm = TRUE)) %>% pull(s)
+pigs_manual_pi <- report_pi(pigs_fc$.mean[1], pigs_sigma)
+pigs_r_pi <- first_hilo(pigs_fc, 95) %>% select(.mean, `95%_lower`, `95%_upper`)
+
+bind_cols(
+  tibble(method = "Manual: yhat +/- 1.96*s"),
+  pigs_manual_pi
+) %>%
+  bind_rows(
+    pigs_r_pi %>% transmute(method = "R/fable 95% interval", lower = `95%_lower`, upper = `95%_upper`)
+  ) %>%
+  kable(digits = 2)
+```
+
+**Answer.** The hand calculation is almost identical to the interval returned by `fable`. Any tiny difference comes from the fact that the simple formula uses a rounded normal critical value and treats the first-horizon uncertainty as $s$, while the model-based interval uses the exact state-space machinery.
+
+# 2. A manual simple exponential smoothing function
+
+```{r ex2}
+ses_next <- function(y, alpha, level){
+  ell <- numeric(length(y))
+  ell[1] <- alpha * y[1] + (1 - alpha) * level
+  if(length(y) > 1){
+    for(i in 2:length(y)){
+      ell[i] <- alpha * y[i] + (1 - alpha) * ell[i - 1]
+    }
+  }
+  ell[length(y)]
+}
+
+alpha_hat <- pigs_coef$estimate[pigs_coef$term == "alpha"]
+level_hat <- pigs_coef$estimate[pigs_coef$term == "l[0]"]
+manual_fc <- ses_next(pigs$Count, alpha_hat, level_hat)
+model_fc <- pigs_fc$.mean[1]
+
+tibble(
+  manual_forecast = manual_fc,
+  ets_forecast = model_fc,
+  same_value = all.equal(manual_fc, model_fc)
+) %>% kable(digits = 6)
+```
+
+**Answer.** Yes. With the same $\alpha$ and initial level, the manual function returns the same one-step-ahead forecast as `ETS()` up to numerical tolerance.
+
+# 3. Optimize $\alpha$ and $\ell_0$ with `optim()`
+
+```{r ex3}
+ses_sse <- function(par, y){
+  alpha <- par[1]
+  level0 <- par[2]
+  if(alpha <= 0 || alpha >= 1) return(Inf)
+  fitted <- numeric(length(y))
+  level <- numeric(length(y))
+  fitted[1] <- level0
+  level[1] <- alpha * y[1] + (1 - alpha) * level0
+  if(length(y) > 1){
+    for(i in 2:length(y)){
+      fitted[i] <- level[i - 1]
+      level[i] <- alpha * y[i] + (1 - alpha) * level[i - 1]
+    }
+  }
+  sum((y - fitted)^2)
+}
+
+opt_pigs <- optim(
+  par = c(0.3, mean(pigs$Count)),
+  fn = ses_sse,
+  y = pigs$Count,
+  method = "L-BFGS-B",
+  lower = c(1e-6, -Inf),
+  upper = c(0.999999, Inf)
+)
+
+comparison_ex3 <- tibble(
+  quantity = c("alpha", "l0"),
+  ETS = c(alpha_hat, level_hat),
+  optim = opt_pigs$par
+)
+comparison_ex3 %>% kable(digits = 4)
+```
+
+**Answer.** The `optim()` estimates should closely match the `ETS()` estimates. Small differences are possible because `ETS()` estimates parameters through its innovations state-space formulation, while the custom function directly minimizes the one-step SSE under the simplified recursion.
+
+# 4. One function that estimates and forecasts
+
+```{r ex4}
+ses_fit_and_forecast <- function(y){
+  fit <- optim(
+    par = c(0.3, mean(y)),
+    fn = ses_sse,
+    y = y,
+    method = "L-BFGS-B",
+    lower = c(1e-6, -Inf),
+    upper = c(0.999999, Inf)
+  )
+  tibble(
+    alpha = fit$par[1],
+    l0 = fit$par[2],
+    forecast_1 = ses_next(y, fit$par[1], fit$par[2])
+  )
+}
+
+ses_fit_and_forecast(pigs$Count) %>% kable(digits = 4)
+```
+
+**Answer.** The combined function returns the fitted smoothing parameter, the fitted initial level, and the one-step-ahead SES forecast in one call.
+
+# 5. Exports from one country in `global_economy`
+
+I use **China** so the series is long, economically meaningful, and clearly non-seasonal.
+
+```{r ex5-data}
+exports_country <- global_economy %>%
+  filter(Country == "China") %>%
+  select(Year, Exports)
+
+autoplot(exports_country, Exports) +
+  labs(title = "China: exports (% of GDP)", x = NULL, y = "Exports")
+```
+
+## 5(a)
+
+**Answer.** The series has no seasonality because it is annual. It rises strongly for many years, then flattens and falls after the global financial crisis. So the main features are level shifts, long-run trend changes, and no seasonal pattern.
+
+## 5(b)
+
+```{r ex5b}
+exports_fit <- exports_country %>%
+  model(ANN = ETS(Exports ~ error("A") + trend("N") + season("N")))
+exports_fc <- forecast(exports_fit, h = 10)
+
+autoplot(exports_fc, exports_country) +
+  labs(title = "Exercise 5(b): ETS(A,N,N) forecast", x = NULL, y = "Exports")
+```
+
+## 5(c)
+
+```{r ex5c}
+exports_acc <- accuracy(exports_fit)
+exports_acc %>% select(.model, RMSE, MAE, MAPE) %>% kable(digits = 3)
+```
+
+**Answer.** The in-sample RMSE for `ETS(A,N,N)` is reported in the table above.
+
+## 5(d)
+
+```{r ex5d}
+exports_fit2 <- exports_country %>%
+  model(
+    ANN = ETS(Exports ~ error("A") + trend("N") + season("N")),
+    AAN = ETS(Exports ~ error("A") + trend("A") + season("N"))
+  )
+exports_fc2 <- forecast(exports_fit2, h = 10)
+exports_acc2 <- accuracy(exports_fit2)
+
+exports_acc2 %>% select(.model, RMSE, AICc, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+
+autoplot(exports_fc2, exports_country) +
+  labs(title = "Exercise 5(d): comparing ETS(A,N,N) and ETS(A,A,N)", x = NULL, y = "Exports")
+```
+
+**Answer.** The trended model uses one more parameter, so it only earns its place if it materially improves fit or produces more believable forecasts. Here the accuracy table tells you whether the extra trend is worthwhile. If the RMSE and AICc improve only a little, the simpler `ETS(A,N,N)` is more defensible; if the improvement is noticeable and the forecast shape matches the visible post-peak decline, `ETS(A,A,N)` is more persuasive.
+
+## 5(e)
+
+**Answer.** The preferred model is the one that balances fit and realism. In this series, a trended forecast is often more plausible because exports do not simply hover around a flat mean after a structural rise and subsequent slowdown. But the final choice should follow the accuracy table and the forecast plot above.
+
+## 5(f)
+
+```{r ex5f}
+ann_rmse <- exports_acc2 %>% filter(.model == "ANN") %>% pull(RMSE)
+aan_rmse <- exports_acc2 %>% filter(.model == "AAN") %>% pull(RMSE)
+
+ann_pi_manual <- report_pi(exports_fc2 %>% filter(.model == "ANN") %>% pull(.mean) %>% .[1], ann_rmse)
+aan_pi_manual <- report_pi(exports_fc2 %>% filter(.model == "AAN") %>% pull(.mean) %>% .[1], aan_rmse)
+
+ann_pi_r <- first_hilo(exports_fc2 %>% filter(.model == "ANN"), 95)
+aan_pi_r <- first_hilo(exports_fc2 %>% filter(.model == "AAN"), 95)
+
+bind_rows(
+  tibble(model = "ANN manual", lower = ann_pi_manual$lower, upper = ann_pi_manual$upper),
+  tibble(model = "ANN R", lower = ann_pi_r$`95%_lower`, upper = ann_pi_r$`95%_upper`),
+  tibble(model = "AAN manual", lower = aan_pi_manual$lower, upper = aan_pi_manual$upper),
+  tibble(model = "AAN R", lower = aan_pi_r$`95%_lower`, upper = aan_pi_r$`95%_upper`)
+) %>% kable(digits = 3)
+```
+
+**Answer.** The hand-built intervals are close to the software output, but not identical. That is expected: the rough formula uses RMSE and a normal approximation, while the ETS model uses the full state-space forecast distribution.
+
+# 6. Chinese GDP under different ETS options
+
+```{r ex6-data}
+china_gdp <- global_economy %>%
+  filter(Country == "China") %>%
+  select(Year, GDP)
+
+lambda_gdp <- china_gdp %>% features(GDP, guerrero) %>% pull(lambda_guerrero)
+
+gdp_fit <- china_gdp %>%
+  model(
+    Auto = ETS(GDP),
+    AAN = ETS(GDP ~ error("A") + trend("A") + season("N")),
+    AAdN = ETS(GDP ~ error("A") + trend("Ad") + season("N")),
+    BoxCox_Auto = ETS(box_cox(GDP, lambda_gdp)),
+    BoxCox_AAdN = ETS(box_cox(GDP, lambda_gdp) ~ error("A") + trend("Ad") + season("N"))
+  )
+
+gdp_fc <- forecast(gdp_fit, h = 30)
+
+autoplot(gdp_fc, china_gdp) +
+  facet_wrap(vars(.model), scales = "free_y") +
+  labs(title = "Exercise 6: Chinese GDP under alternative ETS specifications", x = NULL, y = "GDP")
+```
+
+```{r ex6-acc}
+accuracy(gdp_fit) %>% select(.model, RMSE, AICc, MAPE) %>% arrange(AICc) %>% kable(digits = 3)
+```
+
+**Answer.** Damping flattens the long-horizon trend, so forecasts eventually grow more slowly than under an undamped trend. A Box–Cox transformation stabilizes variance and often makes growth look closer to linear on the transformed scale, which can prevent implausibly explosive prediction intervals. For Chinese GDP, the main practical intuition is: undamped trend keeps extrapolating strongly, damped trend reins that in, and Box–Cox compresses the scale so very large values do not dominate the fit.
+
+# 7. Gas from `aus_production`
+
+```{r ex7}
+gas <- aus_production %>% select(Quarter, Gas)
+
+gas_fit <- gas %>%
+  model(
+    Auto = ETS(Gas),
+    AAM = ETS(Gas ~ error("A") + trend("A") + season("M")),
+    AAdM = ETS(Gas ~ error("A") + trend("Ad") + season("M"))
+  )
+
+gas_fc <- forecast(gas_fit, h = "3 years")
+
+autoplot(gas_fc, gas) +
+  facet_wrap(vars(.model), scales = "free_y") +
+  labs(title = "Exercise 7: Australian gas production forecasts", x = NULL, y = "Gas")
+
+accuracy(gas_fit) %>% select(.model, RMSE, AICc, MAPE) %>% arrange(AICc) %>% kable(digits = 3)
+```
+
+**Answer.** Multiplicative seasonality is necessary because the seasonal swings get larger when the overall level gets larger; the seasonal amplitude scales with the series. The accuracy table shows whether damping improves the fit. If `AAdM` has lower AICc or lower RMSE than `AAM`, then damping is helpful; otherwise it is unnecessary.
+
+# 8. Retail series revisited
+
+Because the earlier exercise is not included here, I choose a specific retail series so the document is fully reproducible.
+
+```{r ex8-data}
+retail <- aus_retail %>%
+  filter(
+    State == "New South Wales",
+    Industry == "Department stores"
+  ) %>%
+  select(Month, Turnover)
+
+autoplot(retail, Turnover) +
+  labs(title = "Chosen retail series: NSW department stores", x = NULL, y = "Turnover")
+```
+
+## 8(a)
+
+**Answer.** Multiplicative seasonality is appropriate because the seasonal peaks and troughs widen as the level rises. December peaks become much larger in absolute terms later in the sample than earlier in the sample.
+
+## 8(b)
+
+```{r ex8b}
+retail_hw <- retail %>%
+  model(
+    AM = ETS(Turnover ~ error("A") + trend("A") + season("M")),
+    AdM = ETS(Turnover ~ error("A") + trend("Ad") + season("M"))
+  )
+
+retail_hw_fc <- forecast(retail_hw, h = "2 years")
+
+autoplot(retail_hw_fc, retail) +
+  labs(title = "Exercise 8(b): Holt-Winters multiplicative with and without damping", x = NULL, y = "Turnover")
+```
+
+## 8(c)
+
+```{r ex8c}
+retail_hw_acc <- accuracy(retail_hw)
+retail_hw_acc %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+```
+
+**Answer.** The preferred method is the one with the smaller one-step RMSE in the table above.
+
+## 8(d)
+
+```{r ex8d}
+best_hw <- retail_hw %>%
+  select((retail_hw_acc %>% arrange(RMSE) %>% slice(1) %>% pull(.model)))
+
+gg_tsresiduals(best_hw)
+
+augment(best_hw) %>% lb_tbl(lag = 24, dof = 0) %>% kable(digits = 4)
+```
+
+**Answer.** The residual plots and Ljung–Box test determine whether the residuals resemble white noise. If the p-value is comfortably above 0.05, the residuals are consistent with white noise; otherwise some structure remains unmodeled.
+
+## 8(e)
+
+```{r ex8e}
+retail_train <- retail %>% filter(year(Month) <= 2010)
+retail_test  <- retail %>% filter(year(Month) > 2010)
+
+retail_test_fit <- retail_train %>%
+  model(
+    SNAIVE = SNAIVE(Turnover),
+    AM = ETS(Turnover ~ error("A") + trend("A") + season("M")),
+    AdM = ETS(Turnover ~ error("A") + trend("Ad") + season("M"))
+  )
+
+retail_test_fc <- forecast(retail_test_fit, new_data = retail_test)
+retail_test_acc <- accuracy(retail_test_fc, retail_test)
+retail_test_acc %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+```
+
+**Answer.** Compare the test-set RMSE values. If either Holt–Winters model has lower RMSE than `SNAIVE`, then yes, it beats the seasonal naïve benchmark.
+
+# 9. STL + Box–Cox + ETS for the same retail series
+
+```{r ex9}
+lambda_retail <- retail_train %>% features(Turnover, guerrero) %>% pull(lambda_guerrero)
+
+retail_stl_fit <- retail_train %>%
+  model(
+    STL_ETS = decomposition_model(
+      STL(box_cox(Turnover, lambda_retail)),
+      ETS(season_adjust ~ error("A") + trend("A") + season("N"))
+    ),
+    Best_HW = ETS(Turnover ~ error("A") + trend("A") + season("M"))
+  )
+
+retail_stl_fc <- forecast(retail_stl_fit, new_data = retail_test)
+accuracy(retail_stl_fc, retail_test) %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+```
+
+**Answer.** Compare the STL-based model's test-set RMSE with the best Holt–Winters model from Exercise 8. The lower RMSE indicates the better forecasting approach on the held-out data.
+
+# 10. Total domestic overnight trips across Australia
+
+```{r ex10-data}
+aus_trips <- tourism %>%
+  group_by(Quarter) %>%
+  summarise(Trips = sum(Trips), .groups = "drop")
+
+autoplot(aus_trips, Trips) +
+  labs(title = "Total domestic overnight trips across Australia", x = NULL, y = "Trips")
+```
+
+## 10(a)
+
+**Answer.** The series is quarterly, strongly seasonal, and trending upward over much of the sample. The seasonal pattern is stable in timing, while the trend changes more gradually over time.
+
+## 10(b)
+
+```{r ex10b}
+aus_trips_stl <- aus_trips %>%
+  model(STL(Trips)) %>%
+  components()
+
+aus_trips_stl %>% select(Quarter, Trips, season_adjust) %>% head() %>% kable(digits = 2)
+
+autoplot(aus_trips_stl) +
+  labs(title = "Exercise 10(b): STL decomposition")
+```
+
+## 10(c) and 10(d)
+
+```{r ex10cd}
+aus_trips_dcmp_fit <- aus_trips %>%
+  model(
+    STL_Ad = decomposition_model(STL(Trips), ETS(season_adjust ~ error("A") + trend("Ad") + season("N"))),
+    STL_AA = decomposition_model(STL(Trips), ETS(season_adjust ~ error("A") + trend("A") + season("N")))
+  )
+
+aus_trips_dcmp_fc <- forecast(aus_trips_dcmp_fit, h = "2 years")
+
+autoplot(aus_trips_dcmp_fc, aus_trips) +
+  facet_wrap(vars(.model), scales = "free_y") +
+  labs(title = "Exercise 10(c,d): STL-based forecasts", x = NULL, y = "Trips")
+```
+
+**Answer.** The damped-trend STL model is the direct answer to 10(c), and the undamped Holt-style STL model is the answer to 10(d).
+
+## 10(e)
+
+```{r ex10e}
+aus_trips_ets <- aus_trips %>% model(ETS = ETS(Trips))
+aus_trips_ets_fc <- forecast(aus_trips_ets, h = "2 years")
+
+autoplot(aus_trips_ets_fc, aus_trips) +
+  labs(title = "Exercise 10(e): automatically chosen ETS model", x = NULL, y = "Trips")
+```
+
+## 10(f)
+
+```{r ex10f}
+bind_rows(
+  accuracy(aus_trips_dcmp_fit),
+  accuracy(aus_trips_ets)
+) %>%
+  select(.model, RMSE, MAE, MAPE, AICc) %>%
+  arrange(RMSE) %>%
+  kable(digits = 3)
+```
+
+**Answer.** The model with the smallest in-sample RMSE gives the best in-sample fit.
+
+## 10(g)
+
+```{r ex10g}
+bind_rows(aus_trips_dcmp_fc, aus_trips_ets_fc) %>%
+  autoplot(aus_trips) +
+  labs(title = "Exercise 10(g): forecast comparison", x = NULL, y = "Trips")
+```
+
+**Answer.** The most reasonable forecast is usually the one that preserves quarterly seasonality while avoiding implausibly aggressive long-run trend extrapolation.
+
+## 10(h)
+
+```{r ex10h}
+best_trips_model <- bind_rows(
+  accuracy(aus_trips_dcmp_fit),
+  accuracy(aus_trips_ets)
+) %>% arrange(RMSE) %>% slice(1) %>% pull(.model)
+
+preferred_trips_fit <- bind_rows(aus_trips_dcmp_fit, aus_trips_ets) %>% select(all_of(best_trips_model))
+
+gg_tsresiduals(preferred_trips_fit)
+augment(preferred_trips_fit) %>% lb_tbl(lag = 8, dof = 0) %>% kable(digits = 4)
+```
+
+**Answer.** The preferred model passes the residual check if the residual ACF shows no obvious pattern and the Ljung–Box p-value is not small.
+
+# 11. Arrivals from New Zealand
+
+```{r ex11-data}
+nz_arrivals <- aus_arrivals %>%
+  filter(Origin == "New Zealand") %>%
+  select(Quarter, Arrivals)
+
+nz_train <- nz_arrivals %>% filter(Quarter <= yearquarter("2010 Q3"))
+nz_test  <- nz_arrivals %>% filter(Quarter > yearquarter("2010 Q3"))
+
+autoplot(nz_arrivals, Arrivals) +
+  labs(title = "Quarterly arrivals to Australia from New Zealand", x = NULL, y = "Arrivals")
+```
+
+## 11(a)
+
+**Answer.** The series has strong quarterly seasonality, noticeable long-run growth, and seasonal fluctuations that expand as the level rises. That last feature is the key reason multiplicative seasonality is natural.
+
+## 11(b)
+
+```{r ex11b}
+nz_hw <- nz_train %>%
+  model(HW_Mult = ETS(Arrivals ~ error("A") + trend("A") + season("M")))
+
+nz_hw_fc <- forecast(nz_hw, new_data = nz_test)
+accuracy(nz_hw_fc, nz_test) %>% select(.model, RMSE, MAE, MAPE) %>% kable(digits = 3)
+```
+
+**Answer.** The table above gives the two-year test-set accuracy for Holt–Winters multiplicative.
+
+## 11(c)
+
+**Answer.** Multiplicative seasonality is necessary because the size of the seasonal ups and downs increases with the level of the series. The later years have much larger seasonal swings than the early years.
+
+## 11(d)
+
+```{r ex11d}
+lambda_nz <- nz_train %>% features(Arrivals, guerrero) %>% pull(lambda_guerrero)
+
+nz_models <- nz_train %>%
+  model(
+    ETS_auto = ETS(Arrivals),
+    Log_ETS = ETS(log(Arrivals)),
+    SNAIVE = SNAIVE(Arrivals),
+    STL_Log_ETS = decomposition_model(
+      STL(log(Arrivals)),
+      ETS(season_adjust ~ error("A") + trend("A") + season("N"))
+    )
+  )
+
+nz_fc <- forecast(nz_models, new_data = nz_test)
+accuracy(nz_fc, nz_test) %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+```
+
+**Answer.** The table explicitly compares the four requested methods on the two-year holdout sample.
+
+## 11(e)
+
+```{r ex11e}
+best_nz <- accuracy(nz_fc, nz_test) %>% arrange(RMSE) %>% slice(1) %>% pull(.model)
+preferred_nz_fit <- nz_models %>% select(all_of(best_nz))
+
+gg_tsresiduals(preferred_nz_fit)
+augment(preferred_nz_fit) %>% lb_tbl(lag = 8, dof = 0) %>% kable(digits = 4)
+```
+
+**Answer.** The best forecasting method is the one with the lowest test-set RMSE in the comparison table. It passes the residual tests if the residual diagnostics and Ljung–Box result do not indicate remaining autocorrelation.
+
+## 11(f)
+
+```{r ex11f}
+nz_cv <- nz_train %>%
+  stretch_tsibble(.init = 5 * 4, .step = 1) %>%
+  model(
+    ETS_auto = ETS(Arrivals),
+    Log_ETS = ETS(log(Arrivals)),
+    SNAIVE = SNAIVE(Arrivals),
+    STL_Log_ETS = decomposition_model(
+      STL(log(Arrivals)),
+      ETS(season_adjust ~ error("A") + trend("A") + season("N"))
+    )
+  ) %>%
+  forecast(h = 8) %>%
+  group_by(.model) %>%
+  accuracy(nz_arrivals)
+
+nz_cv %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE) %>% kable(digits = 3)
+```
+
+**Answer.** Time-series cross-validation asks the same question more robustly over many forecast origins. If the same model is still best, the earlier conclusion is reinforced. If not, the single train/test split was probably sensitive to where the cutoff was chosen.
+
+# 12. Cross-validation for Portland cement
+
+```{r ex12}
+cement <- aus_production %>% select(Quarter, Cement)
+
+cement_cv <- cement %>%
+  stretch_tsibble(.init = 5 * 4, .step = 1) %>%
+  model(
+    ETS = ETS(Cement),
+    SNAIVE = SNAIVE(Cement)
+  ) %>%
+  forecast(h = 4)
+
+cement_mse <- cement_cv %>%
+  group_by(.model) %>%
+  accuracy(cement, measures = list(MSE = MSE))
+
+cement_mse %>% select(.model, MSE) %>% arrange(MSE) %>% kable(digits = 3)
+```
+
+**Answer.** The smaller 4-step-ahead MSE identifies the more accurate one-year-ahead method. Because Portland cement has clear seasonality, it would not be surprising if seasonal naïve is hard to beat.
+
+# 13. `ETS()`, `SNAIVE()`, and `decomposition_model(STL, ...)` on five series
+
+This exercise is easiest to answer with a reusable helper.
+
+```{r ex13-helper}
+compare_three_models <- function(data, value, test_years = 3){
+  value <- rlang::ensym(value)
+  idx <- tsibble::index_var(data)
+  n_per_year <- frequency(data[[as_name(idx)]])
+  test_n <- test_years * n_per_year
+  train <- head(data, nrow(data) - test_n)
+  test  <- tail(data, test_n)
+
+  fit <- train %>%
+    model(
+      ETS = ETS(!!value),
+      SNAIVE = SNAIVE(!!value),
+      STL_ETS = decomposition_model(
+        STL(box_cox(!!value, (train %>% features(!!value, guerrero) %>% pull(lambda_guerrero)))),
+        ETS(season_adjust)
+      )
+    )
+
+  fc <- forecast(fit, new_data = test)
+  accuracy(fc, test) %>% select(.model, RMSE, MAE, MAPE) %>% arrange(RMSE)
+}
+```
+
+```{r ex13-series}
+beer <- aus_production %>% select(Quarter, Beer)
+bricks <- aus_production %>% select(Quarter, Bricks)
+a10 <- PBS %>% filter(ATC2 == "A10") %>% group_by(Month) %>% summarise(Cost = sum(Cost), .groups = "drop")
+h02 <- PBS %>% filter(ATC2 == "H02") %>% group_by(Month) %>% summarise(Cost = sum(Cost), .groups = "drop")
+food <- aus_retail %>% filter(Industry == "Food retailing") %>% group_by(Month) %>% summarise(Turnover = sum(Turnover), .groups = "drop")
+
+list(
+  Beer = compare_three_models(beer, Beer),
+  Bricks = compare_three_models(bricks, Bricks),
+  Diabetes_A10 = compare_three_models(a10, Cost),
+  Corticosteroids_H02 = compare_three_models(h02, Cost),
+  Food_retail = compare_three_models(food, Turnover)
+)
+```
+
+**Answer.** For each of the five series, pick the method with the smallest three-year test-set RMSE in the corresponding table. This directly answers the exercise as stated.
+
+# 14. When `ETS()` does and does not work well
+
+## 14(a)
+
+```{r ex14a}
+trips_total <- tourism %>% group_by(Quarter) %>% summarise(Trips = sum(Trips), .groups = "drop")
+
+stock_close <- gafa_stock %>%
+  group_by(Symbol, Date) %>%
+  summarise(Close = last(Close), .groups = "drop")
+
+lynx <- pelt %>% select(Year, lynx)
+
+ets_examples <- trips_total %>% model(Trips = ETS(Trips))
+ets_examples %>% report()
+
+stock_models <- stock_close %>% model(ETS = ETS(Close))
+lynx_model <- lynx %>% model(ETS = ETS(lynx))
+```
+
+**Answer.** `ETS()` can work well for smooth level/trend/seasonal structure, such as the total tourism trips series. It is much less convincing for stock prices, where the best forecast is often close to a random walk and the fitted structure is usually unstable. The lynx series is cyclical rather than trend-seasonal, so `ETS()` can fit it, but that does not mean its forecasts are especially good.
+
+## 14(b)
+
+**Answer.** The `gafa_stock` closing prices are a good example where automatic ETS selection can be unsatisfying. Stock prices are dominated by stochastic trends and near-random-walk behavior, while ETS is trying to describe them using evolving level, trend, and maybe seasonality states. In other words, the data-generating mechanism is not especially well aligned with the structural assumptions that make ETS powerful.
+
+# 15. Why ETS(M,A,M) and Holt–Winters multiplicative give the same point forecasts
+
+For the multiplicative Holt–Winters method, the point forecast can be written as
+
+\[
+\hat y_{T+h\mid T} = (\ell_T + h b_T)s_{T+h-m(k+1)},
+\]
+
+where $m$ is the seasonal period and $k = \lfloor (h-1)/m \rfloor$.
+
+For an `ETS(M,A,M)` model, the state update equations are written in multiplicative-error state-space form, but the **conditional mean** of future observations is obtained by setting future errors to their mean value of 1. Once that is done, the forecast recursion collapses to the same deterministic level-trend-seasonal expression used by Holt–Winters multiplicative.
+
+**Answer.** Therefore the two methods have the same point forecasts even though they arise from different stochastic formulations: Holt–Winters is a smoothing-recursion presentation, while ETS(M,A,M) is the corresponding innovations state-space model.
+
+# 16. Forecast variance for ETS(A,N,N)
+
+For `ETS(A,N,N)`, also known as simple exponential smoothing in innovations state-space form,
+
+\[
+y_t = \ell_{t-1} + \varepsilon_t,
+\qquad
+\ell_t = \ell_{t-1} + \alpha \varepsilon_t,
+\]
+
+with $\varepsilon_t \sim \text{WN}(0,\sigma^2)$.
+
+By iterating the level recursion forward,
+
+\[
+\ell_{T+h-1} = \ell_T + \alpha\varepsilon_{T+1} + \alpha\varepsilon_{T+2} + \cdots + \alpha\varepsilon_{T+h-1}.
+\]
+
+The $h$-step forecast is
+
+\[
+y_{T+h} = \ell_{T+h-1} + \varepsilon_{T+h}
+= \ell_T + \alpha\sum_{j=1}^{h-1}\varepsilon_{T+j} + \varepsilon_{T+h}.
+\]
+
+Hence the forecast error is
+
+\[
+y_{T+h} - \hat y_{T+h\mid T}
+= \alpha\sum_{j=1}^{h-1}\varepsilon_{T+j} + \varepsilon_{T+h}.
+\]
+
+Using independence of the future innovations,
+
+\[
+\operatorname{Var}(y_{T+h} - \hat y_{T+h\mid T})
+= \alpha^2(h-1)\sigma^2 + \sigma^2
+= \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]
+
+**Answer.** This proves the required result.
+
+# 17. 95% prediction intervals for ETS(A,N,N)
+
+From Exercise 16, the forecast variance is
+
+\[
+\operatorname{Var}(y_{T+h} - \hat y_{T+h\mid T}) = \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]
+
+For `ETS(A,N,N)`, the point forecast is simply
+
+\[
+\hat y_{T+h\mid T} = \ell_T.
+\]
+
+Assuming normal forecast errors, the 95% prediction interval is
+
+\[
+\hat y_{T+h\mid T} \pm 1.96\sqrt{\operatorname{Var}(y_{T+h} - \hat y_{T+h\mid T})}.
+\]
+
+Substituting the expressions above gives
+
+\[
+\boxed{
+\ell_T \pm 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)}
+}
+\]
+
+**Answer.** So the 95% prediction intervals for an `ETS(A,N,N)` model are centered at $\ell_T$ with half-width $1.96\sigma\sqrt{1 + \alpha^2(h-1)}$.

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Randy Howk" />
 
-<meta name="date" content="2026-02-08" />
+<meta name="date" content="2026-02-10" />
 
 <title>FPP3 Chapter 2 Graphics Exercise</title>
 
@@ -164,7 +164,7 @@ pre code {
 
 <h1 class="title toc-ignore">FPP3 Chapter 2 Graphics Exercise</h1>
 <h4 class="author">Randy Howk</h4>
-<h4 class="date">February 08, 2026</h4>
+<h4 class="date">February 10, 2026</h4>
 
 </div>
 
@@ -731,15 +731,26 @@ src="homework1_files/figure-html/graphics-exploration-2.png" /><!-- --></p>
 src="homework1_files/figure-html/graphics-exploration-3.png" /><!-- --></p>
 <pre class="r"><code>myseries |&gt;
   gg_lag(Turnover) +
-  labs(title = &quot;Lag plot: selected retail series&quot;, y = &quot;Turnover&quot;)</code></pre>
+  labs(title = &quot;Lag plot: selected retail series (default lags = 9)&quot;, y = &quot;Turnover&quot;)</code></pre>
 <p><img
 src="homework1_files/figure-html/graphics-exploration-4.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  gg_lag(Turnover, lags = 1:12) +
+  labs(title = &quot;Lag plot: selected retail series (lags = 12)&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-5.png" /><!-- --></p>
 <pre class="r"><code>myseries |&gt;
   ACF(Turnover) |&gt;
   autoplot() +
   labs(title = &quot;ACF: selected retail series&quot;)</code></pre>
 <p><img
-src="homework1_files/figure-html/graphics-exploration-5.png" /><!-- --></p>
+src="homework1_files/figure-html/graphics-exploration-6.png" /><!-- --></p>
+<pre class="r"><code>myseries |&gt;
+  gg_lag(Turnover, lags = 1:24) +
+  facet_wrap(vars(.lag), ncol = 3) +
+  labs(title = &quot;Lag plot: selected retail series (lags = 1:24)&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img
+src="homework1_files/figure-html/graphics-exploration-lag24-1.png" /><!-- --></p>
 <p><strong>Answer (seasonality/cyclicity/trend):</strong><br />
 - <strong>Seasonality</strong> is indicated by repeating within-year
 patterns and ACF spikes at seasonal lags (e.g., 12 for monthly
@@ -795,8 +806,21 @@ gas_barrels &lt;- us_gasoline |&gt; select(Week, Barrels)</code></pre>
       error = function(e) NULL
     ),
 
-    lag = tryCatch(
-      data |&gt; gg_lag({{ value_col }}) + labs(title = paste0(title_prefix, &quot; — lag plot&quot;)),
+    lag_default = tryCatch(
+      data |&gt; gg_lag({{ value_col }}) + labs(title = paste0(title_prefix, &quot; — lag plot (default lags = 9)&quot;)),
+      error = function(e) NULL
+    ),
+
+    lag_12 = tryCatch(
+      data |&gt; gg_lag({{ value_col }}, lags = 1:12) + labs(title = paste0(title_prefix, &quot; — lag plot (lags = 12)&quot;)),
+      error = function(e) NULL
+    ),
+
+    lag_24 = tryCatch(
+      data |&gt;
+        gg_lag({{ value_col }}, lags = 1:24) +
+        facet_wrap(vars(.lag), ncol = 3) +
+        labs(title = paste0(title_prefix, &quot; — lag plot (lags = 1:24)&quot;)),
       error = function(e) NULL
     ),
 
@@ -805,46 +829,66 @@ gas_barrels &lt;- us_gasoline |&gt; select(Week, Barrels)</code></pre>
   )
 }</code></pre>
 <pre class="r"><code>plots_emp &lt;- explore_series(emp_private, Employed, &quot;US Employment (Total Private)&quot;)
-plots_emp$time; plots_emp$season; plots_emp$subseries; plots_emp$lag; plots_emp$acf</code></pre>
+plots_emp$time; plots_emp$season; plots_emp$subseries; plots_emp$lag_default; plots_emp$lag_12; plots_emp$acf</code></pre>
 <p><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-1.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-2.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-3.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-4.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-5.png" /><!-- --></p>
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-5.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-6.png" /><!-- --></p>
 <pre class="r"><code>plots_bricks &lt;- explore_series(bricks_ts, Bricks, &quot;Australian Bricks Production&quot;)
-plots_bricks$time; plots_bricks$season; plots_bricks$subseries; plots_bricks$lag; plots_bricks$acf</code></pre>
+plots_bricks$time; plots_bricks$season; plots_bricks$subseries; plots_bricks$lag_default; plots_bricks$lag_12; plots_bricks$acf</code></pre>
 <p><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-6.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-7.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-8.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-9.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-10.png" /><!-- --></p>
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-10.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-11.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-12.png" /><!-- --></p>
 <pre class="r"><code>plots_hare &lt;- explore_series(hare_ts, value, &quot;Hare Pelts&quot;)
-plots_hare$time; plots_hare$season; plots_hare$subseries; plots_hare$lag; plots_hare$acf</code></pre>
+plots_hare$time; plots_hare$season; plots_hare$subseries; plots_hare$lag_default; plots_hare$lag_12; plots_hare$acf</code></pre>
 <p><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-11.png" /><!-- --></p>
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-13.png" /><!-- --></p>
 <pre><code>## NULL</code></pre>
 <p><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-12.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-13.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-14.png" /><!-- --></p>
-<pre class="r"><code>plots_pbs &lt;- explore_series(pbs_h02, Cost, &quot;PBS H02 Cost&quot;)
-plots_pbs$time; plots_pbs$season; plots_pbs$subseries; plots_pbs$lag; plots_pbs$acf</code></pre>
-<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-14.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-15.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-16.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-17.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-18.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-19.png" /><!-- --></p>
-<pre class="r"><code>plots_gas &lt;- explore_series(gas_barrels, Barrels, &quot;US Gasoline Barrels&quot;)
-plots_gas$time; plots_gas$season; plots_gas$subseries; plots_gas$lag; plots_gas$acf</code></pre>
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-17.png" /><!-- --></p>
+<pre class="r"><code>plots_pbs &lt;- explore_series(pbs_h02, Cost, &quot;PBS H02 Cost&quot;)
+plots_pbs$time; plots_pbs$season; plots_pbs$subseries; plots_pbs$lag_default; plots_pbs$lag_12; plots_pbs$acf</code></pre>
 <p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-18.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-19.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-20.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-21.png" /><!-- --><img
 src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-22.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-23.png" /><!-- --><img
-src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-24.png" /><!-- --></p>
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-23.png" /><!-- --></p>
+<pre class="r"><code>plots_gas &lt;- explore_series(gas_barrels, Barrels, &quot;US Gasoline Barrels&quot;)
+plots_gas$time; plots_gas$season; plots_gas$subseries; plots_gas$lag_default; plots_gas$lag_12; plots_gas$acf</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-24.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-25.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-26.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-27.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-28.png" /><!-- --><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-29.png" /><!-- --></p>
+<pre class="r"><code>plots_emp$lag_24</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-lag24-1.png" /><!-- --></p>
+<pre class="r"><code>plots_bricks$lag_24</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-lag24-2.png" /><!-- --></p>
+<pre class="r"><code>plots_hare$lag_24</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-lag24-3.png" /><!-- --></p>
+<pre class="r"><code>plots_pbs$lag_24</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-lag24-4.png" /><!-- --></p>
+<pre class="r"><code>plots_gas$lag_24</code></pre>
+<p><img
+src="homework1_files/figure-html/plots-gas-emp-hare-pbs-bricks-lag24-5.png" /><!-- --></p>
 <p><strong>Answer (what we learn):</strong> - <strong>US Gasoline
 Barrels</strong> and <strong>PBS H02 Cost</strong> show clear
 <strong>seasonality</strong>: repeating within‑year patterns and ACF
@@ -870,7 +914,7 @@ acf_file &lt;- file.path(tempdir(), &quot;acfguess-1.png&quot;)
 download.file(acf_url, acf_file, mode = &quot;wb&quot;)
 
 knitr::include_graphics(acf_file)</code></pre>
-<p><img src="../../../../../../private/var/folders/z7/hslcs7d13097n9zmv9b992xr0000gn/T/RtmpkGeci7/acfguess-1.png" alt="" width="2361" /></p>
+<p><img src="../../../../../../private/var/folders/z7/hslcs7d13097n9zmv9b992xr0000gn/T/Rtmp6FYpzF/acfguess-1.png" alt="" width="2361" /></p>
 <p><strong>Answer:</strong> Based on the figure: - <strong>Time plot
 A</strong> matches <strong>ACF B</strong> - <strong>Time plot B</strong>
 matches <strong>ACF A</strong> - <strong>Time plot C</strong> matches

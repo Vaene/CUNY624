@@ -3,17 +3,17 @@ title: "Homework 3: FPP3 Toolbox Exercises"
 author: "Randy Howk"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
   pdf_document:
     latex_engine: xelatex
     toc: true
     number_sections: true
     keep_tex: true
     fig_caption: true
-  html_document:
-    self_contained: false
-    toc: true
-    toc_depth: 2
-    number_sections: true
 geometry: "margin=0.5in"
 fontsize: 11pt
 mainfont: "Helvetica"
