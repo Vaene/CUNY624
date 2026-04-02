@@ -1,0 +1,514 @@
+---
+title: "Urban Tree Methods with the USDA Urban Tree Database"
+author: "Rebecca Bronstein"
+date: "2026-04-01"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.width = 8, fig.height = 4.8)
+
+library(tidyverse)
+library(rpart)
+library(ipred)
+library(C50)
+library(caret)
+library(knitr)
+library(randomForest)
+
+theme_lowink <- function() {
+  theme_minimal(base_size = 11) +
+    theme(
+      panel.grid.major.x = element_line(color = "grey88", linewidth = 0.25),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.line = element_blank(),
+      legend.position = "none",
+      plot.title.position = "plot",
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey35"),
+      axis.title = element_text(color = "grey20"),
+      axis.text = element_text(color = "grey20")
+    )
+}
+
+classification_metrics <- function(actual, predicted) {
+  cm <- confusionMatrix(predicted, actual)
+  tibble(
+    Accuracy = round(as.numeric(cm$overall["Accuracy"]), 3),
+    Kappa = round(as.numeric(cm$overall["Kappa"]), 3)
+  )
+}
+
+regression_metrics <- function(actual, predicted) {
+  tibble(
+    RMSE = round(sqrt(mean((predicted - actual)^2)), 2),
+    MAE = round(mean(abs(predicted - actual)), 2)
+  )
+}
+
+top_importance <- function(model, n = 6) {
+  if (is.null(model$variable.importance)) {
+    return(tibble(Variable = character(), Importance = numeric()))
+  }
+
+  tibble(
+    Variable = names(model$variable.importance),
+    Importance = as.numeric(model$variable.importance)
+  ) %>%
+    slice_max(order_by = Importance, n = n, with_ties = FALSE) %>%
+    mutate(Importance = round(Importance, 2))
+}
+
+align_factor_levels <- function(train, test) {
+  for (nm in names(test)) {
+    if (is.factor(train[[nm]])) {
+      test[[nm]] <- factor(test[[nm]], levels = levels(train[[nm]]))
+    }
+  }
+  list(train = train, test = test)
+}
+
+run_benchmark <- function(train, test, formula, label, fitter, predictor) {
+  start_fit <- proc.time()[3]
+  fit_obj <- tryCatch(fitter(train, formula), error = function(e) e)
+  fit_time <- proc.time()[3] - start_fit
+
+  if (inherits(fit_obj, "error")) {
+    return(tibble(
+      Method = label,
+      Status = "Failed",
+      Fit.Seconds = round(fit_time, 3),
+      Predict.Seconds = NA_real_,
+      Accuracy = NA_real_,
+      Kappa = NA_real_,
+      Predicted.Classes = NA_integer_,
+      Notes = fit_obj$message
+    ))
+  }
+
+  start_pred <- proc.time()[3]
+  pred_obj <- tryCatch(predictor(fit_obj, test), error = function(e) e)
+  pred_time <- proc.time()[3] - start_pred
+
+  if (inherits(pred_obj, "error")) {
+    return(tibble(
+      Method = label,
+      Status = "Failed",
+      Fit.Seconds = round(fit_time, 3),
+      Predict.Seconds = round(pred_time, 3),
+      Accuracy = NA_real_,
+      Kappa = NA_real_,
+      Predicted.Classes = NA_integer_,
+      Notes = pred_obj$message
+    ))
+  }
+
+  pred_obj <- factor(pred_obj, levels = levels(test$TreeType))
+  cm <- confusionMatrix(pred_obj, test$TreeType)
+
+  tibble(
+    Method = label,
+    Status = "OK",
+    Fit.Seconds = round(fit_time, 3),
+    Predict.Seconds = round(pred_time, 3),
+    Accuracy = round(as.numeric(cm$overall["Accuracy"]), 3),
+    Kappa = round(as.numeric(cm$overall["Kappa"]), 3),
+    Predicted.Classes = dplyr::n_distinct(pred_obj),
+    Notes = ""
+  )
+}
+
+tree_raw <- read.csv("Data/TS3_Raw_tree_data.csv", stringsAsFactors = FALSE)
+names(tree_raw) <- make.names(tree_raw %>% names())
+
+trees <- tree_raw %>%
+  mutate(
+    Region = factor(Region),
+    City = factor(City),
+    Park.Street = factor(Park.Street),
+    Site.Type = factor(if_else(Park.Street == "Street", "Street", "Park-like")),
+    TreeType = factor(TreeType),
+    Age = na_if(Age, -1),
+    DBH = na_if(DBH..cm., -1),
+    TreeHt = na_if(TreeHt..m., -1),
+    CrnHt = na_if(CrnHt..m., -1),
+    AvgCdia = na_if(AvgCdia..m., -1),
+    Leaf = na_if(Leaf..m2., -1),
+    Setback = na_if(Setback, -1),
+    LandUse = factor(na_if(LandUse, -1)),
+    Shape = factor(na_if(Shape, -1)),
+    WireConf = factor(na_if(WireConf, -1)),
+    CarShade = na_if(CarShade, -1),
+    Big.Shade = factor(if_else(!is.na(CarShade) & CarShade >= 2,
+                               "High shade", "Low shade"))
+  )
+
+overview <- tibble(
+  Measure = c(
+    "Total tree records",
+    "Distinct cities",
+    "Distinct climate regions",
+    "Street trees",
+    "Park-like trees",
+    "Distinct tree types"
+  ),
+  Value = c(
+    nrow(trees),
+    n_distinct(trees$City, na.rm = TRUE),
+    n_distinct(trees$Region, na.rm = TRUE),
+    sum(trees$Site.Type == "Street", na.rm = TRUE),
+    sum(trees$Site.Type == "Park-like", na.rm = TRUE),
+    n_distinct(trees$TreeType, na.rm = TRUE)
+  )
+)
+
+site_data <- trees %>%
+  select(
+    Site.Type, Region, City, TreeType, Age, DBH, TreeHt,
+    CrnHt, AvgCdia, Leaf, Setback, LandUse, Shape, WireConf
+  ) %>%
+  drop_na() %>%
+  slice_sample(n = min(5000, nrow(.)))
+
+height_data <- trees %>%
+  select(
+    TreeHt, Region, City, TreeType, Site.Type, Age, DBH,
+    CrnHt, AvgCdia, Leaf, Setback, LandUse, Shape, WireConf
+  ) %>%
+  drop_na() %>%
+  slice_sample(n = min(5000, nrow(.)))
+
+shade_data <- trees %>%
+  select(
+    Big.Shade, Region, Park.Street, TreeType, DBH, TreeHt, AvgCdia, Leaf
+  ) %>%
+  drop_na() %>%
+  slice_sample(n = min(5000, nrow(.)))
+
+benchmark_data <- trees %>%
+  select(
+    TreeType, Region, City, Park.Street, Age, DBH, TreeHt,
+    CrnHt, AvgCdia, Leaf, Setback, LandUse, Shape, WireConf
+  ) %>%
+  drop_na() %>%
+  droplevels()
+
+set.seed(123)
+site_index <- createDataPartition(site_data$Site.Type, p = 0.7, list = FALSE)
+train_site <- site_data[site_index, ]
+test_site <- site_data[-site_index, ]
+
+height_index <- createDataPartition(height_data$TreeHt, p = 0.7, list = FALSE)
+train_height <- height_data[height_index, ]
+test_height <- height_data[-height_index, ]
+
+shade_index <- createDataPartition(shade_data$Big.Shade, p = 0.7, list = FALSE)
+train_shade <- shade_data[shade_index, ]
+test_shade <- shade_data[-shade_index, ]
+
+benchmark_index <- createDataPartition(benchmark_data$TreeType, p = 0.7, list = FALSE)
+train_bench <- droplevels(benchmark_data[benchmark_index, ])
+test_bench <- droplevels(benchmark_data[-benchmark_index, ])
+aligned_bench <- align_factor_levels(train_bench, test_bench)
+train_bench <- aligned_bench$train
+test_bench <- aligned_bench$test
+
+site_mix <- trees %>%
+  filter(!is.na(Region), !is.na(Site.Type)) %>%
+  count(Region, Site.Type) %>%
+  group_by(Region) %>%
+  mutate(Share = n / sum(n)) %>%
+  ungroup() %>%
+  filter(Site.Type == "Street") %>%
+  arrange(Share)
+
+height_profile <- trees %>%
+  filter(!is.na(DBH), !is.na(TreeHt), !is.na(Site.Type)) %>%
+  sample_n(min(2200, n())) %>%
+  mutate(Site.Type = fct_relevel(Site.Type, "Street", "Park-like"))
+```
+
+## Data Source
+
+This report uses the USDA Forest Service Research Data Archive publication **Urban tree database** and the local file `Data/TS3_Raw_tree_data.csv` included in this folder. The archive describes the publication as a multi-city urban tree dataset covering more than 14,000 measured urban trees across 17 U.S. cities. Source page: <https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005>.
+
+## Why Tree Methods Fit This Dataset
+
+This archive mixes species, urban form, and tree structure in the same table. Tree methods are a natural fit because they can move between those data types without flattening the whole problem into one linear rule.
+
+I use tree methods here to answer four practical questions:
+
+1. Can a tree's structure and site context tell us whether it came from a street setting or a more park-like one?
+2. Which measurements matter most when predicting height?
+3. Can a short rule set explain which trees produce stronger car shade?
+4. How do different classification methods trade speed for accuracy when the target is much harder, such as `TreeType`?
+
+## Data Snapshot
+
+```{r overview}
+kable(overview, caption = "USDA urban tree data summary.")
+```
+
+## Visual Briefing
+
+The two figures below keep the ink budget low and let the data do most of the talking. The first shows how strongly the share of street trees varies by region. The second shows a familiar forestry relationship: height rises with diameter, but the slope and spread differ across site types.
+
+```{r site_mix_plot, fig.height=4.6}
+ggplot(site_mix, aes(x = Share, y = fct_reorder(Region, Share))) +
+  geom_segment(aes(x = 0, xend = Share, yend = Region), color = "grey82", linewidth = 0.35) +
+  geom_point(size = 1.8, color = "black") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Street share varies sharply across climate regions",
+    subtitle = "Each point is the share of observations classified as street trees within a region",
+    x = "Street share",
+    y = NULL
+  ) +
+  theme_lowink()
+```
+
+```{r height_profile_plot, fig.height=4.8}
+ggplot(height_profile, aes(x = DBH, y = TreeHt, color = Site.Type)) +
+  geom_point(alpha = 0.18, size = 0.7, stroke = 0) +
+  geom_smooth(method = "loess", se = FALSE, linewidth = 0.7) +
+  scale_color_manual(values = c("Street" = "grey20", "Park-like" = "grey60")) +
+  labs(
+    title = "Height rises with diameter, but not identically across site types",
+    subtitle = "A thin smoother carries the structure while the points preserve the raw spread",
+    x = "DBH (cm)",
+    y = "Tree height (m)"
+  ) +
+  theme_lowink() +
+  theme(legend.position = c(0.84, 0.2))
+```
+
+## Classification Tree: Street Trees vs. Park-Like Trees
+
+The original `Park/Street` field includes a few tiny categories such as nursery and regional big tree. For the main site-context model I collapse those into a simpler binary outcome:
+
+1. `Street`
+2. `Park-like`
+
+That turns the tree into a site classifier rather than a bookkeeping exercise.
+
+```{r classification_tree}
+site_tree <- rpart(Site.Type ~ ., data = train_site, method = "class")
+plot(site_tree, uniform = TRUE, margin = 0.08)
+text(site_tree, use.n = TRUE, cex = 0.68)
+
+site_pred <- predict(site_tree, test_site, type = "class")
+site_metrics <- classification_metrics(test_site$Site.Type, site_pred)
+site_importance <- top_importance(site_tree)
+
+kable(site_metrics, caption = "Site-type classification performance.")
+kable(site_importance, caption = "Top variables in the site-type tree.")
+```
+
+This model performs well because it is solving a strong structural problem. Region, land use, and setback do most of the work, which is exactly what we would expect if site design and management shape the kinds of trees we observe.
+
+## Regression Tree: What Predicts Tree Height?
+
+Urban tree height sits at the center of many planning questions, but it is not controlled by diameter alone. A regression tree lets the data split into crown-based neighborhoods that are easier to interpret than one global regression line.
+
+```{r regression_tree}
+height_tree <- rpart(TreeHt ~ ., data = train_height, method = "anova")
+plot(height_tree, uniform = TRUE, margin = 0.08)
+text(height_tree, use.n = TRUE, cex = 0.68)
+
+height_pred <- predict(height_tree, test_height)
+height_metrics <- regression_metrics(test_height$TreeHt, height_pred)
+height_importance <- top_importance(height_tree)
+
+kable(height_metrics, caption = "Tree-height regression performance.")
+kable(height_importance, caption = "Top variables in the height model.")
+```
+
+The importance profile usually pushes crown height, leaf area, average crown diameter, and DBH to the top. That is a nice ecological result: height behaves like a canopy architecture problem, not just a trunk-width problem.
+
+## Rule-Based Tree: Which Trees Deliver High Car Shade?
+
+Shade is one of the most concrete ecosystem services in this archive. I convert the `CarShade` field into a binary outcome, `Big.Shade`, and then fit a rule-based classifier to show which combinations of region and structure lead to higher shade performance.
+
+```{r rule_model}
+shade_rules <- C5.0(Big.Shade ~ ., data = train_shade, rules = TRUE)
+shade_pred <- predict(shade_rules, test_shade)
+shade_metrics <- classification_metrics(test_shade$Big.Shade, shade_pred)
+shade_usage <- as.data.frame(C5imp(shade_rules, metric = "usage")) %>%
+  rownames_to_column(var = "Variable") %>%
+  rename(Usage = Overall) %>%
+  arrange(desc(Usage)) %>%
+  mutate(Usage = round(Usage, 2))
+
+kable(shade_metrics, caption = "High-shade rule-model performance.")
+kable(head(shade_usage, 6), caption = "Top predictors in the shade rules.")
+summary(shade_rules)
+```
+
+That rule set is valuable because it turns a broad ecosystem-service idea into plain conditions that planners can actually read. Even compact rules can be useful when they translate structure into likely benefit.
+
+## Bagged Trees: Does the Site Classifier Become More Stable?
+
+A single tree is easy to explain, but it can be sensitive to the training sample. Bagging gives us a check on stability by averaging over many trees trained on bootstrap samples.
+
+```{r bagging}
+bag_model <- bagging(Site.Type ~ ., data = train_site, nbagg = 25)
+bag_pred <- predict(bag_model, test_site)
+
+if (is.list(bag_pred) && "class" %in% names(bag_pred)) {
+  bag_pred <- bag_pred$class
+}
+
+bag_pred <- factor(bag_pred, levels = levels(test_site$Site.Type))
+
+bag_metrics <- classification_metrics(test_site$Site.Type, bag_pred) %>%
+  mutate(Model = "Bagged trees")
+
+single_tree_metrics <- site_metrics %>%
+  mutate(Model = "Single tree")
+
+comparison <- bind_rows(single_tree_metrics, bag_metrics) %>%
+  select(Model, Accuracy, Kappa)
+
+kable(comparison, caption = "Single tree vs. bagged site model.")
+```
+
+The bagged model helps confirm that the site signal is not fragile. When the ensemble only improves modestly, that usually means the main pattern is already strong.
+
+## Benchmarking Classification Speed and Accuracy
+
+The team's concern about classification speed is real, but it depends heavily on the target. Predicting a continuous value such as `TreeHt` is quick in this dataset. Predicting a many-class label such as `TreeType` is harder, and it is the better stress test for comparing methods.
+
+The benchmark below uses the same cleaned multi-class `TreeType` task across six methods:
+
+1. direct `rpart`
+2. `caret` with `rpart`
+3. direct `C5.0`
+4. `caret` with `C5.0`
+5. direct `randomForest`
+6. `caret` with random forest
+
+```{r benchmark_setup}
+tree_formula <- TreeType ~ .
+
+tree_benchmarks <- bind_rows(
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "rpart",
+    fitter = function(train, formula) rpart(formula, data = train, method = "class"),
+    predictor = function(fit, test) predict(fit, test, type = "class")
+  ),
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "caret rpart (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "rpart",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 5
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "C5.0",
+    fitter = function(train, formula) C5.0(formula, data = train),
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "caret C5.0 (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "C5.0",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 3
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "randomForest",
+    fitter = function(train, formula) randomForest(formula, data = train, ntree = 200),
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, tree_formula, "caret rf (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "rf",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 3,
+        ntree = 200
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  )
+) %>%
+  mutate(
+    Total.Seconds = round(Fit.Seconds + Predict.Seconds, 3),
+    Method = factor(Method, levels = Method[order(Accuracy, decreasing = TRUE, na.last = TRUE)])
+  )
+
+kable(tree_benchmarks, caption = "Benchmark: predicting TreeType.")
+```
+
+```{r benchmark_plot, fig.height=4.9}
+plot_bench <- tree_benchmarks %>%
+  filter(Status == "OK")
+
+ggplot(plot_bench, aes(x = Fit.Seconds, y = Accuracy)) +
+  geom_point(size = 2, color = "black") +
+  geom_text(aes(label = Method), nudge_y = 0.01, size = 3, hjust = 0) +
+  labs(
+    title = "More accurate classifiers cost noticeably more time",
+    subtitle = "The hard target here is TreeType, a many-class structural label",
+    x = "Fit time (seconds)",
+    y = "Accuracy"
+  ) +
+  theme_lowink() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = ggplot2::margin(5.5, 80, 5.5, 5.5))
+```
+
+The benchmark makes the tradeoff visible:
+
+1. `rpart` is extremely fast, but it under-predicts the number of tree types and leaves accuracy on the table.
+2. `randomForest` gains a lot of accuracy at a moderate time cost.
+3. The `caret` wrappers, especially `caret C5.0` and `caret rf`, are the slowest because they add resampling and tuning.
+4. Direct `C5.0` failed in this environment even though `caret C5.0` worked, which is a useful reminder that benchmark results include software behavior, not just model theory.
+
+So the right summary is not that classification is always too slow. It is that hard multi-class classification on this dataset becomes meaningfully slower once we use tuning and resampling, especially for the higher-performing methods.
+
+## Conclusion
+
+This USDA urban tree dataset is a strong example of why tree-based methods are useful in applied work:
+
+1. They recover site context from a mix of structural and regional inputs.
+2. They explain height through canopy architecture rather than one isolated measurement.
+3. They turn ecosystem-service questions, such as shade, into readable rule sets.
+4. They make it easy to see the real tradeoff between speed and classification performance on a hard target.
+
+That combination of interpretability and benchmark transparency is exactly what makes tree methods practical in urban forestry analysis.

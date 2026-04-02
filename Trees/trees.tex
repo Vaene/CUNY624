@@ -1,0 +1,561 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Helvetica}
+  \setmonofont[]{Menlo}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={624 Trees: Learning from the Central Park Squirrel Census},
+  pdfauthor={Rebecca Bronstein},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{624 Trees: Learning from the Central Park Squirrel Census}
+\author{Rebecca Bronstein}
+\date{2026-03-30}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\subsection{Why Use Tree Methods on Squirrel
+Data?}\label{why-use-tree-methods-on-squirrel-data}
+
+Tree models are helpful here because the squirrel census is full of
+mixed data types: categorical fur colors, yes/no behaviors, vague human
+interaction signals, and spatial labels such as hectares. A single tree
+can turn that messy field data into readable splits, while ensembles let
+us check whether the same patterns hold up when we average across many
+trees.
+
+Instead of treating this as a generic modeling exercise, I use tree
+methods as a field guide:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  A classification tree asks where squirrels are likely to be observed:
+  on the ground or above it.
+\item
+  A regression tree asks how high squirrels perch once they are already
+  above ground.
+\item
+  A rule-based tree turns feeding behavior into short, interpretable
+  rules.
+\item
+  A bagged tree checks whether an ensemble improves the stability of the
+  location prediction.
+\end{enumerate}
+
+\subsection{Data Snapshot}\label{data-snapshot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(overview, }\AttributeTok{caption =} \StringTok{"Quick overview of the squirrel census data used in this report."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Quick overview of the squirrel census data used in this
+report.}\tabularnewline
+\toprule\noalign{}
+Measure & Value \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Measure & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Total observations & 3023 \\
+Distinct hectares & 339 \\
+Ground-plane sightings & 2116 \\
+Above-ground sightings & 843 \\
+Sightings with recorded height & 793 \\
+\end{longtable}
+
+\subsection{Classification Tree: What Predicts Ground vs.~Above-Ground
+Sightings?}\label{classification-tree-what-predicts-ground-vs.-above-ground-sightings}
+
+This tree treats the park like a behavioral landscape. The goal is to
+see whether movement, feeding, vocalization, tail signals, and basic
+location cues help separate squirrels seen on the ground from squirrels
+spotted above ground.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{location\_tree }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(Location.Class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_location, }\AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(location\_tree, }\AttributeTok{uniform =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{margin =} \FloatTok{0.08}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(location\_tree, }\AttributeTok{use.n =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{trees_files/figure-latex/classification_tree-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{location\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(location\_tree, test\_location, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{location\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_location}\SpecialCharTok{$}\NormalTok{Location.Class, location\_pred)}
+\NormalTok{location\_importance }\OtherTok{\textless{}{-}} \FunctionTok{top\_importance}\NormalTok{(location\_tree)}
+
+\FunctionTok{kable}\NormalTok{(location\_metrics, }\AttributeTok{caption =} \StringTok{"Classification tree performance for predicting squirrel location."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Classification tree performance for predicting squirrel
+location.}\tabularnewline
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.749 & 0.271 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(location\_importance, }\AttributeTok{caption =} \StringTok{"Most influential variables in the location tree."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most influential variables in the location
+tree.}\tabularnewline
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Feeding & 121.25 \\
+Active & 56.93 \\
+Human.Response & 12.43 \\
+Shift & 9.36 \\
+Vocal & 6.21 \\
+Hectare.Number & 5.25 \\
+\end{longtable}
+
+The classification tree helps answer a practical question for field
+observation: what makes a squirrel more likely to be seen above ground?
+In this data, active movement and feeding-related behavior matter much
+more than fur color, which suggests behavior is more informative than
+appearance for understanding where squirrels position themselves.
+
+\subsection{Regression Tree: How High Do Above-Ground Squirrels
+Perch?}\label{regression-tree-how-high-do-above-ground-squirrels-perch}
+
+Once a squirrel is above ground, the next question is not just
+\emph{whether} it climbed, but \emph{how high}. This regression tree
+uses the same mix of spatial and behavioral cues to estimate recorded
+height.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{height\_tree }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(Above.Ground.Height }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_height, }\AttributeTok{method =} \StringTok{"anova"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(height\_tree, }\AttributeTok{uniform =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{margin =} \FloatTok{0.08}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(height\_tree, }\AttributeTok{use.n =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{trees_files/figure-latex/regression_tree-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{height\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(height\_tree, test\_height)}
+\NormalTok{height\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{regression\_metrics}\NormalTok{(test\_height}\SpecialCharTok{$}\NormalTok{Above.Ground.Height, height\_pred)}
+\NormalTok{height\_importance }\OtherTok{\textless{}{-}} \FunctionTok{top\_importance}\NormalTok{(height\_tree)}
+
+\FunctionTok{kable}\NormalTok{(height\_metrics, }\AttributeTok{caption =} \StringTok{"Regression tree performance for above{-}ground height."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Regression tree performance for above-ground
+height.}\tabularnewline
+\toprule\noalign{}
+RMSE & MAE \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+RMSE & MAE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+12.42 & 9.11 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(height\_importance, }\AttributeTok{caption =} \StringTok{"Most influential variables in the height tree."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most influential variables in the height tree.}\tabularnewline
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Hectare.Number & 10877.62 \\
+Human.Response & 8211.92 \\
+Hectare.Letter & 6634.14 \\
+Shift & 1497.91 \\
+Fur.Color & 1370.95 \\
+Tail.Signal & 331.20 \\
+\end{longtable}
+
+This model treats height as a kind of vertical habitat choice. The most
+important predictors are park position and human-response context rather
+than simple color categories, which hints that where a squirrel is seen
+in the park may be more useful than how it looks when we want to explain
+height.
+
+\subsection{Rule-Based Tree: What Simple Rules Describe Feeding
+Behavior?}\label{rule-based-tree-what-simple-rules-describe-feeding-behavior}
+
+Rule models are useful when we want a short, readable description
+instead of a large branching diagram. Here, I predict whether a squirrel
+is feeding or not feeding from its activity level, location, and other
+observation cues.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{feeding\_rules }\OtherTok{\textless{}{-}} \FunctionTok{C5.0}\NormalTok{(Feeding }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_feeding, }\AttributeTok{rules =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{feeding\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(feeding\_rules, test\_feeding)}
+\NormalTok{feeding\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_feeding}\SpecialCharTok{$}\NormalTok{Feeding, feeding\_pred)}
+\NormalTok{feeding\_usage }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{C5imp}\NormalTok{(feeding\_rules, }\AttributeTok{metric =} \StringTok{"usage"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rownames\_to\_column}\NormalTok{(}\AttributeTok{var =} \StringTok{"Variable"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{Usage =}\NormalTok{ Overall) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(Usage)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Usage =} \FunctionTok{round}\NormalTok{(Usage, }\DecValTok{2}\NormalTok{))}
+
+\FunctionTok{kable}\NormalTok{(feeding\_metrics, }\AttributeTok{caption =} \StringTok{"Rule{-}based tree performance for feeding behavior."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Rule-based tree performance for feeding
+behavior.}\tabularnewline
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.778 & 0.55 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(feeding\_usage, }\DecValTok{6}\NormalTok{), }\AttributeTok{caption =} \StringTok{"Most{-}used predictors in the feeding rules."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most-used predictors in the feeding rules.}\tabularnewline
+\toprule\noalign{}
+Variable & Usage \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Usage \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Active & 100 \\
+Shift & 0 \\
+Age & 0 \\
+Fur.Color & 0 \\
+Hectare.Number & 0 \\
+Hectare.Letter & 0 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(feeding\_rules)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## C5.0.formula(formula = Feeding ~ ., data = train_feeding, rules = TRUE)
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Wed Apr  1 21:30:42 2026
+## -------------------------------
+## 
+## Class specified by attribute `outcome'
+## 
+## Read 1976 cases (11 attributes) from undefined.data
+## 
+## Rules:
+## 
+## Rule 1: (1019/102, lift 1.5)
+##  Active = Still
+##  ->  class Feeding  [0.899]
+## 
+## Rule 2: (957/298, lift 1.8)
+##  Active = Active
+##  ->  class Not feeding  [0.688]
+## 
+## Default class: Feeding
+## 
+## 
+## Evaluation on training data (1976 cases):
+## 
+##          Rules     
+##    ----------------
+##      No      Errors
+## 
+##       2  400(20.2%)   <<
+## 
+## 
+##     (a)   (b)    <-classified as
+##    ----  ----
+##     917   298    (a): class Feeding
+##     102   659    (b): class Not feeding
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% Active
+## 
+## 
+## Time: 0.0 secs
+\end{verbatim}
+
+The rules are surprisingly compact. In this dataset, activity level does
+a lot of the work: squirrels that are still are much more often recorded
+as feeding, while squirrels that are actively running, climbing, or
+chasing are more often recorded as not feeding. That is exactly the kind
+of ecological shorthand tree methods are good at surfacing.
+
+\subsection{Bagged Trees: Does an Ensemble Improve the Location
+Story?}\label{bagged-trees-does-an-ensemble-improve-the-location-story}
+
+A single tree is easy to interpret, but it can be sensitive to how the
+sample is split. Bagging averages over many trees, which usually gives a
+more stable answer. I apply bagging to the same ground-vs-above-ground
+problem used in the first section.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bag\_model }\OtherTok{\textless{}{-}} \FunctionTok{bagging}\NormalTok{(Location.Class }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_location, }\AttributeTok{nbagg =} \DecValTok{25}\NormalTok{)}
+\NormalTok{bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(bag\_model, test\_location)}
+
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.list}\NormalTok{(bag\_pred) }\SpecialCharTok{\&\&} \StringTok{"class"} \SpecialCharTok{\%in\%} \FunctionTok{names}\NormalTok{(bag\_pred)) \{}
+\NormalTok{  bag\_pred }\OtherTok{\textless{}{-}}\NormalTok{ bag\_pred}\SpecialCharTok{$}\NormalTok{class}
+\NormalTok{\}}
+
+\NormalTok{bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(bag\_pred, }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(test\_location}\SpecialCharTok{$}\NormalTok{Location.Class))}
+
+\NormalTok{bag\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_location}\SpecialCharTok{$}\NormalTok{Location.Class, bag\_pred) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Model =} \StringTok{"Bagged trees"}\NormalTok{)}
+
+\NormalTok{single\_tree\_metrics }\OtherTok{\textless{}{-}}\NormalTok{ location\_metrics }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Model =} \StringTok{"Single tree"}\NormalTok{)}
+
+\NormalTok{comparison }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(single\_tree\_metrics, bag\_metrics) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Model, Accuracy, Kappa)}
+
+\FunctionTok{kable}\NormalTok{(comparison, }\AttributeTok{caption =} \StringTok{"Comparing a single location tree with a bagged ensemble."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Comparing a single location tree with a bagged
+ensemble.}\tabularnewline
+\toprule\noalign{}
+Model & Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Model & Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Single tree & 0.749 & 0.271 \\
+Bagged trees & 0.739 & 0.319 \\
+\end{longtable}
+
+The bagged model is only slightly more accurate here, but that
+comparison is still useful. It suggests that the strongest patterns in
+this squirrel census are already fairly stable, so the simple tree
+captures much of the signal while the ensemble adds a small amount of
+extra reliability.
+
+\subsection{Conclusion}\label{conclusion}
+
+Tree methods help turn this squirrel census into more than a table of
+observations. They show that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Behavior is more informative than fur color for predicting where
+  squirrels are seen.
+\item
+  Above-ground height looks partly like a spatial decision, not just a
+  random measurement.
+\item
+  Feeding behavior can be summarized with a small set of readable rules.
+\item
+  Bagging confirms that the main location patterns are real enough to
+  survive beyond a single tree.
+\end{enumerate}
+
+That is the main value of tree-based models in a dataset like this one:
+they do not just predict outcomes, they organize messy field
+observations into a form that is easier to explain.
+
+\end{document}

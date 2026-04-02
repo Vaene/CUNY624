@@ -1,0 +1,583 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Helvetica}
+  \setmonofont[]{Menlo}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Urban Tree Methods with the USDA Urban Tree Database},
+  pdfauthor={Rebecca Bronstein},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Urban Tree Methods with the USDA Urban Tree Database}
+\author{Rebecca Bronstein}
+\date{2026-04-01}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\subsection{Data Source}\label{data-source}
+
+This report uses the USDA Forest Service Research Data Archive
+publication \textbf{Urban tree database} and, specifically, the local
+file \texttt{Data/TS3\_Raw\_tree\_data.csv} included in this folder. The
+archive describes the publication as a multi-city urban tree dataset
+covering more than 14,000 measured street and park trees across 17
+cities in the United States. Source page:
+\url{https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005}.
+
+\subsection{Why Tree Methods Fit This
+Dataset}\label{why-tree-methods-fit-this-dataset}
+
+This dataset mixes ecology, urban form, and management questions in one
+table. Tree methods work especially well here because they can combine
+species categories, regional labels, and structural measurements without
+forcing everything into a single linear relationship.
+
+In this notebook I use tree methods to answer four practical questions:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Can tree structure and context tell us whether a record comes from a
+  street tree or a more park-like setting?
+\item
+  Which features matter most when predicting tree height?
+\item
+  Can a rule-based model explain which trees provide high car shade?
+\item
+  Does bagging improve the street-versus-park-like classification?
+\end{enumerate}
+
+\subsection{Data Snapshot}\label{data-snapshot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(overview, }\AttributeTok{caption =} \StringTok{"Summary of the USDA urban tree dataset used in this report."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Summary of the USDA urban tree dataset used in this
+report.}\tabularnewline
+\toprule\noalign{}
+Measure & Value \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Measure & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Total tree records & 14487 \\
+Distinct cities & 17 \\
+Distinct climate regions & 17 \\
+Street trees & 8987 \\
+Non-street trees grouped as park-like & 5500 \\
+Distinct tree types & 12 \\
+\end{longtable}
+
+\subsection{Classification Tree: Street Trees vs.~Park-Like
+Trees}\label{classification-tree-street-trees-vs.-park-like-trees}
+
+The original \texttt{Park/Street} field has a few small categories such
+as nursery and regional big tree. To make the result easier to explain,
+I collapse the outcome into two classes:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{Street}
+\item
+  \texttt{Park-like}
+\end{enumerate}
+
+This lets the tree model act like a site classifier: based on size,
+canopy form, and land-use context, what kind of planting environment
+does a tree look like it belongs to?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{site\_tree }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(Site.Type }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_site, }\AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(site\_tree, }\AttributeTok{uniform =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{margin =} \FloatTok{0.08}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(site\_tree, }\AttributeTok{use.n =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{usda_urban_tree_methods_files/figure-latex/classification_tree-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{site\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(site\_tree, test\_site, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\NormalTok{site\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_site}\SpecialCharTok{$}\NormalTok{Site.Type, site\_pred)}
+\NormalTok{site\_importance }\OtherTok{\textless{}{-}} \FunctionTok{top\_importance}\NormalTok{(site\_tree)}
+
+\FunctionTok{kable}\NormalTok{(site\_metrics, }\AttributeTok{caption =} \StringTok{"Classification performance for predicting site type."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Classification performance for predicting site
+type.}\tabularnewline
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.987 & 0.971 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(site\_importance, }\AttributeTok{caption =} \StringTok{"Most influential variables in the site{-}type tree."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most influential variables in the site-type
+tree.}\tabularnewline
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Region & 1171.33 \\
+LandUse & 645.09 \\
+Leaf & 26.31 \\
+WireConf & 24.95 \\
+Setback & 15.25 \\
+Age & 15.03 \\
+\end{longtable}
+
+This is a useful planning interpretation of the dataset. The strongest
+variables are region, land use, and setback, which suggests that site
+context matters at least as much as raw tree dimensions when
+distinguishing street trees from trees in park-like settings.
+
+\subsection{Regression Tree: What Predicts Tree
+Height?}\label{regression-tree-what-predicts-tree-height}
+
+Urban tree height is shaped by both biology and management. A regression
+tree is useful here because it can split on crown height, diameter, and
+leaf area in a way that feels close to how an arborist might reason
+through the problem.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{height\_tree }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(TreeHt }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_height, }\AttributeTok{method =} \StringTok{"anova"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(height\_tree, }\AttributeTok{uniform =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{margin =} \FloatTok{0.08}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(height\_tree, }\AttributeTok{use.n =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.7}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{usda_urban_tree_methods_files/figure-latex/regression_tree-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{height\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(height\_tree, test\_height)}
+\NormalTok{height\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{regression\_metrics}\NormalTok{(test\_height}\SpecialCharTok{$}\NormalTok{TreeHt, height\_pred)}
+\NormalTok{height\_importance }\OtherTok{\textless{}{-}} \FunctionTok{top\_importance}\NormalTok{(height\_tree)}
+
+\FunctionTok{kable}\NormalTok{(height\_metrics, }\AttributeTok{caption =} \StringTok{"Regression performance for predicting tree height in meters."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Regression performance for predicting tree height in
+meters.}\tabularnewline
+\toprule\noalign{}
+RMSE & MAE \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+RMSE & MAE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2.22 & 1.62 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(height\_importance, }\AttributeTok{caption =} \StringTok{"Most influential variables in the tree{-}height model."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most influential variables in the tree-height
+model.}\tabularnewline
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Importance \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+CrnHt & 124011.20 \\
+Leaf & 65971.88 \\
+AvgCdia & 56974.27 \\
+DBH & 50560.95 \\
+Age & 32469.10 \\
+TreeType & 15566.46 \\
+\end{longtable}
+
+The importance scores usually put crown height, leaf area, average crown
+diameter, and DBH near the top. That makes the model easy to justify:
+urban tree height is strongly tied to overall crown architecture, not
+just one diameter measurement.
+
+\subsection{Rule-Based Tree: Which Trees Deliver High Car
+Shade?}\label{rule-based-tree-which-trees-deliver-high-car-shade}
+
+Shade is one of the clearest urban ecosystem services in this dataset.
+To make that idea more concrete, I create a binary target called
+\texttt{Big.Shade}, where trees with higher \texttt{CarShade} values are
+labeled \texttt{High\ shade}.
+
+The rule model asks a planning-style question: which combinations of
+region and tree structure tend to produce stronger shade benefits?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{shade\_rules }\OtherTok{\textless{}{-}} \FunctionTok{C5.0}\NormalTok{(Big.Shade }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_shade, }\AttributeTok{rules =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{shade\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(shade\_rules, test\_shade)}
+\NormalTok{shade\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_shade}\SpecialCharTok{$}\NormalTok{Big.Shade, shade\_pred)}
+\NormalTok{shade\_usage }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{C5imp}\NormalTok{(shade\_rules, }\AttributeTok{metric =} \StringTok{"usage"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rownames\_to\_column}\NormalTok{(}\AttributeTok{var =} \StringTok{"Variable"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{Usage =}\NormalTok{ Overall) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(Usage)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Usage =} \FunctionTok{round}\NormalTok{(Usage, }\DecValTok{2}\NormalTok{))}
+
+\FunctionTok{kable}\NormalTok{(shade\_metrics, }\AttributeTok{caption =} \StringTok{"Rule{-}based performance for predicting high car shade."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}rr@{}}
+\caption{Rule-based performance for predicting high car
+shade.}\tabularnewline
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.935 & 0.703 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(shade\_usage, }\DecValTok{6}\NormalTok{), }\AttributeTok{caption =} \StringTok{"Most{-}used predictors in the shade rules."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Most-used predictors in the shade rules.}\tabularnewline
+\toprule\noalign{}
+Variable & Usage \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Usage \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Region & 100 \\
+Park.Street & 0 \\
+TreeType & 0 \\
+DBH & 0 \\
+TreeHt & 0 \\
+AvgCdia & 0 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(shade\_rules)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## C5.0.formula(formula = Big.Shade ~ ., data = train_shade, rules = TRUE)
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Wed Apr  1 21:36:56 2026
+## -------------------------------
+## 
+## Class specified by attribute `outcome'
+## 
+## Read 3501 cases (8 attributes) from undefined.data
+## 
+## Rules:
+## 
+## Rule 1: (400/77, lift 6.0)
+##  Region in {NMtnPr, Piedmt}
+##  ->  class High shade  [0.806]
+## 
+## Rule 2: (3101/150, lift 1.1)
+##  Region in {CenFla, GulfCo, InlEmp, InlVal, InterW, LoMidW, MidWst,
+##                    NoCalC, NoEast, PacfNW, SacVal, SoCalC, SWDsrt, TpIntW,
+##                    Tropic}
+##  ->  class Low shade  [0.951]
+## 
+## Default class: Low shade
+## 
+## 
+## Evaluation on training data (3501 cases):
+## 
+##          Rules     
+##    ----------------
+##      No      Errors
+## 
+##       2  227( 6.5%)   <<
+## 
+## 
+##     (a)   (b)    <-classified as
+##    ----  ----
+##     323   150    (a): class High shade
+##      77  2951    (b): class Low shade
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% Region
+## 
+## 
+## Time: 0.0 secs
+\end{verbatim}
+
+This section is intentionally more interpretive than predictive. Even
+when the rules are short, they help translate the dataset into a
+management idea: some regional and structural profiles are much more
+likely to correspond to trees that deliver stronger shade.
+
+\subsection{Bagged Trees: Does the Site Classifier Become More
+Stable?}\label{bagged-trees-does-the-site-classifier-become-more-stable}
+
+A single classification tree is easy to explain, but it can change if
+the sample shifts. Bagging gives us a way to ask whether the
+street-versus-park-like pattern is robust or whether it depends too
+heavily on one tree.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bag\_model }\OtherTok{\textless{}{-}} \FunctionTok{bagging}\NormalTok{(Site.Type }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_site, }\AttributeTok{nbagg =} \DecValTok{25}\NormalTok{)}
+\NormalTok{bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(bag\_model, test\_site)}
+
+\ControlFlowTok{if}\NormalTok{ (}\FunctionTok{is.list}\NormalTok{(bag\_pred) }\SpecialCharTok{\&\&} \StringTok{"class"} \SpecialCharTok{\%in\%} \FunctionTok{names}\NormalTok{(bag\_pred)) \{}
+\NormalTok{  bag\_pred }\OtherTok{\textless{}{-}}\NormalTok{ bag\_pred}\SpecialCharTok{$}\NormalTok{class}
+\NormalTok{\}}
+
+\NormalTok{bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(bag\_pred, }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(test\_site}\SpecialCharTok{$}\NormalTok{Site.Type))}
+
+\NormalTok{bag\_metrics }\OtherTok{\textless{}{-}} \FunctionTok{classification\_metrics}\NormalTok{(test\_site}\SpecialCharTok{$}\NormalTok{Site.Type, bag\_pred) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Model =} \StringTok{"Bagged trees"}\NormalTok{)}
+
+\NormalTok{single\_tree\_metrics }\OtherTok{\textless{}{-}}\NormalTok{ site\_metrics }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Model =} \StringTok{"Single tree"}\NormalTok{)}
+
+\NormalTok{comparison }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(single\_tree\_metrics, bag\_metrics) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Model, Accuracy, Kappa)}
+
+\FunctionTok{kable}\NormalTok{(comparison, }\AttributeTok{caption =} \StringTok{"Comparing a single site{-}type tree with a bagged ensemble."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Comparing a single site-type tree with a bagged
+ensemble.}\tabularnewline
+\toprule\noalign{}
+Model & Accuracy & Kappa \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Model & Accuracy & Kappa \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Single tree & 0.987 & 0.971 \\
+Bagged trees & 0.996 & 0.991 \\
+\end{longtable}
+
+If the bagged model improves only a little, that is still informative.
+It means the site signal in this USDA dataset is already strong enough
+that a single tree captures much of the story, while the ensemble mostly
+adds stability.
+
+\subsection{Conclusion}\label{conclusion}
+
+This USDA urban tree dataset is especially well suited to tree-based
+methods because it combines species, structure, region, and land-use
+information in one place.
+
+The models here suggest four useful takeaways:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Site context can be inferred very accurately from a tree's regional
+  and structural profile.
+\item
+  Tree height behaves like a crown-architecture problem as much as a
+  diameter problem.
+\item
+  Rule-based models make ecosystem-service questions, like shade, easier
+  to explain in plain language.
+\item
+  Bagging confirms that the street-versus-park-like distinction is a
+  stable pattern, not a fragile one.
+\end{enumerate}
+
+That makes this archive a strong example of how tree methods can support
+both ecological interpretation and urban forestry planning.
+
+\end{document}

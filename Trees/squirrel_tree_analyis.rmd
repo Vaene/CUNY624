@@ -1,0 +1,540 @@
+---
+title: "Tree-Based Analysis of the Central Park Squirrel Census"
+author: "Rebecca Bronstein"
+date: "2026-04-01"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, fig.width = 8, fig.height = 4.8)
+
+library(tidyverse)
+library(rpart)
+library(ipred)
+library(C50)
+library(caret)
+library(knitr)
+library(randomForest)
+
+theme_lowink <- function() {
+  theme_minimal(base_size = 11) +
+    theme(
+      panel.grid.major.x = element_line(color = "grey88", linewidth = 0.25),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.line = element_blank(),
+      legend.position = "none",
+      plot.title.position = "plot",
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(color = "grey35"),
+      axis.title = element_text(color = "grey20"),
+      axis.text = element_text(color = "grey20")
+    )
+}
+
+blank_to_na <- function(x) {
+  x <- trimws(x)
+  x[x %in% c("", "?")] <- NA
+  x
+}
+
+true_false_to_factor <- function(x) {
+  factor(
+    case_when(
+      is.na(x) ~ NA_character_,
+      tolower(x) == "true" ~ "Yes",
+      TRUE ~ "No"
+    ),
+    levels = c("No", "Yes")
+  )
+}
+
+classification_metrics <- function(actual, predicted) {
+  cm <- confusionMatrix(predicted, actual)
+  tibble(
+    Accuracy = round(as.numeric(cm$overall["Accuracy"]), 3),
+    Kappa = round(as.numeric(cm$overall["Kappa"]), 3)
+  )
+}
+
+regression_metrics <- function(actual, predicted) {
+  tibble(
+    RMSE = round(sqrt(mean((predicted - actual)^2)), 2),
+    MAE = round(mean(abs(predicted - actual)), 2)
+  )
+}
+
+top_importance <- function(model, n = 6) {
+  if (is.null(model$variable.importance)) {
+    return(tibble(Variable = character(), Importance = numeric()))
+  }
+
+  tibble(
+    Variable = names(model$variable.importance),
+    Importance = as.numeric(model$variable.importance)
+  ) %>%
+    slice_max(order_by = Importance, n = n, with_ties = FALSE) %>%
+    mutate(Importance = round(Importance, 2))
+}
+
+align_factor_levels <- function(train, test) {
+  for (nm in names(test)) {
+    if (is.factor(train[[nm]])) {
+      test[[nm]] <- factor(test[[nm]], levels = levels(train[[nm]]))
+    }
+  }
+  list(train = train, test = test)
+}
+
+run_benchmark <- function(train, test, formula, outcome_name, label, fitter, predictor) {
+  start_fit <- proc.time()[3]
+  fit_obj <- tryCatch(fitter(train, formula), error = function(e) e)
+  fit_time <- proc.time()[3] - start_fit
+
+  if (inherits(fit_obj, "error")) {
+    return(tibble(
+      Method = label,
+      Status = "Failed",
+      Fit.Seconds = round(fit_time, 3),
+      Predict.Seconds = NA_real_,
+      Accuracy = NA_real_,
+      Kappa = NA_real_,
+      Predicted.Classes = NA_integer_,
+      Notes = fit_obj$message
+    ))
+  }
+
+  start_pred <- proc.time()[3]
+  pred_obj <- tryCatch(predictor(fit_obj, test), error = function(e) e)
+  pred_time <- proc.time()[3] - start_pred
+
+  if (inherits(pred_obj, "error")) {
+    return(tibble(
+      Method = label,
+      Status = "Failed",
+      Fit.Seconds = round(fit_time, 3),
+      Predict.Seconds = round(pred_time, 3),
+      Accuracy = NA_real_,
+      Kappa = NA_real_,
+      Predicted.Classes = NA_integer_,
+      Notes = pred_obj$message
+    ))
+  }
+
+  pred_obj <- factor(pred_obj, levels = levels(test[[outcome_name]]))
+  cm <- confusionMatrix(pred_obj, test[[outcome_name]])
+
+  tibble(
+    Method = label,
+    Status = "OK",
+    Fit.Seconds = round(fit_time, 3),
+    Predict.Seconds = round(pred_time, 3),
+    Accuracy = round(as.numeric(cm$overall["Accuracy"]), 3),
+    Kappa = round(as.numeric(cm$overall["Kappa"]), 3),
+    Predicted.Classes = dplyr::n_distinct(pred_obj),
+    Notes = ""
+  )
+}
+
+squirrels_raw <- read.csv(
+  "2018_Central_Park_Squirrel_Census_-_Squirrel_Data_20260401.csv",
+  stringsAsFactors = FALSE
+)
+
+names(squirrels_raw) <- make.names(names(squirrels_raw))
+
+for (nm in names(squirrels_raw)) {
+  if (is.character(squirrels_raw[[nm]])) {
+    squirrels_raw[[nm]] <- blank_to_na(squirrels_raw[[nm]])
+  }
+}
+
+flag_cols <- c(
+  "Running", "Chasing", "Climbing", "Eating", "Foraging",
+  "Kuks", "Quaas", "Moans", "Tail.flags", "Tail.twitches",
+  "Approaches", "Indifferent", "Runs.from"
+)
+
+for (nm in flag_cols) {
+  squirrels_raw[[nm]] <- true_false_to_factor(squirrels_raw[[nm]])
+}
+
+squirrels <- squirrels_raw %>%
+  mutate(
+    Shift = factor(Shift),
+    Age = factor(Age),
+    Fur.Color = factor(Primary.Fur.Color),
+    Location.Class = factor(Location),
+    Hectare.Number = suppressWarnings(as.numeric(sub("([0-9]+).*", "\\1", Hectare))),
+    Hectare.Letter = factor(sub("[0-9]+", "", Hectare)),
+    Above.Ground.Height = suppressWarnings(as.numeric(Above.Ground.Sighter.Measurement)),
+    Active = factor(
+      if_else(Running == "Yes" | Chasing == "Yes" | Climbing == "Yes",
+              "Active", "Still", missing = "Still")
+    ),
+    Feeding = factor(
+      if_else(Eating == "Yes" | Foraging == "Yes",
+              "Feeding", "Not feeding", missing = "Not feeding")
+    ),
+    Vocal = factor(
+      if_else(Kuks == "Yes" | Quaas == "Yes" | Moans == "Yes",
+              "Vocal", "Quiet", missing = "Quiet")
+    ),
+    Tail.Signal = factor(
+      if_else(Tail.flags == "Yes" | Tail.twitches == "Yes",
+              "Signal", "No signal", missing = "No signal")
+    ),
+    Human.Response = case_when(
+      Approaches == "Yes" ~ "Approaches",
+      Runs.from == "Yes" ~ "Runs from",
+      Indifferent == "Yes" ~ "Indifferent",
+      TRUE ~ "Unclear"
+    ) %>% factor(levels = c("Approaches", "Indifferent", "Runs from", "Unclear"))
+  )
+
+overview <- tibble(
+  Measure = c(
+    "Total observations",
+    "Distinct hectares",
+    "Ground-plane sightings",
+    "Above-ground sightings",
+    "Sightings with recorded height"
+  ),
+  Value = c(
+    nrow(squirrels),
+    n_distinct(squirrels$Hectare, na.rm = TRUE),
+    sum(squirrels$Location.Class == "Ground Plane", na.rm = TRUE),
+    sum(squirrels$Location.Class == "Above Ground", na.rm = TRUE),
+    sum(!is.na(squirrels$Above.Ground.Height))
+  )
+)
+
+location_data <- squirrels %>%
+  select(
+    Location.Class, Shift, Age, Fur.Color, Hectare.Number, Hectare.Letter,
+    Active, Feeding, Vocal, Tail.Signal, Human.Response
+  ) %>%
+  drop_na()
+
+height_data <- squirrels %>%
+  filter(Location.Class == "Above Ground", !is.na(Above.Ground.Height)) %>%
+  select(
+    Above.Ground.Height, Shift, Age, Fur.Color, Hectare.Number,
+    Hectare.Letter, Active, Feeding, Vocal, Tail.Signal, Human.Response
+  ) %>%
+  drop_na()
+
+feeding_data <- squirrels %>%
+  select(
+    Feeding, Shift, Age, Fur.Color, Hectare.Number, Hectare.Letter,
+    Location.Class, Active, Vocal, Tail.Signal, Human.Response
+  ) %>%
+  drop_na()
+
+benchmark_data <- squirrels %>%
+  select(
+    Fur.Color, Shift, Age, Location.Class, Hectare.Number, Hectare.Letter,
+    Active, Feeding, Vocal, Tail.Signal, Human.Response
+  ) %>%
+  drop_na() %>%
+  droplevels()
+
+set.seed(123)
+location_index <- createDataPartition(location_data$Location.Class, p = 0.7, list = FALSE)
+train_location <- location_data[location_index, ]
+test_location <- location_data[-location_index, ]
+
+height_index <- createDataPartition(height_data$Above.Ground.Height, p = 0.7, list = FALSE)
+train_height <- height_data[height_index, ]
+test_height <- height_data[-height_index, ]
+
+feeding_index <- createDataPartition(feeding_data$Feeding, p = 0.7, list = FALSE)
+train_feeding <- feeding_data[feeding_index, ]
+test_feeding <- feeding_data[-feeding_index, ]
+
+benchmark_index <- createDataPartition(benchmark_data$Fur.Color, p = 0.7, list = FALSE)
+train_bench <- droplevels(benchmark_data[benchmark_index, ])
+test_bench <- droplevels(benchmark_data[-benchmark_index, ])
+aligned_bench <- align_factor_levels(train_bench, test_bench)
+train_bench <- aligned_bench$train
+test_bench <- aligned_bench$test
+
+location_mix <- squirrels %>%
+  filter(!is.na(Fur.Color), !is.na(Location.Class)) %>%
+  count(Fur.Color, Location.Class) %>%
+  group_by(Fur.Color) %>%
+  mutate(Share = n / sum(n)) %>%
+  ungroup() %>%
+  filter(Location.Class == "Above Ground") %>%
+  arrange(Share)
+
+height_profile <- squirrels %>%
+  filter(Location.Class == "Above Ground", !is.na(Above.Ground.Height), !is.na(Shift)) %>%
+  mutate(Shift = fct_relevel(Shift, "AM", "PM"))
+
+```
+
+## Why Use Tree Methods on Squirrel Data?
+
+The Central Park squirrel census is a classic mixed-data problem. It combines coordinates, observation context, behaviors, and categorical outcomes in the same record. Tree methods are useful precisely because they can work with all of those pieces at once and turn them into readable partitions.
+
+This notebook uses tree methods as a field guide:
+
+1. A classification tree predicts whether a squirrel is seen on the ground or above it.
+2. A regression tree predicts how high an above-ground squirrel perches.
+3. A rule model summarizes feeding behavior.
+4. A benchmark section compares classification methods on the harder multi-class problem of predicting fur color.
+
+## Data Snapshot
+
+```{r overview}
+kable(overview, caption = "Quick overview of the squirrel census data used in this report.")
+```
+
+## Visual Briefing
+
+The next two charts are intentionally sparse. They use thin lines and minimal decoration so the behavioral structure carries the page.
+
+```{r location_mix_plot, fig.height=4.2}
+ggplot(location_mix, aes(x = Share, y = fct_reorder(Fur.Color, Share))) +
+  geom_segment(aes(x = 0, xend = Share, yend = Fur.Color), color = "grey82", linewidth = 0.35) +
+  geom_point(size = 1.8, color = "black") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "The share of above-ground sightings differs by fur color",
+    subtitle = "Even a simple rate summary hints that behavior and visibility vary by group",
+    x = "Share of sightings above ground",
+    y = NULL
+  ) +
+  theme_lowink()
+```
+
+```{r height_profile_plot, fig.height=4.6}
+ggplot(height_profile, aes(x = Shift, y = Above.Ground.Height)) +
+  geom_boxplot(width = 0.3, outlier.alpha = 0.18, fill = "white", color = "grey20") +
+  labs(
+    title = "Perch heights have a long upper tail in both observation shifts",
+    subtitle = "A thin boxplot keeps the focus on distribution rather than decoration",
+    x = NULL,
+    y = "Above-ground height"
+  ) +
+  theme_lowink()
+```
+
+## Classification Tree: What Predicts Ground vs. Above-Ground Sightings?
+
+This tree treats the park like a behavioral landscape. The aim is to see whether movement, feeding, vocalization, tail signals, and basic spatial cues help separate squirrels seen on the ground from squirrels seen above ground.
+
+```{r classification_tree}
+location_tree <- rpart(Location.Class ~ ., data = train_location, method = "class")
+plot(location_tree, uniform = TRUE, margin = 0.08)
+text(location_tree, use.n = TRUE, cex = 0.68)
+
+location_pred <- predict(location_tree, test_location, type = "class")
+location_metrics <- classification_metrics(test_location$Location.Class, location_pred)
+location_importance <- top_importance(location_tree)
+
+kable(location_metrics, caption = "Classification tree performance for predicting squirrel location.")
+kable(location_importance, caption = "Most influential variables in the location tree.")
+```
+
+This model is useful because it answers a real observational question: what makes a squirrel more likely to be spotted above ground? In this data, active movement and feeding-related cues matter more than appearance, which is a strong reminder that behavior often carries more signal than color.
+
+## Regression Tree: How High Do Above-Ground Squirrels Perch?
+
+Once a squirrel is above ground, the next question becomes vertical habitat choice. The regression tree estimates height from a mix of behavior, basic location, and interaction signals.
+
+```{r regression_tree}
+height_tree <- rpart(Above.Ground.Height ~ ., data = train_height, method = "anova")
+plot(height_tree, uniform = TRUE, margin = 0.08)
+text(height_tree, use.n = TRUE, cex = 0.68)
+
+height_pred <- predict(height_tree, test_height)
+height_metrics <- regression_metrics(test_height$Above.Ground.Height, height_pred)
+height_importance <- top_importance(height_tree)
+
+kable(height_metrics, caption = "Regression performance for above-ground perch height.")
+kable(height_importance, caption = "Most influential variables in the height tree.")
+```
+
+The resulting importance profile usually puts hectare position and human-response context near the top. That makes the model interesting: perch height is not only an anatomical question, it also looks tied to where the squirrel is in the park and how it responds to the surrounding environment.
+
+## Rule-Based Tree: What Simple Rules Describe Feeding Behavior?
+
+Rule models are especially good when the goal is explanation rather than just prediction. Here, the target is whether a squirrel is feeding or not feeding.
+
+```{r rule_model}
+feeding_rules <- C5.0(Feeding ~ ., data = train_feeding, rules = TRUE)
+feeding_pred <- predict(feeding_rules, test_feeding)
+feeding_metrics <- classification_metrics(test_feeding$Feeding, feeding_pred)
+feeding_usage <- as.data.frame(C5imp(feeding_rules, metric = "usage")) %>%
+  rownames_to_column(var = "Variable") %>%
+  rename(Usage = Overall) %>%
+  arrange(desc(Usage)) %>%
+  mutate(Usage = round(Usage, 2))
+
+kable(feeding_metrics, caption = "Rule-based performance for feeding behavior.")
+kable(head(feeding_usage, 6), caption = "Most-used predictors in the feeding rules.")
+summary(feeding_rules)
+```
+
+This is the most compact ecological story in the notebook. Squirrels that are still are much more likely to be recorded as feeding, while squirrels in active motion are much more likely to be recorded as not feeding. A short tree-based rule set surfaces that pattern cleanly.
+
+## Bagged Trees: Does an Ensemble Improve the Location Story?
+
+Bagging lets us test whether the ground-versus-above-ground story is stable or overly dependent on one fitted tree.
+
+```{r bagging}
+bag_model <- bagging(Location.Class ~ ., data = train_location, nbagg = 25)
+bag_pred <- predict(bag_model, test_location)
+
+if (is.list(bag_pred) && "class" %in% names(bag_pred)) {
+  bag_pred <- bag_pred$class
+}
+
+bag_pred <- factor(bag_pred, levels = levels(test_location$Location.Class))
+
+bag_metrics <- classification_metrics(test_location$Location.Class, bag_pred) %>%
+  mutate(Model = "Bagged trees")
+
+single_tree_metrics <- location_metrics %>%
+  mutate(Model = "Single tree")
+
+comparison <- bind_rows(single_tree_metrics, bag_metrics) %>%
+  select(Model, Accuracy, Kappa)
+
+kable(comparison, caption = "Comparing a single location tree with a bagged ensemble.")
+```
+
+If the ensemble improves only a little, that is still a good result. It means the main location pattern in the data is already fairly stable, so interpretability is not coming at the cost of a wildly fragile model.
+
+## Benchmarking Classification Speed and Accuracy
+
+To mirror the USDA benchmark, I compare the same six classification methods here. The target is a harder multi-class problem than the main notebook task: predicting `Fur.Color` from location, behavior, and interaction features.
+
+That benchmark matters because it separates two questions:
+
+1. How fast can the method fit?
+2. Does the extra time buy us enough accuracy to matter?
+
+```{r benchmark_setup}
+fur_formula <- Fur.Color ~ .
+
+fur_benchmarks <- bind_rows(
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "rpart",
+    fitter = function(train, formula) rpart(formula, data = train, method = "class"),
+    predictor = function(fit, test) predict(fit, test, type = "class")
+  ),
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "caret rpart (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "rpart",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 5
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "C5.0",
+    fitter = function(train, formula) C5.0(formula, data = train),
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "caret C5.0 (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "C5.0",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 3
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "randomForest",
+    fitter = function(train, formula) randomForest(formula, data = train, ntree = 200),
+    predictor = function(fit, test) predict(fit, test)
+  ),
+  run_benchmark(
+    train_bench, test_bench, fur_formula, "Fur.Color", "caret rf (cv=3)",
+    fitter = function(train, formula) {
+      train(
+        formula, data = train, method = "rf",
+        trControl = trainControl(method = "cv", number = 3),
+        tuneLength = 3,
+        ntree = 200
+      )
+    },
+    predictor = function(fit, test) predict(fit, test)
+  )
+) %>%
+  mutate(
+    Total.Seconds = round(Fit.Seconds + Predict.Seconds, 3),
+    Method = factor(Method, levels = Method[order(Accuracy, decreasing = TRUE, na.last = TRUE)])
+  )
+
+kable(fur_benchmarks, caption = "Classification benchmark for predicting fur color.")
+```
+
+```{r benchmark_plot, fig.height=4.9}
+plot_bench <- fur_benchmarks %>%
+  filter(Status == "OK")
+
+ggplot(plot_bench, aes(x = Fit.Seconds, y = Accuracy)) +
+  geom_point(size = 2, color = "black") +
+  geom_text(aes(label = Method), nudge_y = 0.01, size = 3, hjust = 0) +
+  labs(
+    title = "On squirrel data, extra complexity buys only modest gains",
+    subtitle = "The benchmark target here is Fur.Color, a harder multi-class label than location",
+    x = "Fit time (seconds)",
+    y = "Accuracy"
+  ) +
+  theme_lowink() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = ggplot2::margin(5.5, 90, 5.5, 5.5))
+```
+
+The fur-color benchmark is revealing in a different way than the USDA one:
+
+1. Most methods stay reasonably fast on this dataset.
+2. More complex classifiers may improve accuracy, but the gains are usually modest because fur color is only loosely tied to the behavioral predictors available here.
+3. That means the squirrel data is a good example of when benchmark discipline matters: if the target is weakly connected to the inputs, extra model complexity can hit diminishing returns quickly.
+
+## Conclusion
+
+Tree methods help turn the squirrel census into more than a descriptive spreadsheet:
+
+1. They show that behavior is more informative than appearance for predicting where squirrels are seen.
+2. They frame above-ground height as a vertical habitat question.
+3. They reduce feeding behavior to a compact, readable rule system.
+4. They make it easy to compare classification methods without hiding the cost of extra complexity.
+
+That combination of interpretability, ecological readability, and honest benchmarking is what makes tree-based analysis useful here.

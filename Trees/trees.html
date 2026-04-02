@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rebecca Bronstein" />
+
+<meta name="date" content="2026-03-30" />
+
+<title>624 Trees: Learning from the Central Park Squirrel Census</title>
+
+<script src="trees_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="trees_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="trees_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="trees_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="trees_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="trees_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="trees_files/navigation-1.1/tabsets.js"></script>
+<link href="trees_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="trees_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">624 Trees: Learning from the Central Park
+Squirrel Census</h1>
+<h4 class="author">Rebecca Bronstein</h4>
+<h4 class="date">2026-03-30</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#why-use-tree-methods-on-squirrel-data"
+id="toc-why-use-tree-methods-on-squirrel-data"><span
+class="toc-section-number">1</span> Why Use Tree Methods on Squirrel
+Data?</a></li>
+<li><a href="#data-snapshot" id="toc-data-snapshot"><span
+class="toc-section-number">2</span> Data Snapshot</a></li>
+<li><a
+href="#classification-tree-what-predicts-ground-vs.-above-ground-sightings"
+id="toc-classification-tree-what-predicts-ground-vs.-above-ground-sightings"><span
+class="toc-section-number">3</span> Classification Tree: What Predicts
+Ground vs. Above-Ground Sightings?</a></li>
+<li><a href="#regression-tree-how-high-do-above-ground-squirrels-perch"
+id="toc-regression-tree-how-high-do-above-ground-squirrels-perch"><span
+class="toc-section-number">4</span> Regression Tree: How High Do
+Above-Ground Squirrels Perch?</a></li>
+<li><a
+href="#rule-based-tree-what-simple-rules-describe-feeding-behavior"
+id="toc-rule-based-tree-what-simple-rules-describe-feeding-behavior"><span
+class="toc-section-number">5</span> Rule-Based Tree: What Simple Rules
+Describe Feeding Behavior?</a></li>
+<li><a href="#bagged-trees-does-an-ensemble-improve-the-location-story"
+id="toc-bagged-trees-does-an-ensemble-improve-the-location-story"><span
+class="toc-section-number">6</span> Bagged Trees: Does an Ensemble
+Improve the Location Story?</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span
+class="toc-section-number">7</span> Conclusion</a></li>
+</ul>
+</div>
+
+<div id="why-use-tree-methods-on-squirrel-data" class="section level2"
+number="1">
+<h2><span class="header-section-number">1</span> Why Use Tree Methods on
+Squirrel Data?</h2>
+<p>Tree models are helpful here because the squirrel census is full of
+mixed data types: categorical fur colors, yes/no behaviors, vague human
+interaction signals, and spatial labels such as hectares. A single tree
+can turn that messy field data into readable splits, while ensembles let
+us check whether the same patterns hold up when we average across many
+trees.</p>
+<p>Instead of treating this as a generic modeling exercise, I use tree
+methods as a field guide:</p>
+<ol style="list-style-type: decimal">
+<li>A classification tree asks where squirrels are likely to be
+observed: on the ground or above it.</li>
+<li>A regression tree asks how high squirrels perch once they are
+already above ground.</li>
+<li>A rule-based tree turns feeding behavior into short, interpretable
+rules.</li>
+<li>A bagged tree checks whether an ensemble improves the stability of
+the location prediction.</li>
+</ol>
+</div>
+<div id="data-snapshot" class="section level2" number="2">
+<h2><span class="header-section-number">2</span> Data Snapshot</h2>
+<pre class="r"><code>kable(overview, caption = &quot;Quick overview of the squirrel census data used in this report.&quot;)</code></pre>
+<table>
+<caption>Quick overview of the squirrel census data used in this
+report.</caption>
+<thead>
+<tr class="header">
+<th align="left">Measure</th>
+<th align="right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Total observations</td>
+<td align="right">3023</td>
+</tr>
+<tr class="even">
+<td align="left">Distinct hectares</td>
+<td align="right">339</td>
+</tr>
+<tr class="odd">
+<td align="left">Ground-plane sightings</td>
+<td align="right">2116</td>
+</tr>
+<tr class="even">
+<td align="left">Above-ground sightings</td>
+<td align="right">843</td>
+</tr>
+<tr class="odd">
+<td align="left">Sightings with recorded height</td>
+<td align="right">793</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="classification-tree-what-predicts-ground-vs.-above-ground-sightings"
+class="section level2" number="3">
+<h2><span class="header-section-number">3</span> Classification Tree:
+What Predicts Ground vs. Above-Ground Sightings?</h2>
+<p>This tree treats the park like a behavioral landscape. The goal is to
+see whether movement, feeding, vocalization, tail signals, and basic
+location cues help separate squirrels seen on the ground from squirrels
+spotted above ground.</p>
+<pre class="r"><code>location_tree &lt;- rpart(Location.Class ~ ., data = train_location, method = &quot;class&quot;)
+plot(location_tree, uniform = TRUE, margin = 0.08)
+text(location_tree, use.n = TRUE, cex = 0.7)</code></pre>
+<p><img src="trees_files/figure-html/classification_tree-1.png" alt="" width="768" /></p>
+<pre class="r"><code>location_pred &lt;- predict(location_tree, test_location, type = &quot;class&quot;)
+location_metrics &lt;- classification_metrics(test_location$Location.Class, location_pred)
+location_importance &lt;- top_importance(location_tree)
+
+kable(location_metrics, caption = &quot;Classification tree performance for predicting squirrel location.&quot;)</code></pre>
+<table>
+<caption>Classification tree performance for predicting squirrel
+location.</caption>
+<thead>
+<tr class="header">
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.749</td>
+<td align="right">0.271</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(location_importance, caption = &quot;Most influential variables in the location tree.&quot;)</code></pre>
+<table>
+<caption>Most influential variables in the location tree.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Feeding</td>
+<td align="right">121.25</td>
+</tr>
+<tr class="even">
+<td align="left">Active</td>
+<td align="right">56.93</td>
+</tr>
+<tr class="odd">
+<td align="left">Human.Response</td>
+<td align="right">12.43</td>
+</tr>
+<tr class="even">
+<td align="left">Shift</td>
+<td align="right">9.36</td>
+</tr>
+<tr class="odd">
+<td align="left">Vocal</td>
+<td align="right">6.21</td>
+</tr>
+<tr class="even">
+<td align="left">Hectare.Number</td>
+<td align="right">5.25</td>
+</tr>
+</tbody>
+</table>
+<p>The classification tree helps answer a practical question for field
+observation: what makes a squirrel more likely to be seen above ground?
+In this data, active movement and feeding-related behavior matter much
+more than fur color, which suggests behavior is more informative than
+appearance for understanding where squirrels position themselves.</p>
+</div>
+<div id="regression-tree-how-high-do-above-ground-squirrels-perch"
+class="section level2" number="4">
+<h2><span class="header-section-number">4</span> Regression Tree: How
+High Do Above-Ground Squirrels Perch?</h2>
+<p>Once a squirrel is above ground, the next question is not just
+<em>whether</em> it climbed, but <em>how high</em>. This regression tree
+uses the same mix of spatial and behavioral cues to estimate recorded
+height.</p>
+<pre class="r"><code>height_tree &lt;- rpart(Above.Ground.Height ~ ., data = train_height, method = &quot;anova&quot;)
+plot(height_tree, uniform = TRUE, margin = 0.08)
+text(height_tree, use.n = TRUE, cex = 0.7)</code></pre>
+<p><img src="trees_files/figure-html/regression_tree-1.png" alt="" width="768" /></p>
+<pre class="r"><code>height_pred &lt;- predict(height_tree, test_height)
+height_metrics &lt;- regression_metrics(test_height$Above.Ground.Height, height_pred)
+height_importance &lt;- top_importance(height_tree)
+
+kable(height_metrics, caption = &quot;Regression tree performance for above-ground height.&quot;)</code></pre>
+<table>
+<caption>Regression tree performance for above-ground height.</caption>
+<thead>
+<tr class="header">
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">12.42</td>
+<td align="right">9.11</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(height_importance, caption = &quot;Most influential variables in the height tree.&quot;)</code></pre>
+<table>
+<caption>Most influential variables in the height tree.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Hectare.Number</td>
+<td align="right">10877.62</td>
+</tr>
+<tr class="even">
+<td align="left">Human.Response</td>
+<td align="right">8211.92</td>
+</tr>
+<tr class="odd">
+<td align="left">Hectare.Letter</td>
+<td align="right">6634.14</td>
+</tr>
+<tr class="even">
+<td align="left">Shift</td>
+<td align="right">1497.91</td>
+</tr>
+<tr class="odd">
+<td align="left">Fur.Color</td>
+<td align="right">1370.95</td>
+</tr>
+<tr class="even">
+<td align="left">Tail.Signal</td>
+<td align="right">331.20</td>
+</tr>
+</tbody>
+</table>
+<p>This model treats height as a kind of vertical habitat choice. The
+most important predictors are park position and human-response context
+rather than simple color categories, which hints that where a squirrel
+is seen in the park may be more useful than how it looks when we want to
+explain height.</p>
+</div>
+<div id="rule-based-tree-what-simple-rules-describe-feeding-behavior"
+class="section level2" number="5">
+<h2><span class="header-section-number">5</span> Rule-Based Tree: What
+Simple Rules Describe Feeding Behavior?</h2>
+<p>Rule models are useful when we want a short, readable description
+instead of a large branching diagram. Here, I predict whether a squirrel
+is feeding or not feeding from its activity level, location, and other
+observation cues.</p>
+<pre class="r"><code>feeding_rules &lt;- C5.0(Feeding ~ ., data = train_feeding, rules = TRUE)
+feeding_pred &lt;- predict(feeding_rules, test_feeding)
+feeding_metrics &lt;- classification_metrics(test_feeding$Feeding, feeding_pred)
+feeding_usage &lt;- as.data.frame(C5imp(feeding_rules, metric = &quot;usage&quot;)) %&gt;%
+  rownames_to_column(var = &quot;Variable&quot;) %&gt;%
+  rename(Usage = Overall) %&gt;%
+  arrange(desc(Usage)) %&gt;%
+  mutate(Usage = round(Usage, 2))
+
+kable(feeding_metrics, caption = &quot;Rule-based tree performance for feeding behavior.&quot;)</code></pre>
+<table>
+<caption>Rule-based tree performance for feeding behavior.</caption>
+<thead>
+<tr class="header">
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.778</td>
+<td align="right">0.55</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(head(feeding_usage, 6), caption = &quot;Most-used predictors in the feeding rules.&quot;)</code></pre>
+<table>
+<caption>Most-used predictors in the feeding rules.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Active</td>
+<td align="right">100</td>
+</tr>
+<tr class="even">
+<td align="left">Shift</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Age</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Fur.Color</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Hectare.Number</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Hectare.Letter</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>summary(feeding_rules)</code></pre>
+<pre><code>## 
+## Call:
+## C5.0.formula(formula = Feeding ~ ., data = train_feeding, rules = TRUE)
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Wed Apr  1 21:30:34 2026
+## -------------------------------
+## 
+## Class specified by attribute `outcome&#39;
+## 
+## Read 1976 cases (11 attributes) from undefined.data
+## 
+## Rules:
+## 
+## Rule 1: (1019/102, lift 1.5)
+##  Active = Still
+##  -&gt;  class Feeding  [0.899]
+## 
+## Rule 2: (957/298, lift 1.8)
+##  Active = Active
+##  -&gt;  class Not feeding  [0.688]
+## 
+## Default class: Feeding
+## 
+## 
+## Evaluation on training data (1976 cases):
+## 
+##          Rules     
+##    ----------------
+##      No      Errors
+## 
+##       2  400(20.2%)   &lt;&lt;
+## 
+## 
+##     (a)   (b)    &lt;-classified as
+##    ----  ----
+##     917   298    (a): class Feeding
+##     102   659    (b): class Not feeding
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% Active
+## 
+## 
+## Time: 0.0 secs</code></pre>
+<p>The rules are surprisingly compact. In this dataset, activity level
+does a lot of the work: squirrels that are still are much more often
+recorded as feeding, while squirrels that are actively running,
+climbing, or chasing are more often recorded as not feeding. That is
+exactly the kind of ecological shorthand tree methods are good at
+surfacing.</p>
+</div>
+<div id="bagged-trees-does-an-ensemble-improve-the-location-story"
+class="section level2" number="6">
+<h2><span class="header-section-number">6</span> Bagged Trees: Does an
+Ensemble Improve the Location Story?</h2>
+<p>A single tree is easy to interpret, but it can be sensitive to how
+the sample is split. Bagging averages over many trees, which usually
+gives a more stable answer. I apply bagging to the same
+ground-vs-above-ground problem used in the first section.</p>
+<pre class="r"><code>bag_model &lt;- bagging(Location.Class ~ ., data = train_location, nbagg = 25)
+bag_pred &lt;- predict(bag_model, test_location)
+
+if (is.list(bag_pred) &amp;&amp; &quot;class&quot; %in% names(bag_pred)) {
+  bag_pred &lt;- bag_pred$class
+}
+
+bag_pred &lt;- factor(bag_pred, levels = levels(test_location$Location.Class))
+
+bag_metrics &lt;- classification_metrics(test_location$Location.Class, bag_pred) %&gt;%
+  mutate(Model = &quot;Bagged trees&quot;)
+
+single_tree_metrics &lt;- location_metrics %&gt;%
+  mutate(Model = &quot;Single tree&quot;)
+
+comparison &lt;- bind_rows(single_tree_metrics, bag_metrics) %&gt;%
+  select(Model, Accuracy, Kappa)
+
+kable(comparison, caption = &quot;Comparing a single location tree with a bagged ensemble.&quot;)</code></pre>
+<table>
+<caption>Comparing a single location tree with a bagged
+ensemble.</caption>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Single tree</td>
+<td align="right">0.749</td>
+<td align="right">0.271</td>
+</tr>
+<tr class="even">
+<td align="left">Bagged trees</td>
+<td align="right">0.739</td>
+<td align="right">0.319</td>
+</tr>
+</tbody>
+</table>
+<p>The bagged model is only slightly more accurate here, but that
+comparison is still useful. It suggests that the strongest patterns in
+this squirrel census are already fairly stable, so the simple tree
+captures much of the signal while the ensemble adds a small amount of
+extra reliability.</p>
+</div>
+<div id="conclusion" class="section level2" number="7">
+<h2><span class="header-section-number">7</span> Conclusion</h2>
+<p>Tree methods help turn this squirrel census into more than a table of
+observations. They show that:</p>
+<ol style="list-style-type: decimal">
+<li>Behavior is more informative than fur color for predicting where
+squirrels are seen.</li>
+<li>Above-ground height looks partly like a spatial decision, not just a
+random measurement.</li>
+<li>Feeding behavior can be summarized with a small set of readable
+rules.</li>
+<li>Bagging confirms that the main location patterns are real enough to
+survive beyond a single tree.</li>
+</ol>
+<p>That is the main value of tree-based models in a dataset like this
+one: they do not just predict outcomes, they organize messy field
+observations into a form that is easier to explain.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

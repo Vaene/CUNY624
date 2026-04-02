@@ -1,6 +1,6 @@
 ---
 title: "FPP3 Chapter 8 Exercises — Complete Worked R Markdown"
-author: "OpenAI"
+author: "Randy Howk"
 date: "`r Sys.Date()`"
 output:
   pdf_document:

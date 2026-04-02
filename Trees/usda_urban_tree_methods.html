@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rebecca Bronstein" />
+
+<meta name="date" content="2026-04-01" />
+
+<title>Urban Tree Methods with the USDA Urban Tree Database</title>
+
+<script src="usda_urban_tree_methods_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="usda_urban_tree_methods_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="usda_urban_tree_methods_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="usda_urban_tree_methods_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="usda_urban_tree_methods_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="usda_urban_tree_methods_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="usda_urban_tree_methods_files/navigation-1.1/tabsets.js"></script>
+<link href="usda_urban_tree_methods_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="usda_urban_tree_methods_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Urban Tree Methods with the USDA Urban Tree
+Database</h1>
+<h4 class="author">Rebecca Bronstein</h4>
+<h4 class="date">2026-04-01</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#data-source" id="toc-data-source"><span
+class="toc-section-number">1</span> Data Source</a></li>
+<li><a href="#why-tree-methods-fit-this-dataset"
+id="toc-why-tree-methods-fit-this-dataset"><span
+class="toc-section-number">2</span> Why Tree Methods Fit This
+Dataset</a></li>
+<li><a href="#data-snapshot" id="toc-data-snapshot"><span
+class="toc-section-number">3</span> Data Snapshot</a></li>
+<li><a href="#classification-tree-street-trees-vs.-park-like-trees"
+id="toc-classification-tree-street-trees-vs.-park-like-trees"><span
+class="toc-section-number">4</span> Classification Tree: Street Trees
+vs. Park-Like Trees</a></li>
+<li><a href="#regression-tree-what-predicts-tree-height"
+id="toc-regression-tree-what-predicts-tree-height"><span
+class="toc-section-number">5</span> Regression Tree: What Predicts Tree
+Height?</a></li>
+<li><a href="#rule-based-tree-which-trees-deliver-high-car-shade"
+id="toc-rule-based-tree-which-trees-deliver-high-car-shade"><span
+class="toc-section-number">6</span> Rule-Based Tree: Which Trees Deliver
+High Car Shade?</a></li>
+<li><a href="#bagged-trees-does-the-site-classifier-become-more-stable"
+id="toc-bagged-trees-does-the-site-classifier-become-more-stable"><span
+class="toc-section-number">7</span> Bagged Trees: Does the Site
+Classifier Become More Stable?</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span
+class="toc-section-number">8</span> Conclusion</a></li>
+</ul>
+</div>
+
+<div id="data-source" class="section level2" number="1">
+<h2><span class="header-section-number">1</span> Data Source</h2>
+<p>This report uses the USDA Forest Service Research Data Archive
+publication <strong>Urban tree database</strong> and, specifically, the
+local file <code>Data/TS3_Raw_tree_data.csv</code> included in this
+folder. The archive describes the publication as a multi-city urban tree
+dataset covering more than 14,000 measured street and park trees across
+17 cities in the United States. Source page: <a
+href="https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005"
+class="uri">https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005</a>.</p>
+</div>
+<div id="why-tree-methods-fit-this-dataset" class="section level2"
+number="2">
+<h2><span class="header-section-number">2</span> Why Tree Methods Fit
+This Dataset</h2>
+<p>This dataset mixes ecology, urban form, and management questions in
+one table. Tree methods work especially well here because they can
+combine species categories, regional labels, and structural measurements
+without forcing everything into a single linear relationship.</p>
+<p>In this notebook I use tree methods to answer four practical
+questions:</p>
+<ol style="list-style-type: decimal">
+<li>Can tree structure and context tell us whether a record comes from a
+street tree or a more park-like setting?</li>
+<li>Which features matter most when predicting tree height?</li>
+<li>Can a rule-based model explain which trees provide high car
+shade?</li>
+<li>Does bagging improve the street-versus-park-like
+classification?</li>
+</ol>
+</div>
+<div id="data-snapshot" class="section level2" number="3">
+<h2><span class="header-section-number">3</span> Data Snapshot</h2>
+<pre class="r"><code>kable(overview, caption = &quot;Summary of the USDA urban tree dataset used in this report.&quot;)</code></pre>
+<table>
+<caption>Summary of the USDA urban tree dataset used in this
+report.</caption>
+<thead>
+<tr class="header">
+<th align="left">Measure</th>
+<th align="right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Total tree records</td>
+<td align="right">14487</td>
+</tr>
+<tr class="even">
+<td align="left">Distinct cities</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="left">Distinct climate regions</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">Street trees</td>
+<td align="right">8987</td>
+</tr>
+<tr class="odd">
+<td align="left">Non-street trees grouped as park-like</td>
+<td align="right">5500</td>
+</tr>
+<tr class="even">
+<td align="left">Distinct tree types</td>
+<td align="right">12</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="classification-tree-street-trees-vs.-park-like-trees"
+class="section level2" number="4">
+<h2><span class="header-section-number">4</span> Classification Tree:
+Street Trees vs. Park-Like Trees</h2>
+<p>The original <code>Park/Street</code> field has a few small
+categories such as nursery and regional big tree. To make the result
+easier to explain, I collapse the outcome into two classes:</p>
+<ol style="list-style-type: decimal">
+<li><code>Street</code></li>
+<li><code>Park-like</code></li>
+</ol>
+<p>This lets the tree model act like a site classifier: based on size,
+canopy form, and land-use context, what kind of planting environment
+does a tree look like it belongs to?</p>
+<pre class="r"><code>site_tree &lt;- rpart(Site.Type ~ ., data = train_site, method = &quot;class&quot;)
+plot(site_tree, uniform = TRUE, margin = 0.08)
+text(site_tree, use.n = TRUE, cex = 0.7)</code></pre>
+<p><img src="usda_urban_tree_methods_files/figure-html/classification_tree-1.png" alt="" width="768" /></p>
+<pre class="r"><code>site_pred &lt;- predict(site_tree, test_site, type = &quot;class&quot;)
+site_metrics &lt;- classification_metrics(test_site$Site.Type, site_pred)
+site_importance &lt;- top_importance(site_tree)
+
+kable(site_metrics, caption = &quot;Classification performance for predicting site type.&quot;)</code></pre>
+<table>
+<caption>Classification performance for predicting site type.</caption>
+<thead>
+<tr class="header">
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.991</td>
+<td align="right">0.98</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(site_importance, caption = &quot;Most influential variables in the site-type tree.&quot;)</code></pre>
+<table>
+<caption>Most influential variables in the site-type tree.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Region</td>
+<td align="right">1189.07</td>
+</tr>
+<tr class="even">
+<td align="left">LandUse</td>
+<td align="right">651.11</td>
+</tr>
+<tr class="odd">
+<td align="left">Setback</td>
+<td align="right">33.78</td>
+</tr>
+<tr class="even">
+<td align="left">Leaf</td>
+<td align="right">32.22</td>
+</tr>
+<tr class="odd">
+<td align="left">WireConf</td>
+<td align="right">28.33</td>
+</tr>
+<tr class="even">
+<td align="left">TreeType</td>
+<td align="right">25.06</td>
+</tr>
+</tbody>
+</table>
+<p>This is a useful planning interpretation of the dataset. The
+strongest variables are region, land use, and setback, which suggests
+that site context matters at least as much as raw tree dimensions when
+distinguishing street trees from trees in park-like settings.</p>
+</div>
+<div id="regression-tree-what-predicts-tree-height"
+class="section level2" number="5">
+<h2><span class="header-section-number">5</span> Regression Tree: What
+Predicts Tree Height?</h2>
+<p>Urban tree height is shaped by both biology and management. A
+regression tree is useful here because it can split on crown height,
+diameter, and leaf area in a way that feels close to how an arborist
+might reason through the problem.</p>
+<pre class="r"><code>height_tree &lt;- rpart(TreeHt ~ ., data = train_height, method = &quot;anova&quot;)
+plot(height_tree, uniform = TRUE, margin = 0.08)
+text(height_tree, use.n = TRUE, cex = 0.7)</code></pre>
+<p><img src="usda_urban_tree_methods_files/figure-html/regression_tree-1.png" alt="" width="768" /></p>
+<pre class="r"><code>height_pred &lt;- predict(height_tree, test_height)
+height_metrics &lt;- regression_metrics(test_height$TreeHt, height_pred)
+height_importance &lt;- top_importance(height_tree)
+
+kable(height_metrics, caption = &quot;Regression performance for predicting tree height in meters.&quot;)</code></pre>
+<table>
+<caption>Regression performance for predicting tree height in
+meters.</caption>
+<thead>
+<tr class="header">
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2.14</td>
+<td align="right">1.49</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(height_importance, caption = &quot;Most influential variables in the tree-height model.&quot;)</code></pre>
+<table>
+<caption>Most influential variables in the tree-height model.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CrnHt</td>
+<td align="right">126913.42</td>
+</tr>
+<tr class="even">
+<td align="left">Leaf</td>
+<td align="right">64991.84</td>
+</tr>
+<tr class="odd">
+<td align="left">AvgCdia</td>
+<td align="right">52336.50</td>
+</tr>
+<tr class="even">
+<td align="left">DBH</td>
+<td align="right">47711.57</td>
+</tr>
+<tr class="odd">
+<td align="left">Age</td>
+<td align="right">30539.91</td>
+</tr>
+<tr class="even">
+<td align="left">TreeType</td>
+<td align="right">6177.12</td>
+</tr>
+</tbody>
+</table>
+<p>The importance scores usually put crown height, leaf area, average
+crown diameter, and DBH near the top. That makes the model easy to
+justify: urban tree height is strongly tied to overall crown
+architecture, not just one diameter measurement.</p>
+</div>
+<div id="rule-based-tree-which-trees-deliver-high-car-shade"
+class="section level2" number="6">
+<h2><span class="header-section-number">6</span> Rule-Based Tree: Which
+Trees Deliver High Car Shade?</h2>
+<p>Shade is one of the clearest urban ecosystem services in this
+dataset. To make that idea more concrete, I create a binary target
+called <code>Big.Shade</code>, where trees with higher
+<code>CarShade</code> values are labeled <code>High shade</code>.</p>
+<p>The rule model asks a planning-style question: which combinations of
+region and tree structure tend to produce stronger shade benefits?</p>
+<pre class="r"><code>shade_rules &lt;- C5.0(Big.Shade ~ ., data = train_shade, rules = TRUE)
+shade_pred &lt;- predict(shade_rules, test_shade)
+shade_metrics &lt;- classification_metrics(test_shade$Big.Shade, shade_pred)
+shade_usage &lt;- as.data.frame(C5imp(shade_rules, metric = &quot;usage&quot;)) %&gt;%
+  rownames_to_column(var = &quot;Variable&quot;) %&gt;%
+  rename(Usage = Overall) %&gt;%
+  arrange(desc(Usage)) %&gt;%
+  mutate(Usage = round(Usage, 2))
+
+kable(shade_metrics, caption = &quot;Rule-based performance for predicting high car shade.&quot;)</code></pre>
+<table>
+<caption>Rule-based performance for predicting high car shade.</caption>
+<thead>
+<tr class="header">
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.932</td>
+<td align="right">0.689</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(head(shade_usage, 6), caption = &quot;Most-used predictors in the shade rules.&quot;)</code></pre>
+<table>
+<caption>Most-used predictors in the shade rules.</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="right">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Region</td>
+<td align="right">100</td>
+</tr>
+<tr class="even">
+<td align="left">Park.Street</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">TreeType</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">DBH</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">TreeHt</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">AvgCdia</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>summary(shade_rules)</code></pre>
+<pre><code>## 
+## Call:
+## C5.0.formula(formula = Big.Shade ~ ., data = train_shade, rules = TRUE)
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Wed Apr  1 21:36:48 2026
+## -------------------------------
+## 
+## Class specified by attribute `outcome&#39;
+## 
+## Read 3501 cases (8 attributes) from undefined.data
+## 
+## Rules:
+## 
+## Rule 1: (408/87, lift 5.8)
+##  Region in {NMtnPr, Piedmt}
+##  -&gt;  class High shade  [0.785]
+## 
+## Rule 2: (3093/154, lift 1.1)
+##  Region in {CenFla, GulfCo, InlEmp, InlVal, InterW, LoMidW, MidWst,
+##                    NoCalC, NoEast, PacfNW, SacVal, SoCalC, SWDsrt, TpIntW,
+##                    Tropic}
+##  -&gt;  class Low shade  [0.950]
+## 
+## Default class: Low shade
+## 
+## 
+## Evaluation on training data (3501 cases):
+## 
+##          Rules     
+##    ----------------
+##      No      Errors
+## 
+##       2  241( 6.9%)   &lt;&lt;
+## 
+## 
+##     (a)   (b)    &lt;-classified as
+##    ----  ----
+##     321   154    (a): class High shade
+##      87  2939    (b): class Low shade
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% Region
+## 
+## 
+## Time: 0.0 secs</code></pre>
+<p>This section is intentionally more interpretive than predictive. Even
+when the rules are short, they help translate the dataset into a
+management idea: some regional and structural profiles are much more
+likely to correspond to trees that deliver stronger shade.</p>
+</div>
+<div id="bagged-trees-does-the-site-classifier-become-more-stable"
+class="section level2" number="7">
+<h2><span class="header-section-number">7</span> Bagged Trees: Does the
+Site Classifier Become More Stable?</h2>
+<p>A single classification tree is easy to explain, but it can change if
+the sample shifts. Bagging gives us a way to ask whether the
+street-versus-park-like pattern is robust or whether it depends too
+heavily on one tree.</p>
+<pre class="r"><code>bag_model &lt;- bagging(Site.Type ~ ., data = train_site, nbagg = 25)
+bag_pred &lt;- predict(bag_model, test_site)
+
+if (is.list(bag_pred) &amp;&amp; &quot;class&quot; %in% names(bag_pred)) {
+  bag_pred &lt;- bag_pred$class
+}
+
+bag_pred &lt;- factor(bag_pred, levels = levels(test_site$Site.Type))
+
+bag_metrics &lt;- classification_metrics(test_site$Site.Type, bag_pred) %&gt;%
+  mutate(Model = &quot;Bagged trees&quot;)
+
+single_tree_metrics &lt;- site_metrics %&gt;%
+  mutate(Model = &quot;Single tree&quot;)
+
+comparison &lt;- bind_rows(single_tree_metrics, bag_metrics) %&gt;%
+  select(Model, Accuracy, Kappa)
+
+kable(comparison, caption = &quot;Comparing a single site-type tree with a bagged ensemble.&quot;)</code></pre>
+<table>
+<caption>Comparing a single site-type tree with a bagged
+ensemble.</caption>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="right">Accuracy</th>
+<th align="right">Kappa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Single tree</td>
+<td align="right">0.991</td>
+<td align="right">0.980</td>
+</tr>
+<tr class="even">
+<td align="left">Bagged trees</td>
+<td align="right">0.997</td>
+<td align="right">0.992</td>
+</tr>
+</tbody>
+</table>
+<p>If the bagged model improves only a little, that is still
+informative. It means the site signal in this USDA dataset is already
+strong enough that a single tree captures much of the story, while the
+ensemble mostly adds stability.</p>
+</div>
+<div id="conclusion" class="section level2" number="8">
+<h2><span class="header-section-number">8</span> Conclusion</h2>
+<p>This USDA urban tree dataset is especially well suited to tree-based
+methods because it combines species, structure, region, and land-use
+information in one place.</p>
+<p>The models here suggest four useful takeaways:</p>
+<ol style="list-style-type: decimal">
+<li>Site context can be inferred very accurately from a tree’s regional
+and structural profile.</li>
+<li>Tree height behaves like a crown-architecture problem as much as a
+diameter problem.</li>
+<li>Rule-based models make ecosystem-service questions, like shade,
+easier to explain in plain language.</li>
+<li>Bagging confirms that the street-versus-park-like distinction is a
+stable pattern, not a fragile one.</li>
+</ol>
+<p>That makes this archive a strong example of how tree methods can
+support both ecological interpretation and urban forestry planning.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

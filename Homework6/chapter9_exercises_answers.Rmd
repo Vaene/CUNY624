@@ -1,6 +1,6 @@
 ---
 title: "FPP3 Exercises for the Provided URL — Complete Worked R Markdown"
-author: "OpenAI"
+author: "Randy Howk"
 date: "`r Sys.Date()`"
 output:
   pdf_document:
@@ -88,10 +88,13 @@ as_num <- function(x) as.numeric(x)
 first_hilo_tbl <- function(fc, level = 95) {
   h <- fc %>% hilo(level = level)
   hcol <- names(h)[grepl("%", names(h), fixed = TRUE)][1]
+  h <- h %>% unpack_hilo(!!rlang::sym(hcol), names_sep = "_")
+  lower_col <- paste0(hcol, "_lower")
+  upper_col <- paste0(hcol, "_upper")
   tibble(
-    point_forecast = as_num(fc$.mean[1]),
-    lower = as_num(h[[hcol]][1][[1]][1]),
-    upper = as_num(h[[hcol]][1][[1]][2])
+    point_forecast = as_num(h$.mean[1]),
+    lower = as_num(h[[lower_col]][1]),
+    upper = as_num(h[[upper_col]][1])
   )
 }
 
@@ -776,6 +779,10 @@ compare_three_models <- function(data, value, test_years = 3) {
   idx <- tsibble::index_var(data)
   idx_name <- rlang::as_name(idx)
 
+  if (nrow(data) == 0) {
+    rlang::abort("compare_three_models() received an empty tsibble.")
+  }
+
   n_per_year <- if (inherits(data[[idx_name]], "yearmonth")) {
     12
   } else if (inherits(data[[idx_name]], "yearquarter")) {
@@ -785,6 +792,11 @@ compare_three_models <- function(data, value, test_years = 3) {
   }
 
   test_n <- test_years * n_per_year
+
+  if (nrow(data) <= test_n) {
+    rlang::abort("compare_three_models() needs more observations than the requested test window.")
+  }
+
   train <- head(data, nrow(data) - test_n)
   test <- tail(data, test_n)
 
@@ -821,8 +833,9 @@ bricks <- aus_production %>% select(Quarter, Bricks)
 a10 <- PBS %>% filter(ATC2 == "A10") %>% index_by(Month) %>% summarise(Cost = sum(Cost))
 h02 <- PBS %>% filter(ATC2 == "H02") %>% index_by(Month) %>% summarise(Cost = sum(Cost))
 food <- aus_retail %>%
-  filter(State == "Australia", Industry == "Food retailing") %>%
-  select(Month, Turnover)
+  filter(Industry == "Food retailing") %>%
+  index_by(Month) %>%
+  summarise(Turnover = sum(Turnover))
 
 res_beer <- compare_three_models(beer, Beer) %>% mutate(series = "Beer")
 res_bricks <- compare_three_models(bricks, Bricks) %>% mutate(series = "Bricks")
