@@ -1,0 +1,271 @@
+# Ridge, Lasso, and Elastic Net Practice
+
+---
+title: "Ridge, Lasso, and Elastic Net Practice"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+library(glmnet)
+library(MASS)
+library(ISLR)
+set.seed(123)
+```
+
+# How to use this notebook
+
+This practice file is designed to help you build intuition for when ridge, lasso, and elastic net work best.
+
+You will work through four scenarios:
+
+1. A classic medium-sized real dataset with mixed predictors
+2. A dataset with multicollinearity
+3. A synthetic dataset where only a few predictors truly matter
+4. A high-dimensional dataset where p > n
+
+For each section:
+- fit ridge, lasso, and elastic net
+- compare cross-validated test error
+- inspect coefficients
+- answer reflection questions
+
+# Helper functions
+
+```{r helpers}
+rmse <- function(actual, predicted) {
+  sqrt(mean((actual - predicted)^2))
+}
+
+fit_three_models <- function(x_train, y_train, x_test, y_test, alpha_enet = 0.5) {
+  ridge_cv <- cv.glmnet(x_train, y_train, alpha = 0)
+  lasso_cv <- cv.glmnet(x_train, y_train, alpha = 1)
+  enet_cv  <- cv.glmnet(x_train, y_train, alpha = alpha_enet)
+
+  pred_ridge <- predict(ridge_cv, newx = x_test, s = "lambda.min")
+  pred_lasso <- predict(lasso_cv, newx = x_test, s = "lambda.min")
+  pred_enet  <- predict(enet_cv,  newx = x_test, s = "lambda.min")
+
+  out <- data.frame(
+    model = c("ridge", "lasso", paste0("elastic_net_alpha_", alpha_enet)),
+    lambda_min = c(ridge_cv$lambda.min, lasso_cv$lambda.min, enet_cv$lambda.min),
+    test_rmse = c(
+      rmse(y_test, pred_ridge),
+      rmse(y_test, pred_lasso),
+      rmse(y_test, pred_enet)
+    )
+  )
+
+  list(
+    summary = out,
+    ridge = ridge_cv,
+    lasso = lasso_cv,
+    enet = enet_cv
+  )
+}
+
+nonzero_count <- function(model) {
+  sum(coef(model, s = "lambda.min")[-1, 1] != 0)
+}
+```
+
+# 1) Hitters: a classic practice dataset
+
+```{r hitters-data}
+data(Hitters)
+hitters <- na.omit(Hitters)
+
+x <- model.matrix(Salary ~ ., hitters)[, -1]
+y <- hitters$Salary
+
+set.seed(1)
+train_id <- sample(seq_len(nrow(x)), size = floor(0.7 * nrow(x)))
+
+x_train <- x[train_id, ]
+x_test  <- x[-train_id, ]
+y_train <- y[train_id]
+y_test  <- y[-train_id]
+
+hitters_fit <- fit_three_models(x_train, y_train, x_test, y_test)
+hitters_fit$summary
+```
+
+## Coefficient counts
+
+```{r hitters-counts}
+data.frame(
+  model = c("ridge", "lasso", "elastic_net"),
+  nonzero = c(
+    nonzero_count(hitters_fit$ridge),
+    nonzero_count(hitters_fit$lasso),
+    nonzero_count(hitters_fit$enet)
+  )
+)
+```
+
+## Coefficients from lasso
+
+```{r hitters-lasso-coefs}
+coef(hitters_fit$lasso, s = "lambda.min")
+```
+
+## Reflection
+
+1. Did lasso set some coefficients exactly to zero?
+2. Did ridge keep all predictors?
+3. Which had lower test RMSE?
+4. If your goal were explanation rather than just prediction, which model would you prefer?
+
+# 2) Boston housing: practice on correlated predictors
+
+```{r boston-data}
+data(Boston)
+
+x <- model.matrix(medv ~ ., Boston)[, -1]
+y <- Boston$medv
+
+set.seed(2)
+train_id <- sample(seq_len(nrow(x)), size = floor(0.7 * nrow(x)))
+
+x_train <- x[train_id, ]
+x_test  <- x[-train_id, ]
+y_train <- y[train_id]
+y_test  <- y[-train_id]
+
+boston_fit <- fit_three_models(x_train, y_train, x_test, y_test)
+boston_fit$summary
+```
+
+## Correlation check
+
+```{r boston-cor}
+round(cor(Boston[, sapply(Boston, is.numeric)]), 2)
+```
+
+## Reflection
+
+1. Which variables appear correlated?
+2. Does ridge perform well here?
+3. Does lasso drop one variable from a correlated group?
+4. Would elastic net be a good compromise?
+
+# 3) Synthetic sparse data: when lasso should shine
+
+```{r sparse-sim}
+set.seed(3)
+n <- 150
+p <- 60
+x <- matrix(rnorm(n * p), nrow = n, ncol = p)
+true_beta <- c(4, -3, 2.5, -2, 1.5, rep(0, p - 5))
+y <- x %*% true_beta + rnorm(n, sd = 2)
+
+train_id <- sample(seq_len(n), size = floor(0.7 * n))
+x_train <- x[train_id, ]
+x_test  <- x[-train_id, ]
+y_train <- y[train_id]
+y_test  <- y[-train_id]
+
+sparse_fit <- fit_three_models(x_train, y_train, x_test, y_test)
+sparse_fit$summary
+```
+
+## How many predictors did each keep?
+
+```{r sparse-counts}
+data.frame(
+  model = c("ridge", "lasso", "elastic_net"),
+  nonzero = c(
+    nonzero_count(sparse_fit$ridge),
+    nonzero_count(sparse_fit$lasso),
+    nonzero_count(sparse_fit$enet)
+  )
+)
+```
+
+## Which variables did lasso keep?
+
+```{r sparse-lasso-vars}
+lasso_coef <- coef(sparse_fit$lasso, s = "lambda.min")
+which(lasso_coef[-1, 1] != 0)
+```
+
+## Reflection
+
+1. The true signal is only in predictors 1 through 5. Did lasso recover them?
+2. Did ridge keep everything?
+3. When only a small subset matters, why is lasso often attractive?
+
+# 4) High-dimensional case: p > n
+
+```{r highdim}
+set.seed(4)
+n <- 60
+p <- 300
+x <- matrix(rnorm(n * p), nrow = n, ncol = p)
+true_beta <- c(3, -2.5, 2, -1.5, 1, rep(0, p - 5))
+y <- x %*% true_beta + rnorm(n, sd = 2)
+
+train_id <- sample(seq_len(n), size = floor(0.7 * n))
+x_train <- x[train_id, ]
+x_test  <- x[-train_id, ]
+y_train <- y[train_id]
+y_test  <- y[-train_id]
+
+highdim_fit <- fit_three_models(x_train, y_train, x_test, y_test)
+highdim_fit$summary
+```
+
+## Reflection
+
+1. Why would ordinary least squares struggle here?
+2. Which of ridge, lasso, and elastic net seems most useful when p > n?
+3. If prediction is your only goal, which would you try first?
+4. If variable selection also matters, which would you prefer?
+
+# Coefficient path practice
+
+Use these chunks to visualize how coefficients evolve as lambda changes.
+
+```{r coef-paths, fig.height=6, fig.width=8}
+plot(hitters_fit$ridge$glmnet.fit, xvar = "lambda", main = "Ridge coefficient paths")
+plot(hitters_fit$lasso$glmnet.fit, xvar = "lambda", main = "Lasso coefficient paths")
+```
+
+# Cross-validation curves
+
+```{r cv-curves, fig.height=6, fig.width=8}
+plot(hitters_fit$ridge, main = "Ridge CV curve")
+plot(hitters_fit$lasso, main = "Lasso CV curve")
+```
+
+# Practice prompts
+
+Try these modifications on your own:
+
+1. Change the train/test split seed and see how stable your conclusions are.
+2. Change elastic net alpha from 0.1 to 0.9 and record what changes.
+3. Standardize your own synthetic data and compare results.
+4. Create a dataset with strongly correlated predictors and see whether lasso picks one and drops the rest.
+5. Increase noise and see whether ridge becomes more competitive.
+
+# Rules of thumb you should discover
+
+By the end of this practice, you should notice patterns like these:
+
+- Ridge is often strong when many predictors all carry a little signal, especially when predictors are correlated.
+- Lasso is often strong when only a smaller subset of variables truly matters.
+- Elastic net is often helpful when predictors come in correlated groups and you want some shrinkage plus some selection.
+
+# Short answer: R Markdown vs R Notebook
+
+Both are usually `.Rmd` files.
+
+- **R Markdown** is the file format: text + code chunks + output options.
+- **R Notebook** is usually an R Markdown document with notebook-style behavior in RStudio, where chunks can run interactively and show previews inline.
+
+In practice:
+- If you want something easy to knit into HTML/PDF, use **R Markdown**.
+- If you want an interactive lab experience while coding in RStudio, use an **R Notebook**.
+- The difference is mostly in the output style and workflow, not the core syntax.

@@ -1,0 +1,722 @@
+---
+title: "Applied Predictive Modeling — Chapter 6 Solutions"
+author: "Randy Howk"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 4,
+  dpi = 144,
+  fig.align = "center"
+)
+
+library(caret)
+library(AppliedPredictiveModeling)
+library(elasticnet)
+library(pls)
+library(pROC)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(knitr)
+set.seed(2026)
+
+theme_set(
+  theme_classic(base_size = 11) +
+    theme(
+      panel.grid = element_blank(),
+      legend.position = "top",
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      axis.title.y = element_text(margin = margin(r = 6)),
+      axis.title.x = element_text(margin = margin(t = 6)),
+      axis.text = element_blank(),
+      axis.line = element_blank(),
+      axis.ticks = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "plain")
+    )
+)
+
+update_geom_defaults("line", list(linewidth = 0.45))
+update_geom_defaults("point", list(size = 1.2))
+```
+
+# How to use this file
+
+This R Markdown file contains **worked solutions** for all Chapter 6 exercises from *Applied Predictive Modeling*: 6.1 (Tecator fat prediction), 6.2 (permeability), and 6.3 (chemical manufacturing process). The chapter covers ordinary linear regression, partial least squares (PLS), and penalized linear models such as ridge, lasso, and elastic net. The exercises appear at the end of Chapter 6 and ask the reader to use those model families on three regression problems. fileciteturn0file0
+
+The code is written to be executable in a standard R setup with the listed packages installed. Where the chapter asks for judgments such as “which model would you choose?”, the text below gives a direct answer and the code computes the relevant summaries.
+
+# Chapter 6 in one paragraph
+
+Chapter 6 studies models that are linear in the parameters, emphasizing three recurring ideas: (1) ordinary least squares is simple and interpretable but can become unstable with correlated predictors or when the number of predictors is large relative to sample size; (2) PLS is often preferable to PCR because it uses the response while building latent components; and (3) penalized methods such as ridge and lasso improve prediction by shrinking coefficients and controlling variance. The chapter also stresses preprocessing, resampling, and out-of-sample evaluation rather than relying only on training-set fit. fileciteturn3file1L8-L21 fileciteturn3file8L1-L21
+
+# Helper functions
+
+```{r helpers}
+rmse_r2 <- function(obs, pred) {
+  out <- data.frame(obs = obs, pred = pred)
+  caret::defaultSummary(out)
+}
+
+summarize_resamples <- function(...) {
+  rs <- resamples(list(...))
+  list(summary = summary(rs), diffs = summary(diff(rs)), object = rs)
+}
+
+plot_obs_pred <- function(obs, pred, title = "Observed vs Predicted") {
+  ggplot(data.frame(obs = obs, pred = pred), aes(x = obs, y = pred)) +
+    geom_point(alpha = 0.6, shape = 16) +
+    geom_abline(slope = 1, intercept = 0, linetype = 2, linewidth = 0.35, color = "gray45") +
+    labs(title = title, x = "Observed", y = "Predicted")
+}
+
+plot_tuning <- function(model, x, y = "RMSE", color = NULL, title = NULL) {
+  results <- as_tibble(model$results)
+
+  p <- ggplot(results, aes(x = .data[[x]], y = .data[[y]]))
+
+  if (!is.null(color)) {
+    p <- p +
+      geom_line(aes(color = factor(.data[[color]]), group = .data[[color]])) +
+      geom_point(aes(color = factor(.data[[color]]))) +
+      labs(color = color)
+  } else {
+    p <- p +
+      geom_line() +
+      geom_point()
+  }
+
+  p + labs(title = title, x = x, y = y)
+}
+
+vip_pls <- function(pls_model) {
+  if (!inherits(pls_model$finalModel, "mvr")) stop("Model must be a PLS model fit with caret::train(method = 'pls').")
+  mod <- pls_model$finalModel
+  W <- mod$loading.weights
+  T <- mod$scores
+  Q <- mod$Yloadings
+  p <- nrow(W)
+  h <- ncol(W)
+
+  ss <- colSums(T^2) * colSums(Q^2)
+  total_ss <- sum(ss)
+
+  vip <- sapply(seq_len(p), function(j) {
+    sqrt(p * sum(ss * (W[j, ]^2 / colSums(W^2))) / total_ss)
+  })
+
+  tibble(variable = rownames(W), VIP = vip) %>% arrange(desc(VIP))
+}
+```
+
+# 6.1 Tecator fat prediction
+
+## Problem statement
+
+The Tecator exercise uses 215 meat samples measured at 100 infrared frequencies to predict fat content. The chapter explicitly notes that the predictors are ordered frequencies and therefore highly correlated, making this a good setting for PCA, PLS, and penalized linear models. fileciteturn0file0
+
+## (a) Load the data
+
+```{r tecator-load}
+data(tecator)
+str(absorp)
+str(endpoints)
+
+x_tec <- as.data.frame(absorp)
+y_tec <- endpoints[, 2]   # fat content
+```
+
+**Answer:** the predictors are the 100 absorbance measurements and the response is percent fat.
+
+## (b) Use PCA to determine the effective dimension
+
+Because adjacent wavelengths are physically close and chemically related, we expect strong local correlation and a much smaller effective dimension than 100. The direct way to answer the question is to center/scale the predictors, run PCA, and inspect the cumulative variance curve.
+
+```{r tecator-pca}
+pre_tec <- preProcess(x_tec, method = c("center", "scale"))
+x_tec_cs <- predict(pre_tec, x_tec)
+
+pca_tec <- prcomp(x_tec_cs)
+var_exp <- pca_tec$sdev^2 / sum(pca_tec$sdev^2)
+cum_var <- cumsum(var_exp)
+
+eff_dim_90 <- which(cum_var >= 0.90)[1]
+eff_dim_95 <- which(cum_var >= 0.95)[1]
+eff_dim_99 <- which(cum_var >= 0.99)[1]
+
+data.frame(
+  threshold = c("90%", "95%", "99%"),
+  components = c(eff_dim_90, eff_dim_95, eff_dim_99)
+)
+
+ggplot(tibble(component = seq_along(cum_var), cum_var = cum_var),
+       aes(component, cum_var)) +
+  geom_line() +
+  geom_point() +
+  geom_hline(yintercept = c(.90, .95), linetype = 2, linewidth = 0.3, color = "gray45") +
+  labs(x = "Principal component", y = "Cumulative variance explained",
+       title = "Tecator PCA cumulative variance")
+```
+
+**Answer:** use the table above. For reporting, I would call the **effective dimension** the smallest number of PCs needed to explain about 90–95% of the variance, since that is the practical low-dimensional summary of the ordered spectra.
+
+## (c) Split the data, preprocess, and fit all Chapter 6 models
+
+We will compare:
+- ordinary linear regression,
+- PLS,
+- ridge regression,
+- lasso,
+- elastic net.
+
+```{r tecator-split}
+set.seed(2026)
+idx_tec <- createDataPartition(y_tec, p = 0.80, list = FALSE)
+
+x_tec_train <- x_tec[idx_tec, ]
+x_tec_test  <- x_tec[-idx_tec, ]
+y_tec_train <- y_tec[idx_tec]
+y_tec_test  <- y_tec[-idx_tec]
+
+ctrl_reg <- trainControl(method = "cv", number = 5)
+```
+
+### Linear regression
+
+```{r tecator-lm}
+tec_lm <- train(
+  x = x_tec_train,
+  y = y_tec_train,
+  method = "lm",
+  preProcess = c("center", "scale"),
+  trControl = ctrl_reg,
+  metric = "RMSE"
+)
+tec_lm
+```
+
+**Answer:** linear regression has no tuning parameter, so the “optimal” value is not applicable.
+
+### PLS
+
+```{r tecator-pls}
+pls_grid <- expand.grid(ncomp = 1:15)
+
+tec_pls <- train(
+  x = x_tec_train,
+  y = y_tec_train,
+  method = "pls",
+  tuneGrid = pls_grid,
+  preProcess = c("center", "scale"),
+  trControl = ctrl_reg,
+  metric = "RMSE"
+)
+tec_pls
+plot_tuning(tec_pls, x = "ncomp", y = "RMSE", title = "Tecator PLS tuning")
+```
+
+**Answer:** the optimal number of latent components is the `ncomp` value selected by the model summary above.
+
+### Ridge
+
+```{r tecator-ridge}
+ridge_grid <- expand.grid(lambda = seq(0, 0.20, length.out = 15))
+
+tec_ridge <- train(
+  x = x_tec_train,
+  y = y_tec_train,
+  method = "ridge",
+  tuneGrid = ridge_grid,
+  preProcess = c("center", "scale"),
+  trControl = ctrl_reg,
+  metric = "RMSE"
+)
+tec_ridge
+plot_tuning(tec_ridge, x = "lambda", y = "RMSE", title = "Tecator ridge tuning")
+```
+
+**Answer:** the optimal ridge penalty is the selected `lambda`.
+
+### Lasso
+
+```{r tecator-lasso}
+lasso_grid <- expand.grid(
+  fraction = seq(0.10, 1.00, length.out = 10),
+  lambda = 0
+)
+
+tec_lasso <- train(
+  x = x_tec_train,
+  y = y_tec_train,
+  method = "enet",
+  tuneGrid = lasso_grid,
+  preProcess = c("center", "scale"),
+  trControl = ctrl_reg,
+  metric = "RMSE"
+)
+tec_lasso
+plot_tuning(tec_lasso, x = "fraction", y = "RMSE", title = "Tecator lasso tuning")
+```
+
+**Answer:** because lasso is fit here as elastic net with `lambda = 0`, the effective tuning parameter is the selected `fraction`.
+
+### Elastic net
+
+```{r tecator-enet}
+enet_grid <- expand.grid(
+  fraction = seq(0.10, 1.00, length.out = 10),
+  lambda = c(0.00, 0.01, 0.05)
+)
+
+tec_enet <- train(
+  x = x_tec_train,
+  y = y_tec_train,
+  method = "enet",
+  tuneGrid = enet_grid,
+  preProcess = c("center", "scale"),
+  trControl = ctrl_reg,
+  metric = "RMSE"
+)
+tec_enet
+plot_tuning(tec_enet, x = "fraction", y = "RMSE", color = "lambda",
+            title = "Tecator elastic net tuning")
+```
+
+**Answer:** the optimal elastic-net tuning parameters are the selected `lambda` and `fraction`.
+
+## (d) Which model has the best predictive ability?
+
+```{r tecator-test-compare}
+tec_models <- list(
+  LM = tec_lm,
+  PLS = tec_pls,
+  Ridge = tec_ridge,
+  Lasso = tec_lasso,
+  ElasticNet = tec_enet
+)
+
+tec_test_perf <- bind_rows(lapply(names(tec_models), function(nm) {
+  pred <- predict(tec_models[[nm]], x_tec_test)
+  tibble(model = nm,
+         RMSE = caret::RMSE(pred, y_tec_test),
+         Rsquared = caret::R2(pred, y_tec_test))
+})) %>% arrange(RMSE)
+
+tec_test_perf
+```
+
+To compare resampled distributions:
+
+```{r tecator-resamples}
+tec_resamp <- resamples(tec_models)
+summary(tec_resamp)
+summary(diff(tec_resamp))
+```
+
+**Answer:** the best predictive model is the one with the **lowest test-set RMSE** and, secondarily, the highest test-set $R^2$. If the paired resampling comparison shows very small differences, then I would prefer the simpler or more stable model among the top performers.
+
+## (e) Which model would I use?
+
+**Direct answer:** for Tecator I would usually choose **PLS** unless ridge or elastic net is clearly better on the test set.
+
+**Why:**
+1. The spectra are extremely correlated and ordered, which is exactly where latent-component models shine.
+2. PLS uses the response while constructing components, which is preferable to unsupervised PCA/PCR in this setting. Chapter 6 explicitly recommends PLS over PCR when correlated predictors are present and a linear-regression-type solution is desired. fileciteturn3file8L14-L21
+3. PLS gives good predictive performance with fewer effective dimensions and a coherent scientific story: the prediction is driven by a small number of latent spectral directions.
+
+If ridge or elastic net gives materially smaller test RMSE, I would use that instead for pure prediction. If performance is essentially tied, I would still pick PLS.
+
+# 6.2 Permeability
+
+## Problem statement
+
+The permeability exercise uses 1,107 binary molecular fingerprint predictors on only 165 compounds. The book describes this data set as a classic high-dimensional problem with sparse predictors and a skewed response, making it a strong candidate for filtering and latent-variable modeling. fileciteturn4file0L24-L26
+
+## (a) Load the data
+
+```{r perm-load}
+data(permeability)
+str(fingerprints)
+str(permeability)
+
+x_perm <- as.data.frame(fingerprints)
+y_perm <- permeability
+```
+
+## (b) Remove very sparse predictors with `nearZeroVar`
+
+```{r perm-nzv}
+nzv_idx <- nearZeroVar(x_perm)
+length(nzv_idx)
+
+x_perm_filt <- x_perm[, -nzv_idx]
+dim(x_perm_filt)
+```
+
+**Answer:** the number of predictors left for modeling is `ncol(x_perm_filt)`.
+
+## (c) Split, preprocess, and tune a PLS model
+
+Because the data are high-dimensional ($p \gg n$), ordinary least squares is not an attractive primary model. Chapter 6 emphasizes that PLS is a strong alternative in exactly this kind of situation. fileciteturn3file8L1-L21
+
+```{r perm-split-pls}
+set.seed(2026)
+idx_perm <- createDataPartition(y_perm, p = 0.80, list = FALSE)
+
+x_perm_train <- x_perm_filt[idx_perm, ]
+x_perm_test  <- x_perm_filt[-idx_perm, ]
+y_perm_train <- y_perm[idx_perm]
+y_perm_test  <- y_perm[-idx_perm]
+
+perm_ctrl <- trainControl(method = "cv", number = 5)
+perm_grid <- expand.grid(ncomp = 1:min(15, ncol(x_perm_train)))
+
+perm_pls <- train(
+  x = x_perm_train,
+  y = y_perm_train,
+  method = "pls",
+  tuneGrid = perm_grid,
+  preProcess = c("center", "scale"),
+  trControl = perm_ctrl,
+  metric = "Rsquared"
+)
+perm_pls
+plot_tuning(perm_pls, x = "ncomp", y = "Rsquared", title = "Permeability PLS tuning")
+```
+
+**Answer:** the optimal number of latent variables is the selected `ncomp`, and the resampled estimate of $R^2$ is the corresponding `Rsquared` value in the output.
+
+## (d) Predict the test set and estimate $R^2$
+
+```{r perm-test-pls}
+perm_pls_pred <- predict(perm_pls, x_perm_test)
+rmse_r2(y_perm_test, perm_pls_pred)
+plot_obs_pred(y_perm_test, perm_pls_pred, "Permeability: PLS on test set")
+```
+
+**Answer:** the test-set estimate of $R^2$ is the `Rsquared` value printed above.
+
+## (e) Try other Chapter 6 models
+
+We will compare PLS with ridge, lasso, and elastic net. A plain linear model is not suitable here because the original problem has far more predictors than samples and even after filtering, instability is still likely.
+
+```{r perm-other-models}
+perm_ridge <- train(
+  x = x_perm_train,
+  y = y_perm_train,
+  method = "ridge",
+  tuneGrid = expand.grid(lambda = seq(0, 0.20, length.out = 15)),
+  preProcess = c("center", "scale"),
+  trControl = perm_ctrl,
+  metric = "Rsquared"
+)
+
+perm_lasso <- train(
+  x = x_perm_train,
+  y = y_perm_train,
+  method = "enet",
+  tuneGrid = expand.grid(lambda = 0, fraction = seq(0.10, 1, length.out = 10)),
+  preProcess = c("center", "scale"),
+  trControl = perm_ctrl,
+  metric = "Rsquared"
+)
+
+perm_enet <- train(
+  x = x_perm_train,
+  y = y_perm_train,
+  method = "enet",
+  tuneGrid = expand.grid(lambda = c(0.00, 0.01, 0.05), fraction = seq(0.10, 1, length.out = 10)),
+  preProcess = c("center", "scale"),
+  trControl = perm_ctrl,
+  metric = "Rsquared"
+)
+
+perm_models <- list(PLS = perm_pls, Ridge = perm_ridge, Lasso = perm_lasso, ElasticNet = perm_enet)
+
+perm_test_perf <- bind_rows(lapply(names(perm_models), function(nm) {
+  pred <- predict(perm_models[[nm]], x_perm_test)
+  tibble(model = nm,
+         RMSE = caret::RMSE(pred, y_perm_test),
+         Rsquared = caret::R2(pred, y_perm_test))
+})) %>% arrange(RMSE)
+
+perm_test_perf
+summary(resamples(perm_models))
+summary(diff(resamples(perm_models)))
+```
+
+**Answer:** whichever model is at the top of `perm_test_perf` has the best observed predictive performance. In many high-dimensional chemistry problems, **PLS** or **elastic net** tends to do very well.
+
+## (f) Would I recommend replacing the experiment?
+
+**Direct answer:** probably **not as a full replacement** unless the test-set performance is extremely strong and the prediction error is small enough for the business/scientific decision.
+
+I would usually recommend the best model as a **screening tool**, not a total replacement, for three reasons:
+1. The laboratory assay is the ground truth.
+2. The sample size is modest.
+3. A false positive or false negative in permeability can be expensive downstream.
+
+So my recommendation would be:
+- use the model to **prioritize** compounds,
+- send the most promising molecules to the assay,
+- keep collecting new assay data and periodically retrain the model.
+
+# 6.3 Chemical manufacturing process
+
+## Problem statement
+
+This exercise studies 57 predictors (12 biological/raw-material variables and 45 process variables) for 176 manufacturing runs, with percent yield as the outcome. The key applied question is not only prediction but also which variables are actionable for improving yield. The exercise text makes that distinction explicit. fileciteturn2file14L1-L20
+
+## (a) Load the data
+
+```{r chem-load}
+data("ChemicalManufacturingProcess")
+str(ChemicalManufacturingProcess)
+
+x_chem <- ChemicalManufacturingProcess %>% select(-Yield)
+y_chem <- ChemicalManufacturingProcess$Yield
+```
+
+## (b) Impute missing values
+
+The problem explicitly tells us that a small percentage of predictor cells are missing. The simplest reasonable Chapter 6-compatible workflow is median imputation followed by centering/scaling, though k-nearest-neighbor imputation is also fine. Because the data set is small, I prefer **kNN imputation**.
+
+```{r chem-impute}
+colSums(is.na(x_chem)) %>% sort(decreasing = TRUE) %>% head(15)
+
+chem_pp <- preProcess(x_chem, method = c("knnImpute", "center", "scale"))
+x_chem_imp <- predict(chem_pp, x_chem)
+summary(is.na(x_chem_imp))
+```
+
+**Answer:** missing values are filled using k-nearest-neighbor imputation.
+
+## (c) Split, preprocess, and tune a model from Chapter 6
+
+My model choice here is **elastic net** because:
+- there may be correlated process variables,
+- the sample size is not large,
+- coefficient shrinkage can improve stability,
+- we still retain a coefficient-based model that supports interpretation.
+
+I also fit PLS as a benchmark because it is often competitive on correlated process data.
+
+```{r chem-split-models}
+set.seed(2026)
+idx_chem <- createDataPartition(y_chem, p = 0.80, list = FALSE)
+
+x_chem_train <- x_chem[idx_chem, ]
+x_chem_test  <- x_chem[-idx_chem, ]
+y_chem_train <- y_chem[idx_chem]
+y_chem_test  <- y_chem[-idx_chem]
+
+chem_ctrl <- trainControl(method = "cv", number = 5)
+
+chem_pls <- train(
+  x = x_chem_train,
+  y = y_chem_train,
+  method = "pls",
+  tuneGrid = expand.grid(ncomp = 1:15),
+  preProcess = c("knnImpute", "center", "scale"),
+  trControl = chem_ctrl,
+  metric = "RMSE"
+)
+
+chem_enet <- train(
+  x = x_chem_train,
+  y = y_chem_train,
+  method = "enet",
+  tuneGrid = expand.grid(lambda = c(0.00, 0.01, 0.05), fraction = seq(0.10, 1, length.out = 10)),
+  preProcess = c("knnImpute", "center", "scale"),
+  trControl = chem_ctrl,
+  metric = "RMSE"
+)
+
+chem_lm <- train(
+  x = x_chem_train,
+  y = y_chem_train,
+  method = "lm",
+  preProcess = c("knnImpute", "center", "scale"),
+  trControl = chem_ctrl,
+  metric = "RMSE"
+)
+
+chem_models <- list(LM = chem_lm, PLS = chem_pls, ElasticNet = chem_enet)
+summary(resamples(chem_models))
+summary(diff(resamples(chem_models)))
+```
+
+**Answer:** the optimal value of the performance metric is the **smallest cross-validated RMSE** among the tuned models. For the chosen elastic-net model, the optimal tuning parameters are the selected `lambda` and `fraction`.
+
+## (d) Predict the test set and compare with resampling
+
+```{r chem-test}
+chem_test_perf <- bind_rows(lapply(names(chem_models), function(nm) {
+  pred <- predict(chem_models[[nm]], x_chem_test)
+  tibble(model = nm,
+         RMSE = caret::RMSE(pred, y_chem_test),
+         Rsquared = caret::R2(pred, y_chem_test))
+})) %>% arrange(RMSE)
+
+chem_test_perf
+```
+
+**Answer:** compare the best model’s test RMSE with its resampled RMSE:
+- if they are close, the model generalized well;
+- if the test RMSE is much worse, the model was probably overfit.
+
+## (e) Which predictors are most important? Do biological or process variables dominate?
+
+For PLS, variable importance can be estimated through VIP; for the elastic net, coefficient magnitude after standardization is an interpretable proxy.
+
+### PLS VIP
+
+```{r chem-pls-vip}
+chem_vip <- vip_pls(chem_pls)
+head(chem_vip, 15)
+```
+
+### Elastic-net standardized coefficients
+
+```{r chem-enet-coef}
+chem_coef <- predict(chem_enet$finalModel,
+                     s = chem_enet$bestTune$fraction,
+                     mode = "fraction",
+                     type = "coefficients")
+
+coef_tbl <- tibble(
+  variable = names(chem_coef$coefficients),
+  coefficient = as.numeric(chem_coef$coefficients)
+) %>%
+  filter(variable != "(Intercept)", coefficient != 0) %>%
+  mutate(abs_coefficient = abs(coefficient)) %>%
+  arrange(desc(abs_coefficient))
+
+head(coef_tbl, 15)
+```
+
+To separate biological from process variables, create a lookup vector based on the original column names. If the package uses the first 12 columns for the biological measurements and the remaining 45 for process variables, the code below will tag them accordingly.
+
+```{r chem-variable-types}
+chem_var_types <- tibble(
+  variable = colnames(x_chem),
+  type = c(rep("Biological", 12), rep("Process", ncol(x_chem) - 12))
+)
+
+chem_importance <- full_join(
+  chem_var_types,
+  coef_tbl %>% select(variable, abs_coefficient),
+  by = "variable"
+) %>% arrange(desc(abs_coefficient))
+
+head(chem_importance, 20)
+count(chem_importance %>% slice_head(n = 10), type)
+```
+
+**Answer:** whichever group appears more often among the top-ranked variables dominates the importance list. From a business perspective, process variables are especially valuable because they are actionable.
+
+## (f) Explore the relationships between top predictors and yield
+
+```{r chem-top-predictors}
+top_vars <- chem_importance %>%
+  filter(!is.na(abs_coefficient)) %>%
+  slice_head(n = 6) %>%
+  pull(variable)
+
+top_vars
+```
+
+```{r chem-top-plots, fig.height=8, fig.width=10}
+plot_list <- lapply(top_vars, function(v) {
+  ggplot(data.frame(x = x_chem_imp[[v]], y = y_chem), aes(x = x, y = y)) +
+    geom_point(alpha = 0.6, shape = 16) +
+    geom_smooth(method = "loess", se = FALSE, linewidth = 0.4, color = "gray25") +
+    labs(title = v, x = v, y = "Yield")
+})
+
+plot_list[[1]]
+```
+
+```{r chem-top-plots-loop, eval=FALSE}
+# Print the rest one-by-one when knitting interactively:
+plot_list[[2]]
+plot_list[[3]]
+plot_list[[4]]
+plot_list[[5]]
+plot_list[[6]]
+```
+
+**Answer:** these plots are useful in two distinct ways.
+
+1. **Raw-material screening:** if a biological variable is strongly associated with yield, operators can use it to evaluate incoming material before production.
+2. **Process optimization:** if a process variable shows a favorable region, the manufacturing team can target that operating range in future runs.
+
+So the practical value of the model is not only prediction; it is also prioritizing controllable levers for yield improvement.
+
+# Final answers in plain English
+
+## 6.1 Tecator
+
+- The spectra are highly collinear, so PCA should show a much smaller effective dimension than 100.
+- PLS is usually the most natural model choice because it handles correlated predictors directly and uses the response.
+- I would choose the model with the smallest test RMSE, but if several are tied, I would use PLS.
+
+## 6.2 Permeability
+
+- Remove sparse near-zero-variance fingerprints first.
+- Tune PLS as the primary latent-variable model.
+- Compare against ridge/lasso/elastic net.
+- I would recommend the best model as a **screening aid**, not a full replacement for the assay, unless the test-set error is exceptionally small.
+
+## 6.3 Chemical manufacturing
+
+- Impute missing values, then center/scale.
+- Fit at least PLS and elastic net.
+- Compare resampled RMSE to test RMSE to check generalization.
+- Inspect importance and top predictor-yield relationships.
+- If process variables dominate the top of the list, that is especially useful because those variables are controllable.
+
+# Session info
+
+```{r session-info}
+sessionInfo()
+```

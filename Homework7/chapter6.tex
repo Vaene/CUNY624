@@ -1,0 +1,1828 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Applied Predictive Modeling --- Chapter 6 Solutions},
+  pdfauthor={Randy Howk},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=0.5in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.05}
+\setlength{\emergencystretch}{1em}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\floatplacement{figure}{H}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Applied Predictive Modeling --- Chapter 6 Solutions}
+\author{Randy Howk}
+\date{2026-04-01}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{how-to-use-this-file}{%
+\section{How to use this file}\label{how-to-use-this-file}}
+
+This R Markdown file contains \textbf{worked solutions} for all Chapter
+6 exercises from \emph{Applied Predictive Modeling}: 6.1 (Tecator fat
+prediction), 6.2 (permeability), and 6.3 (chemical manufacturing
+process). The chapter covers ordinary linear regression, partial least
+squares (PLS), and penalized linear models such as ridge, lasso, and
+elastic net. The exercises appear at the end of Chapter 6 and ask the
+reader to use those model families on three regression problems.
+fileciteturn0file0
+
+The code is written to be executable in a standard R setup with the
+listed packages installed. Where the chapter asks for judgments such as
+``which model would you choose?'', the text below gives a direct answer
+and the code computes the relevant summaries.
+
+\hypertarget{chapter-6-in-one-paragraph}{%
+\section{Chapter 6 in one paragraph}\label{chapter-6-in-one-paragraph}}
+
+Chapter 6 studies models that are linear in the parameters, emphasizing
+three recurring ideas: (1) ordinary least squares is simple and
+interpretable but can become unstable with correlated predictors or when
+the number of predictors is large relative to sample size; (2) PLS is
+often preferable to PCR because it uses the response while building
+latent components; and (3) penalized methods such as ridge and lasso
+improve prediction by shrinking coefficients and controlling variance.
+The chapter also stresses preprocessing, resampling, and out-of-sample
+evaluation rather than relying only on training-set fit.
+fileciteturn3file1L8-L21 fileciteturn3file8L1-L21
+
+\hypertarget{helper-functions}{%
+\section{Helper functions}\label{helper-functions}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rmse\_r2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(obs, pred) \{}
+\NormalTok{  out }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{obs =}\NormalTok{ obs, }\AttributeTok{pred =}\NormalTok{ pred)}
+\NormalTok{  caret}\SpecialCharTok{::}\FunctionTok{defaultSummary}\NormalTok{(out)}
+\NormalTok{\}}
+
+\NormalTok{summarize\_resamples }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(...) \{}
+\NormalTok{  rs }\OtherTok{\textless{}{-}} \FunctionTok{resamples}\NormalTok{(}\FunctionTok{list}\NormalTok{(...))}
+  \FunctionTok{list}\NormalTok{(}\AttributeTok{summary =} \FunctionTok{summary}\NormalTok{(rs), }\AttributeTok{diffs =} \FunctionTok{summary}\NormalTok{(}\FunctionTok{diff}\NormalTok{(rs)), }\AttributeTok{object =}\NormalTok{ rs)}
+\NormalTok{\}}
+
+\NormalTok{plot\_obs\_pred }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(obs, pred, }\AttributeTok{title =} \StringTok{"Observed vs Predicted"}\NormalTok{) \{}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{obs =}\NormalTok{ obs, }\AttributeTok{pred =}\NormalTok{ pred), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ obs, }\AttributeTok{y =}\NormalTok{ pred)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{shape =} \DecValTok{16}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{slope =} \DecValTok{1}\NormalTok{, }\AttributeTok{intercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{0.35}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray45"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =}\NormalTok{ title, }\AttributeTok{x =} \StringTok{"Observed"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Predicted"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{plot\_tuning }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(model, x, }\AttributeTok{y =} \StringTok{"RMSE"}\NormalTok{, }\AttributeTok{color =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{title =} \ConstantTok{NULL}\NormalTok{) \{}
+\NormalTok{  results }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(model}\SpecialCharTok{$}\NormalTok{results)}
+
+\NormalTok{  p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(results, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ .data[[x]], }\AttributeTok{y =}\NormalTok{ .data[[y]]))}
+
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(color)) \{}
+\NormalTok{    p }\OtherTok{\textless{}{-}}\NormalTok{ p }\SpecialCharTok{+}
+      \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =} \FunctionTok{factor}\NormalTok{(.data[[color]]), }\AttributeTok{group =}\NormalTok{ .data[[color]])) }\SpecialCharTok{+}
+      \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =} \FunctionTok{factor}\NormalTok{(.data[[color]]))) }\SpecialCharTok{+}
+      \FunctionTok{labs}\NormalTok{(}\AttributeTok{color =}\NormalTok{ color)}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    p }\OtherTok{\textless{}{-}}\NormalTok{ p }\SpecialCharTok{+}
+      \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+      \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{  \}}
+
+\NormalTok{  p }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =}\NormalTok{ title, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y)}
+\NormalTok{\}}
+
+\NormalTok{vip\_pls }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(pls\_model) \{}
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{inherits}\NormalTok{(pls\_model}\SpecialCharTok{$}\NormalTok{finalModel, }\StringTok{"mvr"}\NormalTok{)) }\FunctionTok{stop}\NormalTok{(}\StringTok{"Model must be a PLS model fit with caret::train(method = \textquotesingle{}pls\textquotesingle{})."}\NormalTok{)}
+\NormalTok{  mod }\OtherTok{\textless{}{-}}\NormalTok{ pls\_model}\SpecialCharTok{$}\NormalTok{finalModel}
+\NormalTok{  W }\OtherTok{\textless{}{-}}\NormalTok{ mod}\SpecialCharTok{$}\NormalTok{loading.weights}
+\NormalTok{  T }\OtherTok{\textless{}{-}}\NormalTok{ mod}\SpecialCharTok{$}\NormalTok{scores}
+\NormalTok{  Q }\OtherTok{\textless{}{-}}\NormalTok{ mod}\SpecialCharTok{$}\NormalTok{Yloadings}
+\NormalTok{  p }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(W)}
+\NormalTok{  h }\OtherTok{\textless{}{-}} \FunctionTok{ncol}\NormalTok{(W)}
+
+\NormalTok{  ss }\OtherTok{\textless{}{-}} \FunctionTok{colSums}\NormalTok{(T}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{*} \FunctionTok{colSums}\NormalTok{(Q}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{  total\_ss }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(ss)}
+
+\NormalTok{  vip }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(p), }\ControlFlowTok{function}\NormalTok{(j) \{}
+    \FunctionTok{sqrt}\NormalTok{(p }\SpecialCharTok{*} \FunctionTok{sum}\NormalTok{(ss }\SpecialCharTok{*}\NormalTok{ (W[j, ]}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{colSums}\NormalTok{(W}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))) }\SpecialCharTok{/}\NormalTok{ total\_ss)}
+\NormalTok{  \})}
+
+  \FunctionTok{tibble}\NormalTok{(}\AttributeTok{variable =} \FunctionTok{rownames}\NormalTok{(W), }\AttributeTok{VIP =}\NormalTok{ vip) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(VIP))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{tecator-fat-prediction}{%
+\section{6.1 Tecator fat prediction}\label{tecator-fat-prediction}}
+
+\hypertarget{problem-statement}{%
+\subsection{Problem statement}\label{problem-statement}}
+
+The Tecator exercise uses 215 meat samples measured at 100 infrared
+frequencies to predict fat content. The chapter explicitly notes that
+the predictors are ordered frequencies and therefore highly correlated,
+making this a good setting for PCA, PLS, and penalized linear models.
+fileciteturn0file0
+
+\hypertarget{a-load-the-data}{%
+\subsection{(a) Load the data}\label{a-load-the-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(tecator)}
+\FunctionTok{str}\NormalTok{(absorp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:215, 1:100] 2.62 2.83 2.58 2.82 2.79 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(endpoints)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:215, 1:3] 60.5 46 71 72.8 58.3 44 44 69.3 61.4 61.4 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_tec }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(absorp)}
+\NormalTok{y\_tec }\OtherTok{\textless{}{-}}\NormalTok{ endpoints[, }\DecValTok{2}\NormalTok{]   }\CommentTok{\# fat content}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Answer:} the predictors are the 100 absorbance measurements and
+the response is percent fat.
+
+\hypertarget{b-use-pca-to-determine-the-effective-dimension}{%
+\subsection{(b) Use PCA to determine the effective
+dimension}\label{b-use-pca-to-determine-the-effective-dimension}}
+
+Because adjacent wavelengths are physically close and chemically
+related, we expect strong local correlation and a much smaller effective
+dimension than 100. The direct way to answer the question is to
+center/scale the predictors, run PCA, and inspect the cumulative
+variance curve.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pre\_tec }\OtherTok{\textless{}{-}} \FunctionTok{preProcess}\NormalTok{(x\_tec, }\AttributeTok{method =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
+\NormalTok{x\_tec\_cs }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(pre\_tec, x\_tec)}
+
+\NormalTok{pca\_tec }\OtherTok{\textless{}{-}} \FunctionTok{prcomp}\NormalTok{(x\_tec\_cs)}
+\NormalTok{var\_exp }\OtherTok{\textless{}{-}}\NormalTok{ pca\_tec}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pca\_tec}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{cum\_var }\OtherTok{\textless{}{-}} \FunctionTok{cumsum}\NormalTok{(var\_exp)}
+
+\NormalTok{eff\_dim\_90 }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(cum\_var }\SpecialCharTok{\textgreater{}=} \FloatTok{0.90}\NormalTok{)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{eff\_dim\_95 }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(cum\_var }\SpecialCharTok{\textgreater{}=} \FloatTok{0.95}\NormalTok{)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{eff\_dim\_99 }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(cum\_var }\SpecialCharTok{\textgreater{}=} \FloatTok{0.99}\NormalTok{)[}\DecValTok{1}\NormalTok{]}
+
+\FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{threshold =} \FunctionTok{c}\NormalTok{(}\StringTok{"90\%"}\NormalTok{, }\StringTok{"95\%"}\NormalTok{, }\StringTok{"99\%"}\NormalTok{),}
+  \AttributeTok{components =} \FunctionTok{c}\NormalTok{(eff\_dim\_90, eff\_dim\_95, eff\_dim\_99)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   threshold components
+## 1       90%          1
+## 2       95%          1
+## 3       99%          2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{tibble}\NormalTok{(}\AttributeTok{component =} \FunctionTok{seq\_along}\NormalTok{(cum\_var), }\AttributeTok{cum\_var =}\NormalTok{ cum\_var),}
+       \FunctionTok{aes}\NormalTok{(component, cum\_var)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{c}\NormalTok{(.}\DecValTok{90}\NormalTok{, .}\DecValTok{95}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{0.3}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray45"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Principal component"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Cumulative variance explained"}\NormalTok{,}
+       \AttributeTok{title =} \StringTok{"Tecator PCA cumulative variance"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/tecator-pca-1} \end{center}
+
+\textbf{Answer:} use the table above. For reporting, I would call the
+\textbf{effective dimension} the smallest number of PCs needed to
+explain about 90--95\% of the variance, since that is the practical
+low-dimensional summary of the ordered spectra.
+
+\hypertarget{c-split-the-data-preprocess-and-fit-all-chapter-6-models}{%
+\subsection{(c) Split the data, preprocess, and fit all Chapter 6
+models}\label{c-split-the-data-preprocess-and-fit-all-chapter-6-models}}
+
+We will compare: - ordinary linear regression, - PLS, - ridge
+regression, - lasso, - elastic net.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2026}\NormalTok{)}
+\NormalTok{idx\_tec }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(y\_tec, }\AttributeTok{p =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+
+\NormalTok{x\_tec\_train }\OtherTok{\textless{}{-}}\NormalTok{ x\_tec[idx\_tec, ]}
+\NormalTok{x\_tec\_test  }\OtherTok{\textless{}{-}}\NormalTok{ x\_tec[}\SpecialCharTok{{-}}\NormalTok{idx\_tec, ]}
+\NormalTok{y\_tec\_train }\OtherTok{\textless{}{-}}\NormalTok{ y\_tec[idx\_tec]}
+\NormalTok{y\_tec\_test  }\OtherTok{\textless{}{-}}\NormalTok{ y\_tec[}\SpecialCharTok{{-}}\NormalTok{idx\_tec]}
+
+\NormalTok{ctrl\_reg }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{linear-regression}{%
+\subsubsection{Linear regression}\label{linear-regression}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tec\_lm }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_tec\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_tec\_train,}
+  \AttributeTok{method =} \StringTok{"lm"}\NormalTok{,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ ctrl\_reg,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+\NormalTok{tec\_lm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear Regression 
+## 
+## 174 samples
+## 100 predictors
+## 
+## Pre-processing: centered (100), scaled (100) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 139, 141, 139, 139, 138 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE     
+##   3.676698  0.9209796  2.474238
+## 
+## Tuning parameter 'intercept' was held constant at a value of TRUE
+\end{verbatim}
+
+\textbf{Answer:} linear regression has no tuning parameter, so the
+``optimal'' value is not applicable.
+
+\hypertarget{pls}{%
+\subsubsection{PLS}\label{pls}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pls\_grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{ncomp =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{15}\NormalTok{)}
+
+\NormalTok{tec\_pls }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_tec\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_tec\_train,}
+  \AttributeTok{method =} \StringTok{"pls"}\NormalTok{,}
+  \AttributeTok{tuneGrid =}\NormalTok{ pls\_grid,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ ctrl\_reg,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+\NormalTok{tec\_pls}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Partial Least Squares 
+## 
+## 174 samples
+## 100 predictors
+## 
+## Pre-processing: centered (100), scaled (100) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 139, 139, 138, 139, 141 
+## Resampling results across tuning parameters:
+## 
+##   ncomp  RMSE       Rsquared   MAE     
+##    1     11.622198  0.2118231  9.288816
+##    2      7.960089  0.6544242  6.185909
+##    3      5.340941  0.8345996  4.075444
+##    4      4.355952  0.8956003  3.573886
+##    5      3.259243  0.9442289  2.526937
+##    6      3.192745  0.9457547  2.499605
+##    7      3.211157  0.9451586  2.408406
+##    8      3.012660  0.9525152  2.248368
+##    9      3.041014  0.9524221  2.282326
+##   10      2.973371  0.9544661  2.259329
+##   11      2.857732  0.9588941  2.171496
+##   12      2.523195  0.9676535  1.879841
+##   13      2.374429  0.9705027  1.735981
+##   14      2.208817  0.9728180  1.649793
+##   15      2.384897  0.9669135  1.734478
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was ncomp = 14.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_tuning}\NormalTok{(tec\_pls, }\AttributeTok{x =} \StringTok{"ncomp"}\NormalTok{, }\AttributeTok{y =} \StringTok{"RMSE"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Tecator PLS tuning"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/tecator-pls-1} \end{center}
+
+\textbf{Answer:} the optimal number of latent components is the
+\texttt{ncomp} value selected by the model summary above.
+
+\hypertarget{ridge}{%
+\subsubsection{Ridge}\label{ridge}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ridge\_grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lambda =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.20}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{15}\NormalTok{))}
+
+\NormalTok{tec\_ridge }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_tec\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_tec\_train,}
+  \AttributeTok{method =} \StringTok{"ridge"}\NormalTok{,}
+  \AttributeTok{tuneGrid =}\NormalTok{ ridge\_grid,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ ctrl\_reg,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+\NormalTok{tec\_ridge}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Ridge Regression 
+## 
+## 174 samples
+## 100 predictors
+## 
+## Pre-processing: centered (100), scaled (100) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 139, 139, 141, 138, 139 
+## Resampling results across tuning parameters:
+## 
+##   lambda      RMSE      Rsquared   MAE     
+##   0.00000000  3.571465  0.9409278  2.377526
+##   0.01428571  3.915887  0.9141461  3.249154
+##   0.02857143  4.272598  0.8994477  3.483134
+##   0.04285714  4.527516  0.8891768  3.628764
+##   0.05714286  4.745959  0.8801071  3.751964
+##   0.07142857  4.943550  0.8714022  3.880159
+##   0.08571429  5.125614  0.8628019  4.014069
+##   0.10000000  5.294703  0.8542244  4.135363
+##   0.11428571  5.452464  0.8456501  4.243575
+##   0.12857143  5.600175  0.8370830  4.340466
+##   0.14285714  5.738914  0.8285348  4.429242
+##   0.15714286  5.869624  0.8200199  4.510818
+##   0.17142857  5.993134  0.8115523  4.585895
+##   0.18571429  6.110182  0.8031452  4.657002
+##   0.20000000  6.221418  0.7948102  4.726130
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was lambda = 0.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_tuning}\NormalTok{(tec\_ridge, }\AttributeTok{x =} \StringTok{"lambda"}\NormalTok{, }\AttributeTok{y =} \StringTok{"RMSE"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Tecator ridge tuning"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/tecator-ridge-1} \end{center}
+
+\textbf{Answer:} the optimal ridge penalty is the selected
+\texttt{lambda}.
+
+\hypertarget{lasso}{%
+\subsubsection{Lasso}\label{lasso}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lasso\_grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}
+  \AttributeTok{fraction =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\FloatTok{1.00}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{),}
+  \AttributeTok{lambda =} \DecValTok{0}
+\NormalTok{)}
+
+\NormalTok{tec\_lasso }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_tec\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_tec\_train,}
+  \AttributeTok{method =} \StringTok{"enet"}\NormalTok{,}
+  \AttributeTok{tuneGrid =}\NormalTok{ lasso\_grid,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ ctrl\_reg,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+\NormalTok{tec\_lasso}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Elasticnet 
+## 
+## 174 samples
+## 100 predictors
+## 
+## Pre-processing: centered (100), scaled (100) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 139, 139, 140, 140, 138 
+## Resampling results across tuning parameters:
+## 
+##   fraction  RMSE      Rsquared   MAE     
+##   0.1       2.907102  0.9431352  1.830585
+##   0.2       2.884305  0.9358443  1.791299
+##   0.3       2.639645  0.9511127  1.768909
+##   0.4       2.556941  0.9574745  1.786130
+##   0.5       2.557584  0.9596900  1.790784
+##   0.6       2.662356  0.9572917  1.868958
+##   0.7       2.838514  0.9530671  1.985267
+##   0.8       3.016933  0.9489860  2.119754
+##   0.9       3.220612  0.9438133  2.271996
+##   1.0       3.455901  0.9370981  2.423820
+## 
+## Tuning parameter 'lambda' was held constant at a value of 0
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were fraction = 0.4 and lambda = 0.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_tuning}\NormalTok{(tec\_lasso, }\AttributeTok{x =} \StringTok{"fraction"}\NormalTok{, }\AttributeTok{y =} \StringTok{"RMSE"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Tecator lasso tuning"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/tecator-lasso-1} \end{center}
+
+\textbf{Answer:} because lasso is fit here as elastic net with
+\texttt{lambda\ =\ 0}, the effective tuning parameter is the selected
+\texttt{fraction}.
+
+\hypertarget{elastic-net}{%
+\subsubsection{Elastic net}\label{elastic-net}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{enet\_grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}
+  \AttributeTok{fraction =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\FloatTok{1.00}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{),}
+  \AttributeTok{lambda =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.00}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{tec\_enet }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_tec\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_tec\_train,}
+  \AttributeTok{method =} \StringTok{"enet"}\NormalTok{,}
+  \AttributeTok{tuneGrid =}\NormalTok{ enet\_grid,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ ctrl\_reg,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+\NormalTok{tec\_enet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Elasticnet 
+## 
+## 174 samples
+## 100 predictors
+## 
+## Pre-processing: centered (100), scaled (100) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 140, 138, 140, 139, 139 
+## Resampling results across tuning parameters:
+## 
+##   lambda  fraction  RMSE       Rsquared   MAE     
+##   0.00    0.1        2.332738  0.9703437  1.643515
+##   0.00    0.2        2.311098  0.9726368  1.562452
+##   0.00    0.3        2.262330  0.9739525  1.535520
+##   0.00    0.4        2.214151  0.9752318  1.518391
+##   0.00    0.5        2.321496  0.9730273  1.596747
+##   0.00    0.6        2.509688  0.9681915  1.709508
+##   0.00    0.7        2.680138  0.9629406  1.817880
+##   0.00    0.8        2.970415  0.9530404  1.949865
+##   0.00    0.9        3.343108  0.9377845  2.080041
+##   0.00    1.0        3.803424  0.9158416  2.262305
+##   0.01    0.1       10.063802  0.4602560  8.105926
+##   0.01    0.2        8.529842  0.6586425  6.899677
+##   0.01    0.3        7.144853  0.7749543  5.751698
+##   0.01    0.4        6.072845  0.8288275  4.874107
+##   0.01    0.5        5.277351  0.8543607  4.216315
+##   0.01    0.6        4.657970  0.8754753  3.724478
+##   0.01    0.7        4.286789  0.8889674  3.474962
+##   0.01    0.8        4.091397  0.8971487  3.335886
+##   0.01    0.9        3.975066  0.9027201  3.246501
+##   0.01    1.0        3.908431  0.9061802  3.191396
+##   0.05    0.1       10.479018  0.3933748  8.409536
+##   0.05    0.2        9.327365  0.5552332  7.510074
+##   0.05    0.3        8.263766  0.6766856  6.655012
+##   0.05    0.4        7.316634  0.7552644  5.870763
+##   0.05    0.5        6.606939  0.7956690  5.271769
+##   0.05    0.6        6.061260  0.8186246  4.818116
+##   0.05    0.7        5.569625  0.8380743  4.410887
+##   0.05    0.8        5.175334  0.8526045  4.079815
+##   0.05    0.9        4.912878  0.8612679  3.860406
+##   0.05    1.0        4.757530  0.8659618  3.754580
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were fraction = 0.4 and lambda = 0.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_tuning}\NormalTok{(tec\_enet, }\AttributeTok{x =} \StringTok{"fraction"}\NormalTok{, }\AttributeTok{y =} \StringTok{"RMSE"}\NormalTok{, }\AttributeTok{color =} \StringTok{"lambda"}\NormalTok{,}
+            \AttributeTok{title =} \StringTok{"Tecator elastic net tuning"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/tecator-enet-1} \end{center}
+
+\textbf{Answer:} the optimal elastic-net tuning parameters are the
+selected \texttt{lambda} and \texttt{fraction}.
+
+\hypertarget{d-which-model-has-the-best-predictive-ability}{%
+\subsection{(d) Which model has the best predictive
+ability?}\label{d-which-model-has-the-best-predictive-ability}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tec\_models }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{LM =}\NormalTok{ tec\_lm,}
+  \AttributeTok{PLS =}\NormalTok{ tec\_pls,}
+  \AttributeTok{Ridge =}\NormalTok{ tec\_ridge,}
+  \AttributeTok{Lasso =}\NormalTok{ tec\_lasso,}
+  \AttributeTok{ElasticNet =}\NormalTok{ tec\_enet}
+\NormalTok{)}
+
+\NormalTok{tec\_test\_perf }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}\FunctionTok{lapply}\NormalTok{(}\FunctionTok{names}\NormalTok{(tec\_models), }\ControlFlowTok{function}\NormalTok{(nm) \{}
+\NormalTok{  pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tec\_models[[nm]], x\_tec\_test)}
+  \FunctionTok{tibble}\NormalTok{(}\AttributeTok{model =}\NormalTok{ nm,}
+         \AttributeTok{RMSE =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{RMSE}\NormalTok{(pred, y\_tec\_test),}
+         \AttributeTok{Rsquared =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{R2}\NormalTok{(pred, y\_tec\_test))}
+\NormalTok{\})) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE)}
+
+\NormalTok{tec\_test\_perf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 3
+##   model       RMSE Rsquared
+##   <chr>      <dbl>    <dbl>
+## 1 PLS         2.40    0.959
+## 2 Lasso       4.69    0.861
+## 3 ElasticNet  4.69    0.861
+## 4 Ridge       5.68    0.803
+## 5 LM          5.68    0.803
+\end{verbatim}
+
+To compare resampled distributions:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tec\_resamp }\OtherTok{\textless{}{-}} \FunctionTok{resamples}\NormalTok{(tec\_models)}
+\FunctionTok{summary}\NormalTok{(tec\_resamp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = tec_resamp)
+## 
+## Models: LM, PLS, Ridge, Lasso, ElasticNet 
+## Number of resamples: 5 
+## 
+## MAE 
+##                Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
+## LM         1.682484 2.116087 2.161943 2.474238 3.083070 3.327607    0
+## PLS        1.533240 1.572268 1.644400 1.649793 1.649643 1.849416    0
+## Ridge      1.763377 2.407593 2.407842 2.377526 2.487197 2.821621    0
+## Lasso      1.278178 1.398628 1.482443 1.786130 1.717621 3.053780    0
+## ElasticNet 1.329788 1.339883 1.371867 1.518391 1.662829 1.887586    0
+## 
+## RMSE 
+##                Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
+## LM         2.432179 2.697501 3.036375 3.676698 4.922797 5.294640    0
+## PLS        1.953498 2.023573 2.195984 2.208817 2.289804 2.581229    0
+## Ridge      2.609326 3.448244 3.807463 3.571465 3.979388 4.012902    0
+## Lasso      1.770939 1.949239 1.997812 2.556941 2.357243 4.709474    0
+## ElasticNet 1.803522 1.897477 1.959831 2.214151 2.627699 2.782224    0
+## 
+## Rsquared 
+##                 Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## LM         0.8607977 0.8699964 0.9418633 0.9209796 0.9645767 0.9676640    0
+## PLS        0.9693971 0.9704690 0.9708953 0.9728180 0.9755778 0.9777508    0
+## Ridge      0.9233091 0.9283660 0.9421674 0.9409278 0.9515672 0.9592293    0
+## Lasso      0.8749808 0.9717348 0.9786445 0.9574745 0.9795798 0.9824324    0
+## ElasticNet 0.9646928 0.9749136 0.9750975 0.9752318 0.9761251 0.9853301    0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{diff}\NormalTok{(tec\_resamp))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.diff.resamples(object = diff(tec_resamp))
+## 
+## p-value adjustment: bonferroni 
+## Upper diagonal: estimates of the difference
+## Lower diagonal: p-value for H0: difference = 0
+## 
+## MAE 
+##            LM     PLS      Ridge    Lasso    ElasticNet
+## LM                 0.82444  0.09671  0.68811  0.95585  
+## PLS        0.5242          -0.72773 -0.13634  0.13140  
+## Ridge      1.0000 0.1790             0.59140  0.85914  
+## Lasso      0.5457 1.0000   0.8436             0.26774  
+## ElasticNet 0.3335 1.0000   0.1225   1.0000             
+## 
+## RMSE 
+##            LM      PLS       Ridge     Lasso     ElasticNet
+## LM                  1.467881  0.105234  1.119757  1.462548 
+## PLS        0.63197           -1.362647 -0.348124 -0.005333 
+## Ridge      1.00000 0.16583              1.014523  1.357314 
+## Lasso      0.99476 1.00000   1.00000              0.342791 
+## ElasticNet 0.71075 1.00000   0.09737   1.00000             
+## 
+## Rsquared 
+##            LM      PLS       Ridge     Lasso     ElasticNet
+## LM                 -0.051838 -0.019948 -0.036495 -0.054252 
+## PLS        0.76936            0.031890  0.015344 -0.002414 
+## Ridge      1.00000 0.10855             -0.016547 -0.034304 
+## Lasso      1.00000 1.00000   1.00000             -0.017757 
+## ElasticNet 0.66070 1.00000   0.05633   1.00000
+\end{verbatim}
+
+\textbf{Answer:} the best predictive model is the one with the
+\textbf{lowest test-set RMSE} and, secondarily, the highest test-set
+\(R^2\). If the paired resampling comparison shows very small
+differences, then I would prefer the simpler or more stable model among
+the top performers.
+
+\hypertarget{e-which-model-would-i-use}{%
+\subsection{(e) Which model would I
+use?}\label{e-which-model-would-i-use}}
+
+\textbf{Direct answer:} for Tecator I would usually choose \textbf{PLS}
+unless ridge or elastic net is clearly better on the test set.
+
+\textbf{Why:} 1. The spectra are extremely correlated and ordered, which
+is exactly where latent-component models shine. 2. PLS uses the response
+while constructing components, which is preferable to unsupervised
+PCA/PCR in this setting. Chapter 6 explicitly recommends PLS over PCR
+when correlated predictors are present and a linear-regression-type
+solution is desired. fileciteturn3file8L14-L21 3. PLS gives good
+predictive performance with fewer effective dimensions and a coherent
+scientific story: the prediction is driven by a small number of latent
+spectral directions.
+
+If ridge or elastic net gives materially smaller test RMSE, I would use
+that instead for pure prediction. If performance is essentially tied, I
+would still pick PLS.
+
+\hypertarget{permeability}{%
+\section{6.2 Permeability}\label{permeability}}
+
+\hypertarget{problem-statement-1}{%
+\subsection{Problem statement}\label{problem-statement-1}}
+
+The permeability exercise uses 1,107 binary molecular fingerprint
+predictors on only 165 compounds. The book describes this data set as a
+classic high-dimensional problem with sparse predictors and a skewed
+response, making it a strong candidate for filtering and latent-variable
+modeling. fileciteturn4file0L24-L26
+
+\hypertarget{a-load-the-data-1}{%
+\subsection{(a) Load the data}\label{a-load-the-data-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(permeability)}
+\FunctionTok{str}\NormalTok{(fingerprints)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:165, 1:1107] 0 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, "dimnames")=List of 2
+##   ..$ : chr [1:165] "1" "2" "3" "4" ...
+##   ..$ : chr [1:1107] "X1" "X2" "X3" "X4" ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(permeability)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:165, 1] 12.52 1.12 19.41 1.73 1.68 ...
+##  - attr(*, "dimnames")=List of 2
+##   ..$ : chr [1:165] "1" "2" "3" "4" ...
+##   ..$ : chr "permeability"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_perm }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(fingerprints)}
+\NormalTok{y\_perm }\OtherTok{\textless{}{-}}\NormalTok{ permeability}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{b-remove-very-sparse-predictors-with-nearzerovar}{%
+\subsection{\texorpdfstring{(b) Remove very sparse predictors with
+\texttt{nearZeroVar}}{(b) Remove very sparse predictors with nearZeroVar}}\label{b-remove-very-sparse-predictors-with-nearzerovar}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nzv\_idx }\OtherTok{\textless{}{-}} \FunctionTok{nearZeroVar}\NormalTok{(x\_perm)}
+\FunctionTok{length}\NormalTok{(nzv\_idx)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 719
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_perm\_filt }\OtherTok{\textless{}{-}}\NormalTok{ x\_perm[, }\SpecialCharTok{{-}}\NormalTok{nzv\_idx]}
+\FunctionTok{dim}\NormalTok{(x\_perm\_filt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 165 388
+\end{verbatim}
+
+\textbf{Answer:} the number of predictors left for modeling is
+\texttt{ncol(x\_perm\_filt)}.
+
+\hypertarget{c-split-preprocess-and-tune-a-pls-model}{%
+\subsection{(c) Split, preprocess, and tune a PLS
+model}\label{c-split-preprocess-and-tune-a-pls-model}}
+
+Because the data are high-dimensional (\(p \gg n\)), ordinary least
+squares is not an attractive primary model. Chapter 6 emphasizes that
+PLS is a strong alternative in exactly this kind of situation.
+fileciteturn3file8L1-L21
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2026}\NormalTok{)}
+\NormalTok{idx\_perm }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(y\_perm, }\AttributeTok{p =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+
+\NormalTok{x\_perm\_train }\OtherTok{\textless{}{-}}\NormalTok{ x\_perm\_filt[idx\_perm, ]}
+\NormalTok{x\_perm\_test  }\OtherTok{\textless{}{-}}\NormalTok{ x\_perm\_filt[}\SpecialCharTok{{-}}\NormalTok{idx\_perm, ]}
+\NormalTok{y\_perm\_train }\OtherTok{\textless{}{-}}\NormalTok{ y\_perm[idx\_perm]}
+\NormalTok{y\_perm\_test  }\OtherTok{\textless{}{-}}\NormalTok{ y\_perm[}\SpecialCharTok{{-}}\NormalTok{idx\_perm]}
+
+\NormalTok{perm\_ctrl }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{5}\NormalTok{)}
+\NormalTok{perm\_grid }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{ncomp =} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{15}\NormalTok{, }\FunctionTok{ncol}\NormalTok{(x\_perm\_train)))}
+
+\NormalTok{perm\_pls }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_perm\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_perm\_train,}
+  \AttributeTok{method =} \StringTok{"pls"}\NormalTok{,}
+  \AttributeTok{tuneGrid =}\NormalTok{ perm\_grid,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ perm\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"Rsquared"}
+\NormalTok{)}
+\NormalTok{perm\_pls}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Partial Least Squares 
+## 
+## 133 samples
+## 388 predictors
+## 
+## Pre-processing: centered (388), scaled (388) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 106, 105, 108, 106, 107 
+## Resampling results across tuning parameters:
+## 
+##   ncomp  RMSE      Rsquared   MAE      
+##    1     13.43505  0.2928362  10.191173
+##    2     12.20378  0.4383808   8.704919
+##    3     12.22274  0.4420488   9.176851
+##    4     12.33205  0.4533712   9.439310
+##    5     11.99808  0.4911597   8.915141
+##    6     11.71345  0.5021128   8.774153
+##    7     11.63672  0.5075570   8.811792
+##    8     12.10665  0.4755174   9.226860
+##    9     12.36300  0.4655705   9.255613
+##   10     12.58343  0.4642721   9.565218
+##   11     13.11168  0.4364529   9.781295
+##   12     13.37359  0.4232621   9.956409
+##   13     13.68520  0.4092271  10.001258
+##   14     14.14268  0.3839722  10.299231
+##   15     14.50802  0.3603010  10.618110
+## 
+## Rsquared was used to select the optimal model using the largest value.
+## The final value used for the model was ncomp = 7.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_tuning}\NormalTok{(perm\_pls, }\AttributeTok{x =} \StringTok{"ncomp"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Rsquared"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Permeability PLS tuning"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/perm-split-pls-1} \end{center}
+
+\textbf{Answer:} the optimal number of latent variables is the selected
+\texttt{ncomp}, and the resampled estimate of \(R^2\) is the
+corresponding \texttt{Rsquared} value in the output.
+
+\hypertarget{d-predict-the-test-set-and-estimate-r2}{%
+\subsection{\texorpdfstring{(d) Predict the test set and estimate
+\(R^2\)}{(d) Predict the test set and estimate R\^{}2}}\label{d-predict-the-test-set-and-estimate-r2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{perm\_pls\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(perm\_pls, x\_perm\_test)}
+\FunctionTok{rmse\_r2}\NormalTok{(y\_perm\_test, perm\_pls\_pred)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       RMSE   Rsquared        MAE 
+## 11.1887496  0.4814568  8.4030025
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_obs\_pred}\NormalTok{(y\_perm\_test, perm\_pls\_pred, }\StringTok{"Permeability: PLS on test set"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/perm-test-pls-1} \end{center}
+
+\textbf{Answer:} the test-set estimate of \(R^2\) is the
+\texttt{Rsquared} value printed above.
+
+\hypertarget{e-try-other-chapter-6-models}{%
+\subsection{(e) Try other Chapter 6
+models}\label{e-try-other-chapter-6-models}}
+
+We will compare PLS with ridge, lasso, and elastic net. A plain linear
+model is not suitable here because the original problem has far more
+predictors than samples and even after filtering, instability is still
+likely.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{perm\_ridge }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_perm\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_perm\_train,}
+  \AttributeTok{method =} \StringTok{"ridge"}\NormalTok{,}
+  \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lambda =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.20}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{15}\NormalTok{)),}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ perm\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"Rsquared"}
+\NormalTok{)}
+
+\NormalTok{perm\_lasso }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_perm\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_perm\_train,}
+  \AttributeTok{method =} \StringTok{"enet"}\NormalTok{,}
+  \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lambda =} \DecValTok{0}\NormalTok{, }\AttributeTok{fraction =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{)),}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ perm\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"Rsquared"}
+\NormalTok{)}
+
+\NormalTok{perm\_enet }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_perm\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_perm\_train,}
+  \AttributeTok{method =} \StringTok{"enet"}\NormalTok{,}
+  \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lambda =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.00}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{), }\AttributeTok{fraction =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{)),}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ perm\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"Rsquared"}
+\NormalTok{)}
+
+\NormalTok{perm\_models }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{PLS =}\NormalTok{ perm\_pls, }\AttributeTok{Ridge =}\NormalTok{ perm\_ridge, }\AttributeTok{Lasso =}\NormalTok{ perm\_lasso, }\AttributeTok{ElasticNet =}\NormalTok{ perm\_enet)}
+
+\NormalTok{perm\_test\_perf }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}\FunctionTok{lapply}\NormalTok{(}\FunctionTok{names}\NormalTok{(perm\_models), }\ControlFlowTok{function}\NormalTok{(nm) \{}
+\NormalTok{  pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(perm\_models[[nm]], x\_perm\_test)}
+  \FunctionTok{tibble}\NormalTok{(}\AttributeTok{model =}\NormalTok{ nm,}
+         \AttributeTok{RMSE =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{RMSE}\NormalTok{(pred, y\_perm\_test),}
+         \AttributeTok{Rsquared =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{R2}\NormalTok{(pred, y\_perm\_test))}
+\NormalTok{\})) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE)}
+
+\NormalTok{perm\_test\_perf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   model       RMSE Rsquared
+##   <chr>      <dbl>    <dbl>
+## 1 Lasso       9.96    0.532
+## 2 Ridge      10.3     0.560
+## 3 ElasticNet 10.8     0.458
+## 4 PLS        11.2     0.481
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{resamples}\NormalTok{(perm\_models))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = resamples(perm_models))
+## 
+## Models: PLS, Ridge, Lasso, ElasticNet 
+## Number of resamples: 5 
+## 
+## MAE 
+##                Min.  1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## PLS        6.219190 7.605707  8.978883  8.811792 10.220910 11.034269    0
+## Ridge      8.950801 9.743070 10.128185 10.006878 10.348320 10.864012    0
+## Lasso      7.621820 8.004644  8.331757  8.598963  8.926075 10.110517    1
+## ElasticNet 7.761840 8.038931  8.456838  8.527141  9.182913  9.195185    0
+## 
+## RMSE 
+##                 Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
+## PLS         9.039098 10.97091 11.97316 11.63672 12.75372 13.44673    0
+## Ridge      11.676698 13.15692 13.66472 13.57347 14.51572 14.85329    0
+## Lasso      10.026190 10.15836 10.52784 11.10009 11.46958 13.31849    1
+## ElasticNet 10.622543 10.65748 11.10502 11.37240 12.08972 12.38721    0
+## 
+## Rsquared 
+##                 Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## PLS        0.4208595 0.4263345 0.4754682 0.5075570 0.5991815 0.6159415    0
+## Ridge      0.3451141 0.3951728 0.4934692 0.4731071 0.5186481 0.6131314    0
+## Lasso      0.4645855 0.4687302 0.4840597 0.5285329 0.5438623 0.6814267    1
+## ElasticNet 0.4136885 0.4711638 0.4842472 0.5362397 0.5986140 0.7134848    0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{diff}\NormalTok{(}\FunctionTok{resamples}\NormalTok{(perm\_models)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.diff.resamples(object = diff(resamples(perm_models)))
+## 
+## p-value adjustment: bonferroni 
+## Upper diagonal: estimates of the difference
+## Lower diagonal: p-value for H0: difference = 0
+## 
+## MAE 
+##            PLS    Ridge   Lasso   ElasticNet
+## PLS               -1.1951  0.8610  0.2847   
+## Ridge      0.8884          1.6719  1.4797   
+## Lasso      1.0000 0.5741          -0.1195   
+## ElasticNet 1.0000 0.0210  1.0000            
+## 
+## RMSE 
+##            PLS      Ridge    Lasso    ElasticNet
+## PLS                 -1.9367   1.1860   0.2643   
+## Ridge      0.181762           2.9476   2.2011   
+## Lasso      1.000000 0.281484          -0.4598   
+## ElasticNet 1.000000 0.009394 1.000000           
+## 
+## Rsquared 
+##            PLS Ridge    Lasso    ElasticNet
+## PLS             0.03445 -0.04388 -0.02868  
+## Ridge      1            -0.09043 -0.06313  
+## Lasso      1   1                 -0.02398  
+## ElasticNet 1   1        1
+\end{verbatim}
+
+\textbf{Answer:} whichever model is at the top of
+\texttt{perm\_test\_perf} has the best observed predictive performance.
+In many high-dimensional chemistry problems, \textbf{PLS} or
+\textbf{elastic net} tends to do very well.
+
+\hypertarget{f-would-i-recommend-replacing-the-experiment}{%
+\subsection{(f) Would I recommend replacing the
+experiment?}\label{f-would-i-recommend-replacing-the-experiment}}
+
+\textbf{Direct answer:} probably \textbf{not as a full replacement}
+unless the test-set performance is extremely strong and the prediction
+error is small enough for the business/scientific decision.
+
+I would usually recommend the best model as a \textbf{screening tool},
+not a total replacement, for three reasons: 1. The laboratory assay is
+the ground truth. 2. The sample size is modest. 3. A false positive or
+false negative in permeability can be expensive downstream.
+
+So my recommendation would be: - use the model to \textbf{prioritize}
+compounds, - send the most promising molecules to the assay, - keep
+collecting new assay data and periodically retrain the model.
+
+\hypertarget{chemical-manufacturing-process}{%
+\section{6.3 Chemical manufacturing
+process}\label{chemical-manufacturing-process}}
+
+\hypertarget{problem-statement-2}{%
+\subsection{Problem statement}\label{problem-statement-2}}
+
+This exercise studies 57 predictors (12 biological/raw-material
+variables and 45 process variables) for 176 manufacturing runs, with
+percent yield as the outcome. The key applied question is not only
+prediction but also which variables are actionable for improving yield.
+The exercise text makes that distinction explicit.
+fileciteturn2file14L1-L20
+
+\hypertarget{a-load-the-data-2}{%
+\subsection{(a) Load the data}\label{a-load-the-data-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(}\StringTok{"ChemicalManufacturingProcess"}\NormalTok{)}
+\FunctionTok{str}\NormalTok{(ChemicalManufacturingProcess)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    176 obs. of  58 variables:
+##  $ Yield                 : num  38 42.4 42 41.4 42.5 ...
+##  $ BiologicalMaterial01  : num  6.25 8.01 8.01 8.01 7.47 6.12 7.48 6.94 6.94 6.94 ...
+##  $ BiologicalMaterial02  : num  49.6 61 61 61 63.3 ...
+##  $ BiologicalMaterial03  : num  57 67.5 67.5 67.5 72.2 ...
+##  $ BiologicalMaterial04  : num  12.7 14.7 14.7 14.7 14 ...
+##  $ BiologicalMaterial05  : num  19.5 19.4 19.4 19.4 17.9 ...
+##  $ BiologicalMaterial06  : num  43.7 53.1 53.1 53.1 54.7 ...
+##  $ BiologicalMaterial07  : num  100 100 100 100 100 100 100 100 100 100 ...
+##  $ BiologicalMaterial08  : num  16.7 19 19 19 18.2 ...
+##  $ BiologicalMaterial09  : num  11.4 12.6 12.6 12.6 12.8 ...
+##  $ BiologicalMaterial10  : num  3.46 3.46 3.46 3.46 3.05 3.78 3.04 3.85 3.85 3.85 ...
+##  $ BiologicalMaterial11  : num  138 154 154 154 148 ...
+##  $ BiologicalMaterial12  : num  18.8 21.1 21.1 21.1 21.1 ...
+##  $ ManufacturingProcess01: num  NA 0 0 0 10.7 12 11.5 12 12 12 ...
+##  $ ManufacturingProcess02: num  NA 0 0 0 0 0 0 0 0 0 ...
+##  $ ManufacturingProcess03: num  NA NA NA NA NA NA 1.56 1.55 1.56 1.55 ...
+##  $ ManufacturingProcess04: num  NA 917 912 911 918 924 933 929 928 938 ...
+##  $ ManufacturingProcess05: num  NA 1032 1004 1015 1028 ...
+##  $ ManufacturingProcess06: num  NA 210 207 213 206 ...
+##  $ ManufacturingProcess07: num  NA 177 178 177 178 178 177 178 177 177 ...
+##  $ ManufacturingProcess08: num  NA 178 178 177 178 178 178 178 177 177 ...
+##  $ ManufacturingProcess09: num  43 46.6 45.1 44.9 45 ...
+##  $ ManufacturingProcess10: num  NA NA NA NA NA NA 11.6 10.2 9.7 10.1 ...
+##  $ ManufacturingProcess11: num  NA NA NA NA NA NA 11.5 11.3 11.1 10.2 ...
+##  $ ManufacturingProcess12: num  NA 0 0 0 0 0 0 0 0 0 ...
+##  $ ManufacturingProcess13: num  35.5 34 34.8 34.8 34.6 34 32.4 33.6 33.9 34.3 ...
+##  $ ManufacturingProcess14: num  4898 4869 4878 4897 4992 ...
+##  $ ManufacturingProcess15: num  6108 6095 6087 6102 6233 ...
+##  $ ManufacturingProcess16: num  4682 4617 4617 4635 4733 ...
+##  $ ManufacturingProcess17: num  35.5 34 34.8 34.8 33.9 33.4 33.8 33.6 33.9 35.3 ...
+##  $ ManufacturingProcess18: num  4865 4867 4877 4872 4886 ...
+##  $ ManufacturingProcess19: num  6049 6097 6078 6073 6102 ...
+##  $ ManufacturingProcess20: num  4665 4621 4621 4611 4659 ...
+##  $ ManufacturingProcess21: num  0 0 0 0 -0.7 -0.6 1.4 0 0 1 ...
+##  $ ManufacturingProcess22: num  NA 3 4 5 8 9 1 2 3 4 ...
+##  $ ManufacturingProcess23: num  NA 0 1 2 4 1 1 2 3 1 ...
+##  $ ManufacturingProcess24: num  NA 3 4 5 18 1 1 2 3 4 ...
+##  $ ManufacturingProcess25: num  4873 4869 4897 4892 4930 ...
+##  $ ManufacturingProcess26: num  6074 6107 6116 6111 6151 ...
+##  $ ManufacturingProcess27: num  4685 4630 4637 4630 4684 ...
+##  $ ManufacturingProcess28: num  10.7 11.2 11.1 11.1 11.3 11.4 11.2 11.1 11.3 11.4 ...
+##  $ ManufacturingProcess29: num  21 21.4 21.3 21.3 21.6 21.7 21.2 21.2 21.5 21.7 ...
+##  $ ManufacturingProcess30: num  9.9 9.9 9.4 9.4 9 10.1 11.2 10.9 10.5 9.8 ...
+##  $ ManufacturingProcess31: num  69.1 68.7 69.3 69.3 69.4 68.2 67.6 67.9 68 68.5 ...
+##  $ ManufacturingProcess32: num  156 169 173 171 171 173 159 161 160 164 ...
+##  $ ManufacturingProcess33: num  66 66 66 68 70 70 65 65 65 66 ...
+##  $ ManufacturingProcess34: num  2.4 2.6 2.6 2.5 2.5 2.5 2.5 2.5 2.5 2.5 ...
+##  $ ManufacturingProcess35: num  486 508 509 496 468 490 475 478 491 488 ...
+##  $ ManufacturingProcess36: num  0.019 0.019 0.018 0.018 0.017 0.018 0.019 0.019 0.019 0.019 ...
+##  $ ManufacturingProcess37: num  0.5 2 0.7 1.2 0.2 0.4 0.8 1 1.2 1.8 ...
+##  $ ManufacturingProcess38: num  3 2 2 2 2 2 2 2 3 3 ...
+##  $ ManufacturingProcess39: num  7.2 7.2 7.2 7.2 7.3 7.2 7.3 7.3 7.4 7.1 ...
+##  $ ManufacturingProcess40: num  NA 0.1 0 0 0 0 0 0 0 0 ...
+##  $ ManufacturingProcess41: num  NA 0.15 0 0 0 0 0 0 0 0 ...
+##  $ ManufacturingProcess42: num  11.6 11.1 12 10.6 11 11.5 11.7 11.4 11.4 11.3 ...
+##  $ ManufacturingProcess43: num  3 0.9 1 1.1 1.1 2.2 0.7 0.8 0.9 0.8 ...
+##  $ ManufacturingProcess44: num  1.8 1.9 1.8 1.8 1.7 1.8 2 2 1.9 1.9 ...
+##  $ ManufacturingProcess45: num  2.4 2.2 2.3 2.1 2.1 2 2.2 2.2 2.1 2.4 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_chem }\OtherTok{\textless{}{-}}\NormalTok{ ChemicalManufacturingProcess }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{Yield)}
+\NormalTok{y\_chem }\OtherTok{\textless{}{-}}\NormalTok{ ChemicalManufacturingProcess}\SpecialCharTok{$}\NormalTok{Yield}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{b-impute-missing-values}{%
+\subsection{(b) Impute missing values}\label{b-impute-missing-values}}
+
+The problem explicitly tells us that a small percentage of predictor
+cells are missing. The simplest reasonable Chapter 6-compatible workflow
+is median imputation followed by centering/scaling, though
+k-nearest-neighbor imputation is also fine. Because the data set is
+small, I prefer \textbf{kNN imputation}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{colSums}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(x\_chem)) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{sort}\NormalTok{(}\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{head}\NormalTok{(}\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ManufacturingProcess03 ManufacturingProcess11 ManufacturingProcess10 
+##                     15                     10                      9 
+## ManufacturingProcess25 ManufacturingProcess26 ManufacturingProcess27 
+##                      5                      5                      5 
+## ManufacturingProcess28 ManufacturingProcess29 ManufacturingProcess30 
+##                      5                      5                      5 
+## ManufacturingProcess31 ManufacturingProcess33 ManufacturingProcess34 
+##                      5                      5                      5 
+## ManufacturingProcess35 ManufacturingProcess36 ManufacturingProcess02 
+##                      5                      5                      3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chem\_pp }\OtherTok{\textless{}{-}} \FunctionTok{preProcess}\NormalTok{(x\_chem, }\AttributeTok{method =} \FunctionTok{c}\NormalTok{(}\StringTok{"knnImpute"}\NormalTok{, }\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
+\NormalTok{x\_chem\_imp }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(chem\_pp, x\_chem)}
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(x\_chem\_imp))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  BiologicalMaterial01 BiologicalMaterial02 BiologicalMaterial03
+##  Mode :logical        Mode :logical        Mode :logical       
+##  FALSE:176            FALSE:176            FALSE:176           
+##  BiologicalMaterial04 BiologicalMaterial05 BiologicalMaterial06
+##  Mode :logical        Mode :logical        Mode :logical       
+##  FALSE:176            FALSE:176            FALSE:176           
+##  BiologicalMaterial07 BiologicalMaterial08 BiologicalMaterial09
+##  Mode :logical        Mode :logical        Mode :logical       
+##  FALSE:176            FALSE:176            FALSE:176           
+##  BiologicalMaterial10 BiologicalMaterial11 BiologicalMaterial12
+##  Mode :logical        Mode :logical        Mode :logical       
+##  FALSE:176            FALSE:176            FALSE:176           
+##  ManufacturingProcess01 ManufacturingProcess02 ManufacturingProcess03
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess04 ManufacturingProcess05 ManufacturingProcess06
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess07 ManufacturingProcess08 ManufacturingProcess09
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess10 ManufacturingProcess11 ManufacturingProcess12
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess13 ManufacturingProcess14 ManufacturingProcess15
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess16 ManufacturingProcess17 ManufacturingProcess18
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess19 ManufacturingProcess20 ManufacturingProcess21
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess22 ManufacturingProcess23 ManufacturingProcess24
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess25 ManufacturingProcess26 ManufacturingProcess27
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess28 ManufacturingProcess29 ManufacturingProcess30
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess31 ManufacturingProcess32 ManufacturingProcess33
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess34 ManufacturingProcess35 ManufacturingProcess36
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess37 ManufacturingProcess38 ManufacturingProcess39
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess40 ManufacturingProcess41 ManufacturingProcess42
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176             
+##  ManufacturingProcess43 ManufacturingProcess44 ManufacturingProcess45
+##  Mode :logical          Mode :logical          Mode :logical         
+##  FALSE:176              FALSE:176              FALSE:176
+\end{verbatim}
+
+\textbf{Answer:} missing values are filled using k-nearest-neighbor
+imputation.
+
+\hypertarget{c-split-preprocess-and-tune-a-model-from-chapter-6}{%
+\subsection{(c) Split, preprocess, and tune a model from Chapter
+6}\label{c-split-preprocess-and-tune-a-model-from-chapter-6}}
+
+My model choice here is \textbf{elastic net} because: - there may be
+correlated process variables, - the sample size is not large, -
+coefficient shrinkage can improve stability, - we still retain a
+coefficient-based model that supports interpretation.
+
+I also fit PLS as a benchmark because it is often competitive on
+correlated process data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2026}\NormalTok{)}
+\NormalTok{idx\_chem }\OtherTok{\textless{}{-}} \FunctionTok{createDataPartition}\NormalTok{(y\_chem, }\AttributeTok{p =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{list =} \ConstantTok{FALSE}\NormalTok{)}
+
+\NormalTok{x\_chem\_train }\OtherTok{\textless{}{-}}\NormalTok{ x\_chem[idx\_chem, ]}
+\NormalTok{x\_chem\_test  }\OtherTok{\textless{}{-}}\NormalTok{ x\_chem[}\SpecialCharTok{{-}}\NormalTok{idx\_chem, ]}
+\NormalTok{y\_chem\_train }\OtherTok{\textless{}{-}}\NormalTok{ y\_chem[idx\_chem]}
+\NormalTok{y\_chem\_test  }\OtherTok{\textless{}{-}}\NormalTok{ y\_chem[}\SpecialCharTok{{-}}\NormalTok{idx\_chem]}
+
+\NormalTok{chem\_ctrl }\OtherTok{\textless{}{-}} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{5}\NormalTok{)}
+
+\NormalTok{chem\_pls }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_chem\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_chem\_train,}
+  \AttributeTok{method =} \StringTok{"pls"}\NormalTok{,}
+  \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{ncomp =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{15}\NormalTok{),}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"knnImpute"}\NormalTok{, }\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ chem\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+
+\NormalTok{chem\_enet }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_chem\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_chem\_train,}
+  \AttributeTok{method =} \StringTok{"enet"}\NormalTok{,}
+  \AttributeTok{tuneGrid =} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{lambda =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.00}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{), }\AttributeTok{fraction =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{)),}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"knnImpute"}\NormalTok{, }\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ chem\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+
+\NormalTok{chem\_lm }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}
+  \AttributeTok{x =}\NormalTok{ x\_chem\_train,}
+  \AttributeTok{y =}\NormalTok{ y\_chem\_train,}
+  \AttributeTok{method =} \StringTok{"lm"}\NormalTok{,}
+  \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"knnImpute"}\NormalTok{, }\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{),}
+  \AttributeTok{trControl =}\NormalTok{ chem\_ctrl,}
+  \AttributeTok{metric =} \StringTok{"RMSE"}
+\NormalTok{)}
+
+\NormalTok{chem\_models }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{LM =}\NormalTok{ chem\_lm, }\AttributeTok{PLS =}\NormalTok{ chem\_pls, }\AttributeTok{ElasticNet =}\NormalTok{ chem\_enet)}
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{resamples}\NormalTok{(chem\_models))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.resamples(object = resamples(chem_models))
+## 
+## Models: LM, PLS, ElasticNet 
+## Number of resamples: 5 
+## 
+## MAE 
+##                 Min.   1st Qu.    Median     Mean   3rd Qu.     Max. NA's
+## LM         1.0546174 1.1606477 1.1771644 2.223575 1.2503733 6.475074    0
+## PLS        0.8025465 1.0370804 1.0465846 1.026813 1.0888404 1.159012    0
+## ElasticNet 0.6721988 0.8791256 0.8863139 0.874652 0.8933251 1.042296    0
+## 
+## RMSE 
+##                 Min.  1st Qu.   Median     Mean  3rd Qu.      Max. NA's
+## LM         1.2413009 1.352700 1.457929 6.714996 1.912527 27.610523    0
+## PLS        1.1856506 1.287629 1.320378 1.297017 1.329736  1.361689    0
+## ElasticNet 0.8196107 1.088340 1.118194 1.091072 1.124350  1.304864    0
+## 
+## Rsquared 
+##                    Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## LM         0.0001786201 0.3786757 0.5319395 0.4226357 0.5762273 0.6261574    0
+## PLS        0.4640524696 0.5304580 0.5505597 0.5445897 0.5600670 0.6178111    0
+## ElasticNet 0.5876051187 0.6074860 0.6370570 0.6736118 0.7337756 0.8021351    0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{diff}\NormalTok{(}\FunctionTok{resamples}\NormalTok{(chem\_models)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## summary.diff.resamples(object = diff(resamples(chem_models)))
+## 
+## p-value adjustment: bonferroni 
+## Upper diagonal: estimates of the difference
+## Lower diagonal: p-value for H0: difference = 0
+## 
+## MAE 
+##            LM     PLS    ElasticNet
+## LM                1.1968 1.3489    
+## PLS        0.9697        0.1522    
+## ElasticNet 0.8159 0.4050           
+## 
+## RMSE 
+##            LM     PLS    ElasticNet
+## LM                5.4180 5.6239    
+## PLS        1.0000        0.2059    
+## ElasticNet 1.0000 0.2386           
+## 
+## Rsquared 
+##            LM     PLS    ElasticNet
+## LM                -0.122 -0.251    
+## PLS        0.8892        -0.129    
+## ElasticNet 0.2464 0.1947
+\end{verbatim}
+
+\textbf{Answer:} the optimal value of the performance metric is the
+\textbf{smallest cross-validated RMSE} among the tuned models. For the
+chosen elastic-net model, the optimal tuning parameters are the selected
+\texttt{lambda} and \texttt{fraction}.
+
+\hypertarget{d-predict-the-test-set-and-compare-with-resampling}{%
+\subsection{(d) Predict the test set and compare with
+resampling}\label{d-predict-the-test-set-and-compare-with-resampling}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chem\_test\_perf }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}\FunctionTok{lapply}\NormalTok{(}\FunctionTok{names}\NormalTok{(chem\_models), }\ControlFlowTok{function}\NormalTok{(nm) \{}
+\NormalTok{  pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(chem\_models[[nm]], x\_chem\_test)}
+  \FunctionTok{tibble}\NormalTok{(}\AttributeTok{model =}\NormalTok{ nm,}
+         \AttributeTok{RMSE =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{RMSE}\NormalTok{(pred, y\_chem\_test),}
+         \AttributeTok{Rsquared =}\NormalTok{ caret}\SpecialCharTok{::}\FunctionTok{R2}\NormalTok{(pred, y\_chem\_test))}
+\NormalTok{\})) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE)}
+
+\NormalTok{chem\_test\_perf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 3
+##   model       RMSE Rsquared
+##   <chr>      <dbl>    <dbl>
+## 1 ElasticNet  1.46   0.363 
+## 2 PLS         3.03   0.136 
+## 3 LM         10.4    0.0363
+\end{verbatim}
+
+\textbf{Answer:} compare the best model's test RMSE with its resampled
+RMSE: - if they are close, the model generalized well; - if the test
+RMSE is much worse, the model was probably overfit.
+
+\hypertarget{e-which-predictors-are-most-important-do-biological-or-process-variables-dominate}{%
+\subsection{(e) Which predictors are most important? Do biological or
+process variables
+dominate?}\label{e-which-predictors-are-most-important-do-biological-or-process-variables-dominate}}
+
+For PLS, variable importance can be estimated through VIP; for the
+elastic net, coefficient magnitude after standardization is an
+interpretable proxy.
+
+\hypertarget{pls-vip}{%
+\subsubsection{PLS VIP}\label{pls-vip}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chem\_vip }\OtherTok{\textless{}{-}} \FunctionTok{vip\_pls}\NormalTok{(chem\_pls)}
+\FunctionTok{head}\NormalTok{(chem\_vip, }\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 15 x 2
+##    variable                 VIP
+##    <chr>                  <dbl>
+##  1 ManufacturingProcess32  2.04
+##  2 ManufacturingProcess13  1.87
+##  3 ManufacturingProcess17  1.75
+##  4 ManufacturingProcess36  1.74
+##  5 ManufacturingProcess09  1.72
+##  6 BiologicalMaterial06    1.69
+##  7 BiologicalMaterial02    1.64
+##  8 BiologicalMaterial03    1.56
+##  9 BiologicalMaterial08    1.41
+## 10 BiologicalMaterial12    1.41
+## 11 BiologicalMaterial11    1.39
+## 12 ManufacturingProcess33  1.36
+## 13 ManufacturingProcess06  1.35
+## 14 BiologicalMaterial04    1.33
+## 15 BiologicalMaterial01    1.32
+\end{verbatim}
+
+\hypertarget{elastic-net-standardized-coefficients}{%
+\subsubsection{Elastic-net standardized
+coefficients}\label{elastic-net-standardized-coefficients}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chem\_coef }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(chem\_enet}\SpecialCharTok{$}\NormalTok{finalModel,}
+                     \AttributeTok{s =}\NormalTok{ chem\_enet}\SpecialCharTok{$}\NormalTok{bestTune}\SpecialCharTok{$}\NormalTok{fraction,}
+                     \AttributeTok{mode =} \StringTok{"fraction"}\NormalTok{,}
+                     \AttributeTok{type =} \StringTok{"coefficients"}\NormalTok{)}
+
+\NormalTok{coef\_tbl }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{variable =} \FunctionTok{names}\NormalTok{(chem\_coef}\SpecialCharTok{$}\NormalTok{coefficients),}
+  \AttributeTok{coefficient =} \FunctionTok{as.numeric}\NormalTok{(chem\_coef}\SpecialCharTok{$}\NormalTok{coefficients)}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(variable }\SpecialCharTok{!=} \StringTok{"(Intercept)"}\NormalTok{, coefficient }\SpecialCharTok{!=} \DecValTok{0}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{abs\_coefficient =} \FunctionTok{abs}\NormalTok{(coefficient)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(abs\_coefficient))}
+
+\FunctionTok{head}\NormalTok{(coef\_tbl, }\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 15 x 3
+##    variable               coefficient abs_coefficient
+##    <chr>                        <dbl>           <dbl>
+##  1 ManufacturingProcess32      0.760           0.760 
+##  2 ManufacturingProcess09      0.496           0.496 
+##  3 ManufacturingProcess13     -0.376           0.376 
+##  4 BiologicalMaterial06        0.272           0.272 
+##  5 ManufacturingProcess37     -0.271           0.271 
+##  6 ManufacturingProcess45      0.188           0.188 
+##  7 ManufacturingProcess34      0.165           0.165 
+##  8 ManufacturingProcess28     -0.163           0.163 
+##  9 ManufacturingProcess39      0.147           0.147 
+## 10 BiologicalMaterial05        0.147           0.147 
+## 11 ManufacturingProcess06      0.138           0.138 
+## 12 ManufacturingProcess15      0.134           0.134 
+## 13 ManufacturingProcess07     -0.130           0.130 
+## 14 ManufacturingProcess36     -0.122           0.122 
+## 15 ManufacturingProcess01      0.0908          0.0908
+\end{verbatim}
+
+To separate biological from process variables, create a lookup vector
+based on the original column names. If the package uses the first 12
+columns for the biological measurements and the remaining 45 for process
+variables, the code below will tag them accordingly.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chem\_var\_types }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{variable =} \FunctionTok{colnames}\NormalTok{(x\_chem),}
+  \AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{"Biological"}\NormalTok{, }\DecValTok{12}\NormalTok{), }\FunctionTok{rep}\NormalTok{(}\StringTok{"Process"}\NormalTok{, }\FunctionTok{ncol}\NormalTok{(x\_chem) }\SpecialCharTok{{-}} \DecValTok{12}\NormalTok{))}
+\NormalTok{)}
+
+\NormalTok{chem\_importance }\OtherTok{\textless{}{-}} \FunctionTok{full\_join}\NormalTok{(}
+\NormalTok{  chem\_var\_types,}
+\NormalTok{  coef\_tbl }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(variable, abs\_coefficient),}
+  \AttributeTok{by =} \StringTok{"variable"}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(abs\_coefficient))}
+
+\FunctionTok{head}\NormalTok{(chem\_importance, }\DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 20 x 3
+##    variable               type       abs_coefficient
+##    <chr>                  <chr>                <dbl>
+##  1 ManufacturingProcess32 Process             0.760 
+##  2 ManufacturingProcess09 Process             0.496 
+##  3 ManufacturingProcess13 Process             0.376 
+##  4 BiologicalMaterial06   Biological          0.272 
+##  5 ManufacturingProcess37 Process             0.271 
+##  6 ManufacturingProcess45 Process             0.188 
+##  7 ManufacturingProcess34 Process             0.165 
+##  8 ManufacturingProcess28 Process             0.163 
+##  9 ManufacturingProcess39 Process             0.147 
+## 10 BiologicalMaterial05   Biological          0.147 
+## 11 ManufacturingProcess06 Process             0.138 
+## 12 ManufacturingProcess15 Process             0.134 
+## 13 ManufacturingProcess07 Process             0.130 
+## 14 ManufacturingProcess36 Process             0.122 
+## 15 ManufacturingProcess01 Process             0.0908
+## 16 ManufacturingProcess17 Process             0.0838
+## 17 ManufacturingProcess04 Process             0.0612
+## 18 BiologicalMaterial07   Biological          0.0500
+## 19 ManufacturingProcess20 Process             0.0466
+## 20 ManufacturingProcess43 Process             0.0385
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{count}\NormalTok{(chem\_importance }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice\_head}\NormalTok{(}\AttributeTok{n =} \DecValTok{10}\NormalTok{), type)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   type           n
+##   <chr>      <int>
+## 1 Biological     2
+## 2 Process        8
+\end{verbatim}
+
+\textbf{Answer:} whichever group appears more often among the top-ranked
+variables dominates the importance list. From a business perspective,
+process variables are especially valuable because they are actionable.
+
+\hypertarget{f-explore-the-relationships-between-top-predictors-and-yield}{%
+\subsection{(f) Explore the relationships between top predictors and
+yield}\label{f-explore-the-relationships-between-top-predictors-and-yield}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{top\_vars }\OtherTok{\textless{}{-}}\NormalTok{ chem\_importance }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(abs\_coefficient)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{slice\_head}\NormalTok{(}\AttributeTok{n =} \DecValTok{6}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pull}\NormalTok{(variable)}
+
+\NormalTok{top\_vars}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "ManufacturingProcess32" "ManufacturingProcess09" "ManufacturingProcess13"
+## [4] "BiologicalMaterial06"   "ManufacturingProcess37" "ManufacturingProcess45"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plot\_list }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(top\_vars, }\ControlFlowTok{function}\NormalTok{(v) \{}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_chem\_imp[[v]], }\AttributeTok{y =}\NormalTok{ y\_chem), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{shape =} \DecValTok{16}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"loess"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{0.4}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray25"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =}\NormalTok{ v, }\AttributeTok{x =}\NormalTok{ v, }\AttributeTok{y =} \StringTok{"Yield"}\NormalTok{)}
+\NormalTok{\})}
+
+\NormalTok{plot\_list[[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter6_files/figure-latex/chem-top-plots-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Print the rest one{-}by{-}one when knitting interactively:}
+\NormalTok{plot\_list[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{plot\_list[[}\DecValTok{3}\NormalTok{]]}
+\NormalTok{plot\_list[[}\DecValTok{4}\NormalTok{]]}
+\NormalTok{plot\_list[[}\DecValTok{5}\NormalTok{]]}
+\NormalTok{plot\_list[[}\DecValTok{6}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Answer:} these plots are useful in two distinct ways.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Raw-material screening:} if a biological variable is strongly
+  associated with yield, operators can use it to evaluate incoming
+  material before production.
+\item
+  \textbf{Process optimization:} if a process variable shows a favorable
+  region, the manufacturing team can target that operating range in
+  future runs.
+\end{enumerate}
+
+So the practical value of the model is not only prediction; it is also
+prioritizing controllable levers for yield improvement.
+
+\hypertarget{final-answers-in-plain-english}{%
+\section{Final answers in plain
+English}\label{final-answers-in-plain-english}}
+
+\hypertarget{tecator}{%
+\subsection{6.1 Tecator}\label{tecator}}
+
+\begin{itemize}
+\tightlist
+\item
+  The spectra are highly collinear, so PCA should show a much smaller
+  effective dimension than 100.
+\item
+  PLS is usually the most natural model choice because it handles
+  correlated predictors directly and uses the response.
+\item
+  I would choose the model with the smallest test RMSE, but if several
+  are tied, I would use PLS.
+\end{itemize}
+
+\hypertarget{permeability-1}{%
+\subsection{6.2 Permeability}\label{permeability-1}}
+
+\begin{itemize}
+\tightlist
+\item
+  Remove sparse near-zero-variance fingerprints first.
+\item
+  Tune PLS as the primary latent-variable model.
+\item
+  Compare against ridge/lasso/elastic net.
+\item
+  I would recommend the best model as a \textbf{screening aid}, not a
+  full replacement for the assay, unless the test-set error is
+  exceptionally small.
+\end{itemize}
+
+\hypertarget{chemical-manufacturing}{%
+\subsection{6.3 Chemical manufacturing}\label{chemical-manufacturing}}
+
+\begin{itemize}
+\tightlist
+\item
+  Impute missing values, then center/scale.
+\item
+  Fit at least PLS and elastic net.
+\item
+  Compare resampled RMSE to test RMSE to check generalization.
+\item
+  Inspect importance and top predictor-yield relationships.
+\item
+  If process variables dominate the top of the list, that is especially
+  useful because those variables are controllable.
+\end{itemize}
+
+\hypertarget{session-info}{%
+\section{Session info}\label{session-info}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sessionInfo}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## R version 4.2.2 Patched (2022-11-10 r83330)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Debian GNU/Linux 12 (bookworm)
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.11.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.11.0
+## 
+## locale:
+##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] knitr_1.51                      tidyr_1.3.2                    
+##  [3] dplyr_1.2.0                     pROC_1.19.0.1                  
+##  [5] pls_2.9-0                       elasticnet_1.3                 
+##  [7] lars_1.3                        AppliedPredictiveModeling_1.1-7
+##  [9] caret_7.0-1                     lattice_0.20-45                
+## [11] ggplot2_4.0.2                  
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.1.1           rpart.plot_3.1.4     lubridate_1.9.5     
+##  [4] listenv_0.10.1       class_7.3-21         utf8_1.2.6          
+##  [7] digest_0.6.39        ipred_0.9-15         foreach_1.5.2       
+## [10] parallelly_1.46.1    R6_2.6.1             plyr_1.8.9          
+## [13] hardhat_1.4.2        stats4_4.2.2         ellipse_0.5.0       
+## [16] evaluate_1.0.5       pillar_1.11.1        rlang_1.1.7         
+## [19] data.table_1.18.2.1  rpart_4.1.19         Matrix_1.5-3        
+## [22] rmarkdown_2.31       labeling_0.4.3       splines_4.2.2       
+## [25] gower_1.0.2          stringr_1.6.0        S7_0.2.1            
+## [28] compiler_4.2.2       xfun_0.56            pkgconfig_2.0.3     
+## [31] mgcv_1.8-41          globals_0.19.1       htmltools_0.5.9     
+## [34] nnet_7.3-18          tidyselect_1.2.1     tibble_3.3.1        
+## [37] prodlim_2026.03.11   RANN_2.6.2           CORElearn_1.57.3.1  
+## [40] codetools_0.2-19     future_1.70.0        withr_3.0.2         
+## [43] MASS_7.3-58.2        recipes_1.3.1        ModelMetrics_1.2.2.2
+## [46] grid_4.2.2           nlme_3.1-162         gtable_0.3.6        
+## [49] lifecycle_1.0.5      magrittr_2.0.4       scales_1.4.0        
+## [52] future.apply_1.20.2  cli_3.6.5            stringi_1.8.7       
+## [55] farver_2.1.2         reshape2_1.4.5       timeDate_4052.112   
+## [58] generics_0.1.4       vctrs_0.7.1          lava_1.8.2          
+## [61] RColorBrewer_1.1-3   iterators_1.0.14     tools_4.2.2         
+## [64] glue_1.8.0           purrr_1.2.1          plotrix_3.8-14      
+## [67] parallel_4.2.2       fastmap_1.2.0        survival_3.5-3      
+## [70] yaml_2.3.12          timechange_0.4.0     cluster_2.1.4
+\end{verbatim}
+
+\end{document}
