@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
+Trees/usgs_wildfire_demo/artifacts/Trees.zip
+Trees/usgs_wildfire_demo/data/*.zip
+Trees/usgs_wildfire_demo/data/extracted/
+Trees/usgs_wildfire_demo/data/gdb/
+Trees/usgs_wildfire_demo/presentation/export/node_modules/
+Trees/usgs_wildfire_demo/presentation/export/output/
+Trees/usgs_wildfire_demo/presentation/export/package-lock.json

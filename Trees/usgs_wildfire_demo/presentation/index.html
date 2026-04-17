@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tree-Based Models: Squirrels, Trees, and Wildfires</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="slide active" data-step="1" data-accent="intro">
+        <div class="eyebrow">Tree Models Presentation</div>
+        <h1>How Tree-Based Models Grow From Simple Splits To Strong Ensembles</h1>
+        <p class="subtitle">
+          A single environmental story, now strengthened with the decision
+          rules, impurity math, pruning ideas, and boosting mechanics from the
+          course PDF.
+        </p>
+        <div class="hero-grid">
+          <div class="focus-card">
+            <div class="label">Focus</div>
+            <p>
+              The HTML deck keeps the original squirrel, urban-tree, and
+              wildfire narrative. The PDF material now fills in the missing
+              bridge: how trees choose splits, why ensembles help, and what the
+              equations mean in practice.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Readable splits</span>
+              <span class="pill">Regression loss</span>
+              <span class="pill">Bagging and forests</span>
+              <span class="pill">Boosting math</span>
+              <span class="pill">Rule models and Cubist</span>
+            </div>
+          </div>
+          <aside class="roadmap">
+            <div class="label">Slide Roadmap</div>
+            <ol>
+              <li>Why tree models</li>
+              <li>Split mechanics and squirrel foundations</li>
+              <li>Regression trees and rules</li>
+              <li>Urban-tree ensembles and pruning</li>
+              <li>Wildfire boosting and modern variants</li>
+              <li>Model selection and sources</li>
+            </ol>
+          </aside>
+        </div>
+      </section>
+
+      <section class="slide" data-step="2" data-accent="squirrel">
+        <div class="eyebrow">I. Introduction</div>
+        <h1>Why Tree Models Work So Well For Mixed Environmental Data</h1>
+        <p class="subtitle">
+          The squirrel dataset is the perfect on-ramp because it mixes behavior,
+          place, and simple categories without demanding heavy preprocessing.
+        </p>
+        <div class="two-col tall-right">
+          <div>
+            <h2>Advantages From The PDF</h2>
+            <ul class="clean-list">
+              <li>They do not assume a fixed linear relationship between predictors and response.</li>
+              <li>They handle categorical and numeric predictors in the same workflow.</li>
+              <li>They stay usable with skewed, sparse, or partially missing data.</li>
+              <li>They are easy to explain because each prediction is a path through rules.</li>
+            </ul>
+            <div class="note-strip">
+              <span>Classification</span>
+              <span>Regression</span>
+              <span>Rules</span>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <canvas id="squirrelOverviewChart" aria-label="Squirrel overview chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="3" data-accent="squirrel">
+        <div class="eyebrow">I. Split Mechanics</div>
+        <h1>Classification Trees Choose Splits That Reduce Impurity Fastest</h1>
+        <p class="subtitle">
+          The PDF’s Gini example gives the math behind the first squirrel split:
+          we want child nodes that are more homogeneous than the parent.
+        </p>
+        <div class="formula-grid">
+          <article class="formula-card">
+            <div class="label">Gini</div>
+            <div class="equation">Gini = 1 - Σ p<sub>k</sub><sup>2</sup></div>
+            <p>
+              For a two-class problem, low Gini means the node is mostly one
+              class. Trees search for the split that gives the biggest drop in
+              impurity.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">Entropy</div>
+            <div class="equation">Entropy = - Σ p<sub>k</sub> log p<sub>k</sub></div>
+            <p>
+              Entropy tells the same story with a different scale: more mixed
+              classes create more uncertainty, so good splits reduce entropy.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">Worked Example</div>
+            <div class="equation">1/2 - 1/6 = 1/3</div>
+            <p>
+              In the PDF student example, splitting on gender drops weighted
+              Gini from <code>0.5</code> to <code>0.1667</code>, which is a big
+              impurity reduction. That is the same logic behind a split like
+              <code>Feeding</code> in the squirrel tree.
+            </p>
+          </article>
+        </div>
+        <div class="two-col compact-two-col">
+          <div class="focus-card">
+            <div class="label">How To Read A Tree</div>
+            <p>
+              Each observation starts at the root, follows one branch at every
+              rule, and ends in one leaf. One path equals one prediction.
+            </p>
+          </div>
+          <div class="focus-card">
+            <div class="label">Why This Matters Here</div>
+            <p>
+              Squirrels make the logic visible because “ground or above ground”
+              is intuitive enough that we can connect the formula to the
+              branches live.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="4" data-accent="squirrel">
+        <div class="eyebrow">I. Visual Briefing</div>
+        <h1>The Squirrel Data Already Shows Visible Split Structure</h1>
+        <p class="subtitle">
+          Before any model is fit, the raw charts already hint at separable
+          regions and different vertical behavior patterns.
+        </p>
+        <div class="image-grid">
+          <figure class="tree-figure">
+            <div
+              id="squirrelLocationMixViz"
+              class="custom-chart"
+              aria-label="Animated share of above-ground sightings by fur color"
+            ></div>
+            <figcaption>
+              Fur-color groups are not decisive on their own, but they do show
+              different above-ground rates.
+            </figcaption>
+          </figure>
+          <figure class="tree-figure">
+            <div
+              id="squirrelPerchBoxViz"
+              class="custom-chart"
+              aria-label="Animated perch-height boxplot by shift"
+            ></div>
+            <figcaption>
+              The perch-height spread sets up the regression question: once a
+              squirrel is above ground, how high does it go?
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="slide" data-step="5" data-accent="squirrel">
+        <div class="eyebrow">II. Decision Trees</div>
+        <h1>A Classification Tree Turns The Split Logic Into A Readable Diagram</h1>
+        <p class="subtitle">
+          The code and the tree can be read side by side, which makes the model
+          mechanics visible rather than abstract.
+        </p>
+        <div class="feature-split">
+          <div class="stack-block">
+            <div class="label">R Code</div>
+            <pre class="code-block compact-code"><code>location_tree &lt;- rpart(
+  Location.Class ~ Shift + Age + Fur.Color +
+    Hectare.Number + Hectare.Letter + Active +
+    Feeding + Vocal + Tail.Signal + Human.Response,
+  data = train_location,
+  method = "class"
+)
+
+location_pred &lt;- predict(
+  location_tree, test_location, type = "class"
+)</code></pre>
+          </div>
+          <div class="tree-wide-block">
+            <div class="label">Animated Tree</div>
+            <button class="replay-button" data-tree-replay="squirrelTreeViz">
+              Tree Build
+            </button>
+            <div
+              id="squirrelTreeViz"
+              class="tree-viz tree-viz-wide"
+              aria-label="Animated squirrel classification tree"
+            ></div>
+            <p class="viz-caption">
+              The first split on <code>Feeding</code> is a nice teaching moment:
+              one behavior already separates large parts of the problem.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="6" data-accent="squirrel">
+        <div class="eyebrow">II. Regression Trees</div>
+        <h1>Regression Trees Replace Impurity With RSS And Predict Regional Means</h1>
+        <p class="subtitle">
+          The PDF’s regression section fills in the math under the squirrel
+          perch-height model and the wildfire acreage baseline.
+        </p>
+        <div class="two-col">
+          <div>
+            <div class="formula-card compact-card">
+              <div class="label">Split Objective</div>
+              <div class="equation">RSS = Σ (y<sub>i</sub> - ŷ<sub>Rj</sub>)<sup>2</sup></div>
+              <p>
+                Regression trees partition the predictor space into regions
+                <code>R<sub>j</sub></code> and predict the mean response inside
+                each region.
+              </p>
+            </div>
+            <div class="formula-card compact-card">
+              <div class="label">Metrics Primer</div>
+              <div class="equation">MAE and RMSE</div>
+              <p>
+                <code>MAE</code> keeps the original unit, while
+                <code>RMSE</code> punishes larger misses more heavily. Lower is
+                better for both.
+              </p>
+            </div>
+          </div>
+          <div class="chart-panel large">
+            <canvas id="squirrelMethodsChart" aria-label="Squirrel method results chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="7" data-accent="squirrel">
+        <div class="eyebrow">II. Squirrel Results</div>
+        <h1>One Dataset Supports Classification, Regression, Rules, And Benchmarking</h1>
+        <p class="subtitle">
+          The squirrel section is small, but it already shows the full family of
+          tree-based ideas before we move to larger ensembles.
+        </p>
+        <div class="chart-panel large">
+          <canvas id="squirrelBenchmarkChart" aria-label="Squirrel benchmark chart"></canvas>
+        </div>
+        <div class="two-col compact-two-col">
+          <div>
+            <h2>What The Models Revealed</h2>
+            <ul class="clean-list">
+              <li>The location tree predicts <code>Ground Plane</code> vs <code>Above Ground</code> with 0.749 accuracy.</li>
+              <li>The regression tree predicts perch height with RMSE 12.42 and MAE 9.11.</li>
+              <li>The rule model predicts feeding behavior with 0.778 accuracy.</li>
+            </ul>
+          </div>
+          <div>
+            <h2>Why Benchmark Here</h2>
+            <ul class="clean-list">
+              <li>The hard target is fur color, not location.</li>
+              <li>That is why most methods cluster tightly despite different complexity.</li>
+              <li>It prepares us for the stronger case for ensembles in the urban-tree and wildfire sections.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="8" data-accent="squirrel">
+        <div class="eyebrow">II. Rule-Based Trees</div>
+        <h1>Rules Keep Tree Logic Human-Readable Even After The Branches Disappear</h1>
+        <p class="subtitle">
+          The PDF’s rule-model framing complements the HTML deck here: patterns
+          are learned from the data, then translated into short logical rules.
+        </p>
+        <div class="code-grid">
+          <div>
+            <div class="label">R Code</div>
+            <pre class="code-block"><code>feeding_rules &lt;- C5.0(
+  Feeding ~ Shift + Age + Fur.Color +
+    Hectare.Number + Hectare.Letter +
+    Location.Class + Active + Vocal +
+    Tail.Signal + Human.Response,
+  data = train_feeding,
+  rules = TRUE
+)</code></pre>
+          </div>
+          <div>
+            <div class="label">Resulting Rules</div>
+            <pre class="output-block"><code>Rule 1:
+  Shift = PM
+  Hectare.Number &gt; 8 and &lt;= 16
+  Hectare.Letter = F
+  Location.Class = Ground Plane
+  -&gt; Feeding
+
+Rule 4:
+  Active = Still
+  -&gt; Feeding  [0.885]</code></pre>
+          </div>
+        </div>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Strength</div>
+            <p>Easy to explain and transparent in applied settings.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Risk</div>
+            <p>Too many rules can overfit and become harder to manage.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Bridge</div>
+            <p>Rule models are the interpretability counterweight to later ensembles.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="9" data-accent="tree">
+        <div class="eyebrow">III. Ensemble Methods</div>
+        <h1>A Larger Urban-Tree Dataset Makes The Case For Stronger Ensembles</h1>
+        <p class="subtitle">
+          The USDA data scales the story up: more structure, more classes, and a
+          stronger reason to compare one tree with bagging and random forests.
+        </p>
+        <div class="two-col tall-right">
+          <div>
+            <h2>Urban Tree Scope</h2>
+            <p>
+              The local file covers 14,487 urban trees across 17 U.S. cities
+              and 17 climate regions. That makes it large enough to stress-test
+              classification in a way the squirrel data does not.
+            </p>
+            <div class="pill-row">
+              <span class="pill">14,487 tree records</span>
+              <span class="pill">17 cities</span>
+              <span class="pill">17 regions</span>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <canvas id="treeOverviewChart" aria-label="Urban tree overview chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="10" data-accent="tree">
+        <div class="eyebrow">III. Ensemble Mechanics</div>
+        <h1>Bagging And Random Forests Reduce Instability By Averaging Many Trees</h1>
+        <p class="subtitle">
+          The PDF gives the ensemble intuition directly: one tree is readable
+          but unstable, so we average many trees and decorrelate them.
+        </p>
+        <div class="three-col">
+          <article class="mini-card">
+            <div class="label">Bagging</div>
+            <div class="equation small-equation">ŷ(x) = (1 / B) Σ T<sub>b</sub>(x)</div>
+            <p>
+              Bootstrap the training data, fit one tree per resample, and
+              average the predictions.
+            </p>
+          </article>
+          <article class="mini-card">
+            <div class="label">Random Forest</div>
+            <div class="equation small-equation">m ≈ √p</div>
+            <p>
+              At each split, only a random subset of features is considered,
+              which lowers correlation among trees.
+            </p>
+          </article>
+          <article class="mini-card">
+            <div class="label">Why It Helps</div>
+            <div class="equation small-equation">Lower variance</div>
+            <p>
+              Small changes in training data can make one tree swing wildly.
+              Averaging many trees makes the predictions more robust.
+            </p>
+          </article>
+        </div>
+        <div class="note-strip">
+          <span>Bootstrap resamples</span>
+          <span>Out-of-bag checks</span>
+          <span>Random feature subsets</span>
+          <span>Majority vote or average</span>
+        </div>
+      </section>
+
+      <section class="slide" data-step="11" data-accent="tree">
+        <div class="eyebrow">III. Visual Briefing</div>
+        <h1>The Raw Urban Tree Data Already Shows Regional And Structural Patterns</h1>
+        <p class="subtitle">
+          The raw data sets up the ensemble section visually before the models
+          arrive.
+        </p>
+        <div class="image-grid">
+          <figure class="tree-figure">
+            <div
+              id="treeSiteMixViz"
+              class="custom-chart"
+              aria-label="Animated street share by climate region"
+            ></div>
+            <figcaption>
+              Regional street-share differences make the site-type
+              classification problem visually plausible.
+            </figcaption>
+          </figure>
+          <figure class="tree-figure">
+            <div
+              id="treeHeightProfileViz"
+              class="custom-chart"
+              aria-label="Animated tree height versus DBH by site type"
+            ></div>
+            <figcaption>
+              A nonlinear height-diameter shape explains why flexible tree
+              methods are so natural here.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="slide" data-step="12" data-accent="tree">
+        <div class="eyebrow">III. Bagging &amp; Random Forests</div>
+        <h1>Ensembles Help Most When The Urban Tree Task Gets Harder</h1>
+        <p class="subtitle">
+          For simple site-type prediction, one tree is already strong. The
+          harder multi-class task of predicting <code>TreeType</code> is where
+          ensembles begin to earn their keep.
+        </p>
+        <div class="two-col">
+          <div>
+            <h2>Method Context</h2>
+            <ul class="clean-list">
+              <li><code>bagging</code> fits many trees on bootstrap samples and averages them.</li>
+              <li><code>randomForest</code> adds random feature selection to reduce tree-to-tree similarity.</li>
+              <li>Out-of-bag samples can estimate predictive performance without a separate validation pass.</li>
+            </ul>
+          </div>
+          <div class="chart-panel large">
+            <canvas id="treeMethodsChart" aria-label="Urban tree methods chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide dense-slide" data-step="13" data-accent="tree">
+        <div class="eyebrow">III. Workflow</div>
+        <h1>The Workflow Stays Similar As Trees Become Ensembles</h1>
+        <p class="subtitle">
+          The code changes much less than the model complexity does.
+        </p>
+        <div class="feature-split">
+          <div class="stack-block">
+            <div class="label">R Code</div>
+            <pre class="code-block compact-code"><code>site_tree &lt;- rpart(
+  Site.Type ~ Region + City + TreeType + Age +
+    DBH + TreeHt + AvgCdia + LandUse,
+  data = train_site,
+  method = "class"
+)
+
+bag_model &lt;- bagging(Site.Type ~ ., data = train_site, nbagg = 25)
+rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
+            <p class="viz-caption">Pruning uses <code>C<sub>α</sub>(T) = Error(T) + α|T|</code>.</p>
+          </div>
+          <div class="tree-wide-block">
+            <div class="label">Animated Tree</div>
+            <button class="replay-button" data-tree-replay="urbanTreeViz">
+              Tree Build
+            </button>
+            <div
+              id="urbanTreeViz"
+              class="tree-viz tree-viz-wide"
+              aria-label="Animated urban tree site-type classification tree"
+            ></div>
+            <p class="viz-caption">
+              The site-type tree starts with <code>Region</code> and narrows with <code>LandUse</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="14" data-accent="tree">
+        <div class="eyebrow">III. Benchmark Tradeoffs</div>
+        <h1>Higher Accuracy Usually Costs More Time And More Tuning</h1>
+        <p class="subtitle">
+          This is where the PDF’s pruning and complexity ideas meet the
+          benchmark chart: every performance gain has a cost in computation or
+          simplicity.
+        </p>
+        <div class="two-col">
+          <div class="focus-card">
+            <div class="label">Cost-Complexity Intuition</div>
+            <p>
+              Pruning limits size, depth, and unnecessary branches. In practice,
+              wrappers like <code>caret</code> add cross-validation and tuning
+              overhead on top of that search.
+            </p>
+            <ul class="clean-list tight-list">
+              <li>Single trees are extremely fast.</li>
+              <li>Tuned wrappers are slower because they fit many candidate models.</li>
+              <li>Stronger ensembles tend to win on harder targets.</li>
+            </ul>
+          </div>
+          <div class="chart-panel large">
+            <canvas id="treeBenchmarkChart" aria-label="Urban tree benchmark chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="15" data-accent="tree">
+        <div class="eyebrow">III. Rules And Cubist</div>
+        <h1>Rule Models Stay Readable, And Cubist Adds Local Linear Models On Top</h1>
+        <p class="subtitle">
+          The PDF’s Cubist section adds a useful bridge between simple rule
+          systems and stronger predictive models.
+        </p>
+        <div class="code-grid">
+          <div>
+            <div class="label">Readable Rules</div>
+            <pre class="output-block"><code>Rule 1:
+  Region in {NMtnPr, Piedmt}
+  -&gt; High shade  [0.794]
+
+Rule 2:
+  Region in {CenFla, GulfCo, InlEmp, ...}
+  -&gt; Low shade  [0.949]</code></pre>
+          </div>
+          <div>
+            <div class="label">Cubist Overview</div>
+            <div class="mini-stack">
+              <div class="mini-card">
+                <p>Partition data with rules, like a tree.</p>
+              </div>
+              <div class="mini-card">
+                <p>Fit a linear model inside each region instead of using only a flat leaf average.</p>
+              </div>
+              <div class="mini-card">
+                <p>Average committees, then optionally adjust with nearest neighbors.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="16" data-accent="intro">
+        <div class="eyebrow">IV. Transition</div>
+        <h1>Single Trees Explain More Clearly, But Prediction Pressure Pushes Us Forward</h1>
+        <p class="subtitle">
+          The squirrel and urban-tree examples explain the family structure. The
+          wildfire problem shifts the emphasis from interpretability toward
+          predictive strength.
+        </p>
+        <div class="chart-panel large">
+          <canvas id="crossDatasetChart" aria-label="Cross dataset comparison chart"></canvas>
+        </div>
+      </section>
+
+      <section class="slide" data-step="17" data-accent="fire">
+        <div class="eyebrow">IV. Modern Boosting Variants</div>
+        <h1>Wildfire Data Is Where Boosting Starts To Make The Strongest Case</h1>
+        <p class="subtitle">
+          The USGS release is larger, more geospatial, and more prediction
+          oriented, so it naturally rewards stronger ensembles.
+        </p>
+        <div class="two-col">
+          <div>
+            <h2>Wildfire Pipeline</h2>
+            <ul class="clean-list">
+              <li>Official USGS polygon release loaded from the geodatabase.</li>
+              <li>18,000 fires sampled from 65,862 total records.</li>
+              <li>Target: <code>log1p(Combined_Acres)</code>.</li>
+              <li>Features include cause, dates, geometry, centroid, source, and duration.</li>
+            </ul>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="stat-label">Raw rows</div>
+              <div class="stat-value">65,862</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Modeled rows</div>
+              <div class="stat-value">18,000</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Train split</div>
+              <div class="stat-value">13,500</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Test split</div>
+              <div class="stat-value">4,500</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="18" data-accent="fire">
+        <div class="eyebrow">IV. Features</div>
+        <h1>Thoughtful Features Still Matter, Even For Flexible Tree Models</h1>
+        <p class="subtitle">
+          Trees are forgiving, but better summaries of when and where a fire
+          happens still improve the model’s view of the problem.
+        </p>
+        <div class="two-col">
+          <div class="chart-panel large">
+            <canvas id="importanceChart" aria-label="Wildfire feature importance chart"></canvas>
+          </div>
+          <div class="mini-stack">
+            <div class="formula-card compact-card">
+              <div class="label">Target Transform</div>
+              <div class="equation">log(1 + acres)</div>
+              <p>
+                The log transform stabilizes the extreme spread in wildfire
+                sizes and makes the benchmark easier to interpret.
+              </p>
+            </div>
+            <div class="formula-card compact-card">
+              <div class="label">Feature Story</div>
+              <p>
+                Geometry and duration dominate, which makes sense: area, shape,
+                and how long a fire burns naturally carry strong signal.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="19" data-accent="fire">
+        <div class="eyebrow">IV. Baseline Tree</div>
+        <h1>One Regression Tree Gives A Clear Baseline Before We Add Ensembles</h1>
+        <p class="subtitle">
+          The baseline remains interpretable, but it is only the first step in a
+          prediction-heavy workflow.
+        </p>
+        <div class="feature-split">
+          <div class="stack-block">
+            <div class="label">Python Code</div>
+            <pre class="code-block compact-code"><code>baseline_tree = DecisionTreeRegressor(
+  max_depth=8,
+  min_samples_leaf=30,
+  random_state=42
+)
+
+pipeline = Pipeline([
+  ("preprocess", preprocessor),
+  ("model", baseline_tree)
+])</code></pre>
+          </div>
+          <div class="tree-wide-block">
+            <div class="label">Animated Tree</div>
+            <button class="replay-button" data-tree-replay="wildfireTreeViz">
+              Tree Build
+            </button>
+            <div
+              id="wildfireTreeViz"
+              class="tree-viz tree-viz-wide"
+              aria-label="Animated wildfire baseline regression tree"
+            ></div>
+            <p class="viz-caption">
+              This is still interpretable, but the strongest wildfire results do
+              not come from relying on one tree alone.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="20" data-accent="fire">
+        <div class="eyebrow">IV. Boosting Mechanics</div>
+        <h1>Boosting Builds An Additive Model By Correcting Residuals In Sequence</h1>
+        <p class="subtitle">
+          The PDF’s stagewise view fits perfectly here: each tree is a small
+          correction to what the earlier trees still miss.
+        </p>
+        <div class="two-col">
+          <div
+            id="boostSequenceViz"
+            class="custom-chart boost-sequence-chart"
+            aria-label="Animated boosting sequence"
+          ></div>
+          <div class="mini-stack">
+            <div class="formula-card compact-card">
+              <div class="label">Stagewise Additive Form</div>
+              <div class="equation">F<sub>M</sub>(x) = Σ ν f<sub>m</sub>(x)</div>
+              <p>
+                Each new learner contributes a small correction rather than a
+                whole new independent prediction.
+              </p>
+            </div>
+            <div class="formula-card compact-card">
+              <div class="label">Interpretation</div>
+              <p>
+                Bagging averages many independent trees. Boosting fits them one
+                after another so each tree focuses on what remains hard.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="21" data-accent="fire">
+        <div class="eyebrow">IV. Boosting</div>
+        <h1>Gradient Boosting Wins On Error, But The Gain Comes With Extra Cost</h1>
+        <p class="subtitle">
+          This benchmark compares a single tree, a bagging-style ensemble,
+          classic boosting, and a modern histogram-based variant on the same
+          wildfire task.
+        </p>
+        <div class="two-col">
+          <div class="chart-panel large">
+            <canvas id="rmseChart" aria-label="Wildfire RMSE chart"></canvas>
+          </div>
+          <div class="mini-stack">
+            <div class="mini-card">
+              <div class="label">Pros</div>
+              <p>High predictive accuracy, minimal preprocessing, strong fit for tree-based data.</p>
+            </div>
+            <div class="mini-card">
+              <div class="label">Cons</div>
+              <p>Slower than one tree and less interpretable once many corrections are stacked.</p>
+            </div>
+            <div class="mini-card">
+              <div class="label">Modern Variant</div>
+              <p><code>HistGradientBoostingRegressor</code> bins features first to scale boosting more efficiently.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide dense-slide" data-step="22" data-accent="fire">
+        <div class="eyebrow">V. Practical Demo</div>
+        <h1>One Pipeline Can Train Several Tree Regressors And Expose The Tradeoff Clearly</h1>
+        <p class="subtitle">
+          The preprocessing stays fixed while the estimator changes, which makes
+          the speed-versus-accuracy tradeoff easy to compare.
+        </p>
+        <div class="code-grid compact">
+          <div>
+            <div class="label">Python Code</div>
+            <pre class="code-block"><code>preprocessor = ColumnTransformer([...])
+models = {
+  "Decision Tree": DecisionTreeRegressor(...),
+  "Random Forest": RandomForestRegressor(...),
+  "Gradient Boosting": GradientBoostingRegressor(...),
+  "HistGradientBoosting": HistGradientBoostingRegressor(...)
+}
+pipeline = Pipeline([("preprocess", preprocessor), ("model", estimator)])</code></pre>
+          </div>
+          <div>
+            <div class="label">Console Output</div>
+            <pre class="output-block"><code>Gradient Boosting     fit 5.387s  RMSE 0.016
+Random Forest         fit 1.636s  RMSE 0.020
+HistGradientBoosting  fit 2.547s  RMSE 0.034
+Decision Tree         fit 0.065s  RMSE 0.040</code></pre>
+          </div>
+        </div>
+        <div class="two-col compact-two-col">
+          <div class="chart-panel">
+            <canvas id="tradeoffChart" aria-label="Wildfire speed accuracy chart"></canvas>
+          </div>
+          <div>
+            <h2>What The Demo Shows</h2>
+            <ul class="clean-list">
+              <li>The single tree is fastest.</li>
+              <li>Random forest is the quickest strong ensemble.</li>
+              <li>Gradient boosting is the most accurate here.</li>
+              <li>Modern histogram boosting is the scalable next step to mention alongside XGBoost and LightGBM.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="23" data-accent="intro">
+        <div class="eyebrow">VI. Conclusion</div>
+        <h1>The Story Arc Is Now Complete: Splits, Loss, Ensembles, And Model Choice</h1>
+        <p class="subtitle">
+          The HTML deck keeps the applied story. The PDF material now gives each
+          stage a mathematical and methodological explanation.
+        </p>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Interpretability</div>
+            <p>Single trees and rules are strongest when the audience needs to see the logic directly.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Stability</div>
+            <p>Bagging and random forests tame instability by averaging many trees.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Prediction</div>
+            <p>Boosting is most useful when reducing error matters more than keeping one clean tree diagram.</p>
+          </div>
+        </div>
+        <div class="focus-card">
+          <div class="label">Takeaway</div>
+          <p>
+            Tree methods form a family, not a single model. The right choice
+            depends on whether the job is explanation, stability, or raw
+            predictive strength.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" data-step="24" data-accent="intro">
+        <div class="eyebrow">Sources</div>
+        <h1>Data, Course Material, And Project Files</h1>
+        <p class="subtitle">
+          These slides now synthesize both the original workspace analyses and
+          the course PDF examples on tree mechanics.
+        </p>
+        <div class="two-col">
+          <div>
+            <ul class="clean-list">
+              <li>Central Park Squirrel Census local CSV and <code>squirrel_tree_analyis.rmd</code>.</li>
+              <li>USDA urban tree database and <code>tree_tree_analysis.rmd</code>.</li>
+              <li>USGS wildfire polygon release and the Python benchmark artifacts in this folder.</li>
+              <li><code>Data 624 Tree Models.pdf</code> for split criteria, pruning, ensemble mechanics, and Cubist context.</li>
+            </ul>
+          </div>
+          <aside class="roadmap">
+            <div class="label">External Sources</div>
+            <ul class="clean-list">
+              <li><a href="https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005">USDA Urban Tree Database</a></li>
+              <li><a href="https://www.usgs.gov/data/combined-wildfire-datasets-united-states-and-certain-territories-1878-2019">USGS Wildfire Data Release</a></li>
+              <li><a href="https://doi.org/10.5066/P9Z2VVRT">USGS Wildfire DOI</a></li>
+            </ul>
+            <div class="label source-label">Downloads</div>
+            <a class="button" href="../artifacts/model_metrics.csv">Wildfire Metrics</a>
+            <a class="button secondary" href="../artifacts/benchmark_summary.txt">Wildfire Summary</a>
+            <a class="button" href="../artifacts/Trees.zip">Complete Project (ZIP)</a>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <button class="nav nav-prev" id="prevBtn" aria-label="Previous slide">‹</button>
+    <button class="nav nav-next" id="nextBtn" aria-label="Next slide">›</button>
+
+    <div class="pager" id="pager"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
