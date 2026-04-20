@@ -1,29 +1,34 @@
 # USGS Wildfire Tree Regression Demo
 
-This demo uses the official USGS data release "Combined wildfire datasets for the United States and certain territories, 1878-2019" to predict wildfire size in acres with tree-based regression models.
+This folder now hosts the presentation in a small Next.js app.
+The slide deck itself is still the same browser-native presentation,
+but Next serves it from `/presentation/index.html` so you can run it with
+`npm run dev` or `npm run build`.
 
-Models included:
+## Run the presentation
 
-- `DecisionTreeRegressor`
-- `RandomForestRegressor`
-- `GradientBoostingRegressor`
-- `HistGradientBoostingRegressor`
-
-The target is `log1p(Combined_Acres)` so the comparison is more stable and easier to explain in a presentation.
-
-## Run
+From `usgs_wildfire_demo/`:
 
 ```bash
-Trees/.venv_wildfire_demo/bin/python Trees/usgs_wildfire_demo/scripts/usgs_wildfire_boosting_demo.py
+npm install
+npm run dev
 ```
 
-## Outputs
+Then open the app served by Next.js.
 
-Artifacts are written to `Trees/usgs_wildfire_demo/artifacts/`:
+For production builds:
 
-- `model_metrics.csv`
-- `benchmark_summary.txt`
-- `model_comparison_rmse.png`
-- `model_fit_times.png`
-- `predicted_vs_actual.png`
-- `histgb_permutation_importance.png`
+```bash
+npm run build
+npm run start
+```
+
+The deck source is synced into `public/presentation/` automatically before
+`dev` and `build`.
+
+## Notes
+
+- The interactive slides use Pyodide + scikit-learn in the browser.
+- The legacy R/Shiny assets are still present for reference, but they are no
+  longer required to run the presentation.
+- The older wildfire model artifacts remain in `artifacts/`.

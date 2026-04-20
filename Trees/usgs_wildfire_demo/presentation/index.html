@@ -6,6 +6,7 @@
     <title>Tree-Based Models: Squirrels, Trees, and Wildfires</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   </head>
@@ -15,18 +16,17 @@
         <div class="eyebrow">Tree Models Presentation</div>
         <h1>How Tree-Based Models Grow From Simple Splits To Strong Ensembles</h1>
         <p class="subtitle">
-          A single environmental story, now strengthened with the decision
-          rules, impurity math, pruning ideas, and boosting mechanics from the
-          course PDF.
+          One environmental story, strengthened with the decision rules,
+          impurity math, pruning ideas, and boosting mechanics that explain why
+          the visuals look the way they do.
         </p>
         <div class="hero-grid">
           <div class="focus-card">
             <div class="label">Focus</div>
             <p>
-              The HTML deck keeps the original squirrel, urban-tree, and
-              wildfire narrative. The PDF material now fills in the missing
-              bridge: how trees choose splits, why ensembles help, and what the
-              equations mean in practice.
+              The squirrel, urban-tree, and wildfire visuals carry the story,
+              while the math underneath explains why the branch patterns,
+              benchmark gaps, and ensemble gains reflect real model behavior.
             </p>
             <div class="pill-row">
               <span class="pill">Readable splits</span>
@@ -39,41 +39,134 @@
           <aside class="roadmap">
             <div class="label">Slide Roadmap</div>
             <ol>
-              <li>Why tree models</li>
-              <li>Split mechanics and squirrel foundations</li>
-              <li>Regression trees and rules</li>
-              <li>Urban-tree ensembles and pruning</li>
-              <li>Wildfire boosting and modern variants</li>
-              <li>Model selection and sources</li>
+              <li>Python and R tree workflows</li>
+              <li>Intro, basic trees, and regression</li>
+              <li>Pruning</li>
+              <li>Random forest and bagging</li>
+              <li>Rule-based models, Cubist, and bagging</li>
+              <li>Boosting</li>
+              <li>Outro and sources</li>
             </ol>
           </aside>
         </div>
       </section>
 
-      <section class="slide" data-step="2" data-accent="squirrel">
-        <div class="eyebrow">I. Introduction</div>
-        <h1>Why Tree Models Work So Well For Mixed Environmental Data</h1>
+      <section class="slide" data-step="2" data-accent="intro">
+        <div class="eyebrow">I. Python And R</div>
+        <h1>Python And R Use The Same Tree Ideas With Different Syntax</h1>
         <p class="subtitle">
-          The squirrel dataset is the perfect on-ramp because it mixes behavior,
-          place, and simple categories without demanding heavy preprocessing.
+          The models build on the same logic in both languages: choose splits,
+          control complexity, then add ensembles when a single tree is too
+          unstable. The syntax changes more than the modeling idea does.
         </p>
-        <div class="two-col tall-right">
+        <div class="code-grid">
           <div>
-            <h2>Advantages From The PDF</h2>
-            <ul class="clean-list">
-              <li>They do not assume a fixed linear relationship between predictors and response.</li>
-              <li>They handle categorical and numeric predictors in the same workflow.</li>
-              <li>They stay usable with skewed, sparse, or partially missing data.</li>
-              <li>They are easy to explain because each prediction is a path through rules.</li>
-            </ul>
-            <div class="note-strip">
-              <span>Classification</span>
-              <span>Regression</span>
-              <span>Rules</span>
-            </div>
+            <div class="label">R Equivalent (`rpart`)</div>
+            <pre class="code-block compact-code"><code>tree_r &lt;- rpart(
+  y ~ .,
+  data = train_df,
+  method = "class",
+  control = rpart.control(cp = 0.01, maxdepth = 5)
+)</code></pre>
           </div>
-          <div class="chart-panel">
-            <canvas id="squirrelOverviewChart" aria-label="Squirrel overview chart"></canvas>
+          <div>
+            <div class="label">Python Equivalent (`scikit-learn`)</div>
+            <pre class="code-block compact-code"><code>tree_py = DecisionTreeClassifier(
+    max_depth=5,
+    min_samples_leaf=10,
+    random_state=0,
+).fit(X_train, y_train)</code></pre>
+          </div>
+        </div>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Same Idea</div>
+            <p>Both fit a rule path from the data and stop when the tree is too small to justify more splits.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">What Differs</div>
+            <p>`rpart`, `C5.0`, `caret`, and `Cubist` wrap the logic in R-friendly interfaces, while scikit-learn uses estimator objects and parameters.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Why It Matters</div>
+            <p>Once the audience sees that the ideas are shared, the later R and Python examples feel like translations rather than new models.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="2" data-accent="squirrel">
+        <div class="eyebrow">I. Intro, Basic Trees, And Regression</div>
+        <h1>Intro, Basic Trees, And Regression</h1>
+        <p class="subtitle">
+          The squirrel data is a clean on-ramp because it mixes behavior,
+          location, and simple categories without demanding heavy preprocessing.
+          It is ideal for showing how classification and regression trees start
+          from the same branching logic.
+        </p>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Why The Data Fits</div>
+            <p>Mixed predictors, visible split structure, and a response that works as both a class label and a numeric target.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">What Comes Next</div>
+            <p>We move from single-tree logic to pruning, then to bagging, random forest, Cubist, and boosting.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">What To Watch For</div>
+            <p>The tree grows by asking simpler questions, but the model needs pruning to stop before it chases noise.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="3" data-accent="squirrel">
+        <div class="eyebrow">I. Pruning</div>
+        <h1>Pruning Decides When A Tree Should Stop Growing</h1>
+        <p class="subtitle">
+          Pruning is the answer to three practical questions: how big should the
+          tree be, why should we stop early, and when should we choose a smaller
+          tree over a perfect fit to the training data.
+        </p>
+        <div class="formula-grid">
+          <article class="formula-card">
+            <div class="label">What It Is</div>
+            <div class="equation">C<sub>α</sub>(T) = Error(T) + α |T|</div>
+            <p>
+              Cost-complexity pruning trades off fit and size. Smaller trees are
+              easier to explain and less likely to chase random wiggles.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">Why Do It</div>
+            <p>
+              A tree with too many leaves can memorize the training data. Pruning
+              keeps the model honest, simpler, and more stable on new data.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">When To Choose It</div>
+            <p>
+              Use the minimum cross-validated error, or the 1-SE rule when you
+              want a smaller tree that performs almost as well as the best one.
+            </p>
+          </article>
+        </div>
+        <div class="two-col compact-two-col">
+          <div class="focus-card">
+            <div class="label">R And Python Knobs</div>
+            <p>
+              In R, <code>cp</code> and the cross-validation table guide pruning.
+              In Python, the same idea appears through <code>max_depth</code>,
+              <code>min_samples_leaf</code>, <code>min_samples_split</code>, and
+              <code>ccp_alpha</code>.
+            </p>
+          </div>
+          <div class="focus-card">
+            <div class="label">What You Should See</div>
+            <p>
+              A smaller tree with fewer branches, a shallower decision path, and
+              test-set metrics that are often better than the unpruned version.
+            </p>
           </div>
         </div>
       </section>
@@ -82,8 +175,9 @@
         <div class="eyebrow">I. Split Mechanics</div>
         <h1>Classification Trees Choose Splits That Reduce Impurity Fastest</h1>
         <p class="subtitle">
-          The PDF’s Gini example gives the math behind the first squirrel split:
-          we want child nodes that are more homogeneous than the parent.
+          The first squirrel split works because the child nodes are more
+          homogeneous than the parent, and the impurity formulas make that gain
+          measurable.
         </p>
         <div class="formula-grid">
           <article class="formula-card">
@@ -91,7 +185,7 @@
             <div class="equation">Gini = 1 - Σ p<sub>k</sub><sup>2</sup></div>
             <p>
               For a two-class problem, low Gini means the node is mostly one
-              class. Trees search for the split that gives the biggest drop in
+              class. A tree searches for the split that gives the biggest drop in
               impurity.
             </p>
           </article>
@@ -100,16 +194,17 @@
             <div class="equation">Entropy = - Σ p<sub>k</sub> log p<sub>k</sub></div>
             <p>
               Entropy tells the same story with a different scale: more mixed
-              classes create more uncertainty, so good splits reduce entropy.
+              classes create more uncertainty, so good splits reduce that
+              uncertainty.
             </p>
           </article>
           <article class="formula-card">
             <div class="label">Worked Example</div>
             <div class="equation">1/2 - 1/6 = 1/3</div>
             <p>
-              In the PDF student example, splitting on gender drops weighted
-              Gini from <code>0.5</code> to <code>0.1667</code>, which is a big
-              impurity reduction. That is the same logic behind a split like
+              In a simple two-group example, weighted Gini can drop from
+              <code>0.5</code> to <code>0.1667</code>, which is a large impurity
+              reduction. That is the same logic behind a split such as
               <code>Feeding</code> in the squirrel tree.
             </p>
           </article>
@@ -126,8 +221,8 @@
             <div class="label">Why This Matters Here</div>
             <p>
               Squirrels make the logic visible because “ground or above ground”
-              is intuitive enough that we can connect the formula to the
-              branches live.
+              is intuitive enough to connect the formula directly to the
+              branches.
             </p>
           </div>
         </div>
@@ -159,8 +254,9 @@
               aria-label="Animated perch-height boxplot by shift"
             ></div>
             <figcaption>
-              The perch-height spread sets up the regression question: once a
-              squirrel is above ground, how high does it go?
+              AM and PM have similar central perch heights, but AM has a much
+              longer upper tail. The axis is zoomed to the main range so one
+              extreme outlier does not flatten the whole story.
             </figcaption>
           </figure>
         </div>
@@ -168,14 +264,14 @@
 
       <section class="slide" data-step="5" data-accent="squirrel">
         <div class="eyebrow">II. Decision Trees</div>
-        <h1>A Classification Tree Turns The Split Logic Into A Readable Diagram</h1>
+        <h1>Decision Trees Are A Useful Extension Beyond The Book Examples</h1>
         <p class="subtitle">
-          The code and the tree can be read side by side, which makes the model
-          mechanics visible rather than abstract.
+          The book gives the intuition, and `rpart` makes the mechanics visible:
+          you can see exactly how a split rule becomes a prediction path.
         </p>
-        <div class="feature-split">
-          <div class="stack-block">
-            <div class="label">R Code</div>
+        <div class="code-grid">
+          <div>
+            <div class="label">R Equivalent (`rpart`)</div>
             <pre class="code-block compact-code"><code>location_tree &lt;- rpart(
   Location.Class ~ Shift + Age + Fur.Color +
     Hectare.Number + Hectare.Letter + Active +
@@ -188,30 +284,43 @@ location_pred &lt;- predict(
   location_tree, test_location, type = "class"
 )</code></pre>
           </div>
-          <div class="tree-wide-block">
+          <div>
+            <div class="label">Python Equivalent (`scikit-learn`)</div>
+            <pre class="code-block compact-code"><code>location_tree = DecisionTreeClassifier(
+    max_depth=5,
+    min_samples_leaf=15,
+    random_state=624,
+)
+location_tree.fit(X_train, y_train)
+location_pred = location_tree.predict(X_test)</code></pre>
+          </div>
+        </div>
+        <div class="tree-wide-block">
             <div class="label">Animated Tree</div>
             <button class="replay-button" data-tree-replay="squirrelTreeViz">
               Tree Build
             </button>
             <div
               id="squirrelTreeViz"
-              class="tree-viz tree-viz-wide"
+              class="tree-viz tree-viz-wide tree-viz-squirrel"
               aria-label="Animated squirrel classification tree"
             ></div>
             <p class="viz-caption">
-              The first split on <code>Feeding</code> is a nice teaching moment:
-              one behavior already separates large parts of the problem.
+              The first split on <code>Feeding</code> is a strong teaching
+              moment: one behavior already separates a large share of the
+              problem.
             </p>
           </div>
-        </div>
       </section>
 
       <section class="slide" data-step="6" data-accent="squirrel">
         <div class="eyebrow">II. Regression Trees</div>
         <h1>Regression Trees Replace Impurity With RSS And Predict Regional Means</h1>
         <p class="subtitle">
-          The PDF’s regression section fills in the math under the squirrel
-          perch-height model and the wildfire acreage baseline.
+          The same math explains both the squirrel perch-height model and the
+          wildfire acreage baseline: split the space into regions, then predict
+          the mean within each region. The units stay visible in the error
+          metrics, so you can see what the model is missing.
         </p>
         <div class="two-col">
           <div>
@@ -240,12 +349,85 @@ location_pred &lt;- predict(
         </div>
       </section>
 
+      <section class="slide interactive-slide" data-step="7" data-accent="squirrel">
+        <div class="eyebrow">II. Interactive Regression</div>
+        <h1>Regression Tree Explorer</h1>
+        <p class="subtitle">
+          The data is just there to illustrate the model. Use the controls to
+          see how pre-pruning and post-pruning change the tree shape, error,
+          and complexity together.
+        </p>
+        <div class="interactive-layout">
+          <div class="pyodide-shell" data-pyodide-app="m5p"></div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="8" data-accent="squirrel">
+        <div class="eyebrow">II. Why These Terms Matter</div>
+        <h1>Why We Use Classification, Regression, Rules, And Benchmarking</h1>
+        <p class="subtitle">
+          This page explains the four ideas that organize the squirrel section.
+          Each one answers a different modeling question, and together they show
+          why a single dataset can teach a whole tree family.
+        </p>
+        <div class="formula-grid">
+          <article class="formula-card">
+            <div class="label">Classification</div>
+            <p>
+              Classification predicts a category such as <code>Ground Plane</code>
+              or <code>Above Ground</code>. We use it when the answer is a label,
+              not a number.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">Regression</div>
+            <p>
+              Regression predicts a numeric response such as perch height.
+              We use it when the answer has units and the error should be
+              measured in those same units.
+            </p>
+          </article>
+          <article class="formula-card">
+            <div class="label">Rules</div>
+            <p>
+              Rules rewrite the tree as a readable if-then list. We use them
+              when the audience needs the logic in compact language rather than
+              a branching diagram.
+            </p>
+          </article>
+        </div>
+        <div class="two-col compact-two-col">
+          <div class="formula-card compact-card">
+            <div class="label">Benchmarking</div>
+            <p>
+              Benchmarking compares methods on the same data with the same
+              metric, so we can see whether a small tree, a pruned tree, or an
+              ensemble actually improves the result.
+            </p>
+          </div>
+          <div class="formula-card compact-card">
+            <div class="label">Why This Matters Here</div>
+            <p>
+              The squirrel data is small enough to keep the story readable, but
+              rich enough to show all four ideas before we move to larger
+              urban-tree and wildfire examples.
+            </p>
+          </div>
+        </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>Classification</strong> = choose a class label.</div>
+          <div class="legend-pill"><strong>Regression</strong> = predict a numeric outcome.</div>
+          <div class="legend-pill"><strong>Rules</strong> = express the tree as if/then statements.</div>
+          <div class="legend-pill"><strong>Benchmarking</strong> = compare models on the same target and metric.</div>
+        </div>
+      </section>
+
       <section class="slide" data-step="7" data-accent="squirrel">
         <div class="eyebrow">II. Squirrel Results</div>
         <h1>One Dataset Supports Classification, Regression, Rules, And Benchmarking</h1>
         <p class="subtitle">
           The squirrel section is small, but it already shows the full family of
-          tree-based ideas before we move to larger ensembles.
+          tree-based ideas before we scale up to larger ensembles.
         </p>
         <div class="chart-panel large">
           <canvas id="squirrelBenchmarkChart" aria-label="Squirrel benchmark chart"></canvas>
@@ -260,26 +442,41 @@ location_pred &lt;- predict(
             </ul>
           </div>
           <div>
-            <h2>Why Benchmark Here</h2>
-            <ul class="clean-list">
-              <li>The hard target is fur color, not location.</li>
-              <li>That is why most methods cluster tightly despite different complexity.</li>
-              <li>It prepares us for the stronger case for ensembles in the urban-tree and wildfire sections.</li>
-            </ul>
+            <h2>Rule Snapshot</h2>
+            <pre class="code-block compact-code"><code>--- TreeHt (m) &gt; 14.25
+| | | | |--- value: [80.94]
+| |--- Region_TpIntW &gt; 0.50
+| | |--- DBH (cm) &lt;= 59.55
+| | | |--- value: [50.39]
+| | |--- DBH (cm) &gt; 59.55
+| | | |--- AvgCdia (m) &lt;= 14.05
+| | | | |--- value: [67.93]
+| | | |--- AvgCdia (m) &gt; 14.0</code></pre>
+            <p class="viz-caption">
+              The rule model keeps the same split logic, but writes it as a readable path through the tree.
+            </p>
           </div>
+        </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>`rpart`</strong> = recursive partitioning and regression trees, the classic R tree package.</div>
+          <div class="legend-pill"><strong>`rf`</strong> = shorthand for random forest, the ensemble version of tree models.</div>
+          <div class="legend-pill"><strong>`C5.0`</strong> = Quinlan's rule-tree learner for readable classification rules.</div>
+          <div class="legend-pill"><strong>`caret`</strong> = Classification And REgression Training, the tuning wrapper package.</div>
+          <div class="legend-pill"><strong>`randomForest`</strong> = the classic R package for random forest ensembles.</div>
         </div>
       </section>
 
       <section class="slide" data-step="8" data-accent="squirrel">
         <div class="eyebrow">II. Rule-Based Trees</div>
-        <h1>Rules Keep Tree Logic Human-Readable Even After The Branches Disappear</h1>
+        <h1>Rules Recast The Same Tree As Human-Readable Logic</h1>
         <p class="subtitle">
-          The PDF’s rule-model framing complements the HTML deck here: patterns
-          are learned from the data, then translated into short logical rules.
+          The model has not changed, only the representation. A rule set makes
+          the same structure explicit in words so the progression from tree to
+          rules is easy to follow.
         </p>
         <div class="code-grid">
           <div>
-            <div class="label">R Code</div>
+            <div class="label">R Equivalent (`C5.0` rules)</div>
             <pre class="code-block"><code>feeding_rules &lt;- C5.0(
   Feeding ~ Shift + Age + Fur.Color +
     Hectare.Number + Hectare.Letter +
@@ -289,6 +486,18 @@ location_pred &lt;- predict(
   rules = TRUE
 )</code></pre>
           </div>
+          <div>
+            <div class="label">Python Equivalent (`scikit-learn`)</div>
+            <pre class="code-block"><code>rule_tree = DecisionTreeClassifier(
+    max_depth=4,
+    min_samples_leaf=12,
+    random_state=624,
+)
+rule_tree.fit(X_train, y_train)
+rule_text = export_text(rule_tree, feature_names=feature_names)</code></pre>
+          </div>
+        </div>
+        <div class="code-grid compact">
           <div>
             <div class="label">Resulting Rules</div>
             <pre class="output-block"><code>Rule 1:
@@ -302,6 +511,20 @@ Rule 4:
   Active = Still
   -&gt; Feeding  [0.885]</code></pre>
           </div>
+          <div>
+            <div class="label">Python Output (`export_text`)</div>
+            <pre class="output-block"><code>|--- Shift_PM &lt;= 0.50
+|   |--- Hectare_Number &lt;= 8.50
+|   |   |--- Vocal_Quiet &lt;= 0.50
+|   |   |   |--- class: Feeding
+|   |   |--- class: Not Feeding
+|--- Hectare_Letter_F &gt; 0.50</code></pre>
+          </div>
+        </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>`C5.0`</strong> = rule-based classification trees that produce compact if/then rules.</div>
+          <div class="legend-pill"><strong>`rules = TRUE`</strong> = tell C5.0 to print rules instead of a plain tree.</div>
+          <div class="legend-pill"><strong>`export_text`</strong> = scikit-learn helper that turns a fitted tree into readable split text.</div>
         </div>
         <div class="three-col">
           <div class="mini-card">
@@ -319,39 +542,58 @@ Rule 4:
         </div>
       </section>
 
-      <section class="slide" data-step="9" data-accent="tree">
-        <div class="eyebrow">III. Ensemble Methods</div>
-        <h1>A Larger Urban-Tree Dataset Makes The Case For Stronger Ensembles</h1>
+      <section class="slide interactive-slide" data-step="9" data-accent="squirrel">
+        <div class="eyebrow">II. Interactive Rules</div>
+        <h1>Rule-Based Tree Explorer</h1>
         <p class="subtitle">
-          The USDA data scales the story up: more structure, more classes, and a
-          stronger reason to compare one tree with bagging and random forests.
+          This companion shows the same pruning controls from the tree view,
+          but the output is translated into readable if-then rules so the
+          model shift is obvious.
         </p>
-        <div class="two-col tall-right">
-          <div>
-            <h2>Urban Tree Scope</h2>
-            <p>
-              The local file covers 14,487 urban trees across 17 U.S. cities
-              and 17 climate regions. That makes it large enough to stress-test
-              classification in a way the squirrel data does not.
-            </p>
-            <div class="pill-row">
-              <span class="pill">14,487 tree records</span>
-              <span class="pill">17 cities</span>
-              <span class="pill">17 regions</span>
-            </div>
+        <div class="interactive-layout">
+          <div class="focus-card">
+            <div class="label">What To Change</div>
+            <ul class="clean-list">
+              <li>Switch pruning methods and compare how rule length changes.</li>
+              <li>Use the same split controls as the tree explorer to see shared behavior.</li>
+              <li>Read the output as a compact explanation for the fitted model.</li>
+            </ul>
           </div>
-          <div class="chart-panel">
-            <canvas id="treeOverviewChart" aria-label="Urban tree overview chart"></canvas>
+          <div class="pyodide-shell pyodide-shell-rules" data-pyodide-app="m5rules"></div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="9" data-accent="tree">
+        <div class="eyebrow">II. Random Forest</div>
+        <h1>Random Forest</h1>
+        <p class="subtitle">
+          The USDA urban-tree data is a better ensemble test than the squirrel
+          data because it has more rows, more classes, and more correlated
+          predictors. That makes one tree wobblier and makes random forest more
+          useful.
+        </p>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Data Being Used</div>
+            <p>14,487 urban trees across 17 cities and 17 climate regions.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">How It Builds On Trees</div>
+            <p>Random forest starts with bagging, then adds feature subsampling so trees are less similar to one another.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Why It Fits Here</div>
+            <p>This is the point where one readable tree is still helpful, but a stronger ensemble starts to pay off.</p>
           </div>
         </div>
       </section>
 
       <section class="slide" data-step="10" data-accent="tree">
-        <div class="eyebrow">III. Ensemble Mechanics</div>
+        <div class="eyebrow">III. Bagging And Random Forests</div>
         <h1>Bagging And Random Forests Reduce Instability By Averaging Many Trees</h1>
         <p class="subtitle">
-          The PDF gives the ensemble intuition directly: one tree is readable
-          but unstable, so we average many trees and decorrelate them.
+          The key tradeoff is that one tree is readable but unstable, so we
+          average many trees and decorrelate them to reduce variance.
         </p>
         <div class="three-col">
           <article class="mini-card">
@@ -375,7 +617,7 @@ Rule 4:
             <div class="equation small-equation">Lower variance</div>
             <p>
               Small changes in training data can make one tree swing wildly.
-              Averaging many trees makes the predictions more robust.
+              Averaging many trees makes predictions more robust.
             </p>
           </article>
         </div>
@@ -387,11 +629,32 @@ Rule 4:
         </div>
       </section>
 
+      <section class="slide interactive-slide" data-step="11" data-accent="tree">
+        <div class="eyebrow">III. Interactive Bagging</div>
+        <h1>Bagging Explorer</h1>
+        <p class="subtitle">
+          This live panel shows how averaging many trees stabilizes the model.
+          The data is only there to reveal how the ensemble responds as the
+          tree settings change.
+        </p>
+        <div class="interactive-layout">
+          <div class="focus-card">
+            <div class="label">What To Change</div>
+            <ul class="clean-list">
+              <li>Increase <code>nbagg</code> and watch the RMSE curve flatten.</li>
+              <li>Adjust the base-tree depth and split thresholds.</li>
+              <li>Compare the bagged fit with a single pruned tree.</li>
+            </ul>
+          </div>
+          <div class="pyodide-shell pyodide-shell-bagging" data-pyodide-app="bagging"></div>
+        </div>
+      </section>
+
       <section class="slide" data-step="11" data-accent="tree">
         <div class="eyebrow">III. Visual Briefing</div>
         <h1>The Raw Urban Tree Data Already Shows Regional And Structural Patterns</h1>
         <p class="subtitle">
-          The raw data sets up the ensemble section visually before the models
+          The raw data sets up the ensemble story visually before the models
           arrive.
         </p>
         <div class="image-grid">
@@ -414,7 +677,7 @@ Rule 4:
             ></div>
             <figcaption>
               A nonlinear height-diameter shape explains why flexible tree
-              methods are so natural here.
+              methods fit naturally here.
             </figcaption>
           </figure>
         </div>
@@ -443,16 +706,17 @@ Rule 4:
         </div>
       </section>
 
-      <section class="slide dense-slide" data-step="13" data-accent="tree">
-        <div class="eyebrow">III. Workflow</div>
+      <section class="slide dense-slide workflow-tree-slide" data-step="13" data-accent="tree">
+        <div class="eyebrow">III. Bagging Workflow</div>
         <h1>The Workflow Stays Similar As Trees Become Ensembles</h1>
         <p class="subtitle">
           The code changes much less than the model complexity does.
         </p>
-        <div class="feature-split">
-          <div class="stack-block">
-            <div class="label">R Code</div>
-            <pre class="code-block compact-code"><code>site_tree &lt;- rpart(
+        <div class="workflow-compare">
+          <div class="workflow-code-column">
+            <div class="stack-block">
+              <div class="label">R Equivalent (`rpart`, `bagging`, `randomForest`)</div>
+              <pre class="code-block compact-code"><code>site_tree &lt;- rpart(
   Site.Type ~ Region + City + TreeType + Age +
     DBH + TreeHt + AvgCdia + LandUse,
   data = train_site,
@@ -461,9 +725,30 @@ Rule 4:
 
 bag_model &lt;- bagging(Site.Type ~ ., data = train_site, nbagg = 25)
 rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
-            <p class="viz-caption">Pruning uses <code>C<sub>α</sub>(T) = Error(T) + α|T|</code>.</p>
+              <p class="viz-caption">Pruning balances fit and size with <code>C<sub>α</sub>(T) = Error(T) + α|T|</code>.</p>
+            </div>
+            <div class="stack-block">
+              <div class="label">Python Equivalent (`scikit-learn`)</div>
+              <pre class="code-block compact-code"><code>site_tree = DecisionTreeClassifier(
+    max_depth=5,
+    random_state=624,
+)
+site_tree.fit(X_site, y_site)
+
+bag_model = BaggingClassifier(
+    estimator=DecisionTreeClassifier(random_state=624),
+    n_estimators=25,
+    random_state=624,
+)
+rf_model = RandomForestClassifier(
+    n_estimators=500,
+    max_features="sqrt",
+    random_state=624,
+)</code></pre>
+              <p class="viz-caption">The workflow stays the same: fit one tree, average many trees, then add feature subsampling.</p>
+            </div>
           </div>
-          <div class="tree-wide-block">
+          <div class="tree-wide-block workflow-tree-block">
             <div class="label">Animated Tree</div>
             <button class="replay-button" data-tree-replay="urbanTreeViz">
               Tree Build
@@ -474,9 +759,37 @@ rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
               aria-label="Animated urban tree site-type classification tree"
             ></div>
             <p class="viz-caption">
-              The site-type tree starts with <code>Region</code> and narrows with <code>LandUse</code>.
+              The site-type tree opens with <code>Region</code> and sharpens
+              with <code>LandUse</code>.
             </p>
           </div>
+        </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>`rpart`</strong> = recursive partitioning and regression trees.</div>
+          <div class="legend-pill"><strong>`bagging`</strong> = bootstrap aggregating, or averaging many bootstrap trees.</div>
+          <div class="legend-pill"><strong>`randomForest`</strong> = bagging plus random feature selection at each split.</div>
+          <div class="legend-pill"><strong>`caret`</strong> = tuning wrapper for classification and regression training.</div>
+        </div>
+      </section>
+
+      <section class="slide interactive-slide" data-step="14" data-accent="tree">
+        <div class="eyebrow">III. Interactive Random Forest</div>
+        <h1>Random Forest Explorer</h1>
+        <p class="subtitle">
+          Bagging is the first ensemble step, and random forest adds feature
+          subsampling on top. This demo makes that progression visible by
+          letting you tune the forest directly.
+        </p>
+        <div class="interactive-layout">
+          <div class="focus-card">
+            <div class="label">What To Change</div>
+            <ul class="clean-list">
+              <li>Change <code>ntree</code>, <code>mtry</code>, and <code>nodesize</code>.</li>
+              <li>Compare OOB error and variable importance as the forest grows.</li>
+              <li>Watch the representative tree update as the forest settings change.</li>
+            </ul>
+          </div>
+          <div class="pyodide-shell pyodide-shell-rf" data-pyodide-app="rf"></div>
         </div>
       </section>
 
@@ -484,9 +797,9 @@ rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
         <div class="eyebrow">III. Benchmark Tradeoffs</div>
         <h1>Higher Accuracy Usually Costs More Time And More Tuning</h1>
         <p class="subtitle">
-          This is where the PDF’s pruning and complexity ideas meet the
-          benchmark chart: every performance gain has a cost in computation or
-          simplicity.
+          This is where pruning and model complexity meet the benchmark chart:
+          every performance gain has a cost in computation, tuning, or
+          interpretability.
         </p>
         <div class="two-col">
           <div class="focus-card">
@@ -494,7 +807,7 @@ rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
             <p>
               Pruning limits size, depth, and unnecessary branches. In practice,
               wrappers like <code>caret</code> add cross-validation and tuning
-              overhead on top of that search.
+              overhead on top of that search process.
             </p>
             <ul class="clean-list tight-list">
               <li>Single trees are extremely fast.</li>
@@ -506,16 +819,112 @@ rf_model &lt;- randomForest(TreeType ~ ., data = train_bench)</code></pre>
             <canvas id="treeBenchmarkChart" aria-label="Urban tree benchmark chart"></canvas>
           </div>
         </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>`caret`</strong> = Classification And REgression Training, which adds tuning and cross-validation.</div>
+          <div class="legend-pill"><strong>Benchmarking</strong> = compare fit time, accuracy, and complexity on the same task.</div>
+        </div>
       </section>
 
       <section class="slide" data-step="15" data-accent="tree">
-        <div class="eyebrow">III. Rules And Cubist</div>
-        <h1>Rule Models Stay Readable, And Cubist Adds Local Linear Models On Top</h1>
+        <div class="eyebrow">III. Rule-Based Models, Cubist, And Bagging</div>
+        <h1>Rule-Based Models, Cubist, And Bagging</h1>
         <p class="subtitle">
-          The PDF’s Cubist section adds a useful bridge between simple rule
-          systems and stronger predictive models.
+          This section moves from readable tree rules to Cubist, which keeps
+          the rule structure but fits a stronger local model inside each region.
+          Bagging then shows how averaging many trees helps stabilize the same
+          basic tree logic.
+        </p>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">Rule Based</div>
+            <p>Tree-style conditions are rewritten so the model reads like a compact decision list.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Cubist</div>
+            <p>Rules define regions, then local linear models improve accuracy inside each region.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">Bagging</div>
+            <p>Many trees are averaged so the model is less sensitive to one lucky or unlucky split.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="16" data-accent="tree">
+        <div class="eyebrow">III. Cubist Code</div>
+        <h1>Cubist Keeps The Rules, Then Improves The Fit Inside Each Region</h1>
+        <p class="subtitle">
+          The code shows the important idea: first define regions, then let the
+          model learn a more flexible prediction inside each region. The same
+          structure is visible in both R and a Python-style rule workflow.
         </p>
         <div class="code-grid">
+          <div>
+            <div class="label">R Equivalent (`Cubist`)</div>
+            <pre class="code-block compact-code"><code>cubist_model &lt;- Cubist(
+  x = train_x,
+  y = train_y,
+  committees = 50,
+  neighbors = 5
+)</code></pre>
+          </div>
+          <div>
+            <div class="label">Python Analog (`DecisionTreeRegressor` + rules)</div>
+            <pre class="code-block compact-code"><code>tree = DecisionTreeRegressor(
+    max_depth=4,
+    min_samples_leaf=20,
+    random_state=0,
+).fit(X_train, y_train)
+
+rules = export_text(tree, feature_names=feature_names)</code></pre>
+          </div>
+        </div>
+        <div class="legend-strip">
+          <div class="legend-pill"><strong>`Cubist`</strong> = rule-based model with local linear models inside each region.</div>
+          <div class="legend-pill"><strong>`committees`</strong> = multiple Cubist models averaged together.</div>
+          <div class="legend-pill"><strong>`neighbors`</strong> = nearby training cases used to refine the prediction.</div>
+        </div>
+        <div class="two-col compact-two-col">
+          <div class="focus-card">
+            <div class="label">What The Code Is Doing</div>
+            <p>
+              The R version fits a committee of rule-based local models. The
+              Python analog shows the same region-first idea, even if the exact
+              Cubist algorithm is R-native.
+            </p>
+          </div>
+          <div class="focus-card">
+            <div class="label">Why It Matters</div>
+            <p>
+              The audience sees how a model can stay readable while still
+              becoming stronger than a flat tree leaf average.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-step="17" data-accent="tree">
+        <div class="eyebrow">III. Cubist Graphics</div>
+        <h1>Cubist Improves On Plain Rules By Mixing Structure And Local Prediction</h1>
+        <p class="subtitle">
+          These graphics show the logic chain: rules define the region, a local
+          model sharpens the prediction, and committees average the result.
+        </p>
+        <div class="three-col">
+          <div class="mini-card">
+            <div class="label">1. Rules</div>
+            <p>Rules split the data into regions that are still readable to a human audience.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">2. Local Models</div>
+            <p>Inside each region, a local linear fit does more than a constant leaf mean.</p>
+          </div>
+          <div class="mini-card">
+            <div class="label">3. Committees</div>
+            <p>Several models vote together, which makes the final answer smoother and more stable.</p>
+          </div>
+        </div>
+        <div class="code-grid compact">
           <div>
             <div class="label">Readable Rules</div>
             <pre class="output-block"><code>Rule 1:
@@ -527,79 +936,87 @@ Rule 2:
   -&gt; Low shade  [0.949]</code></pre>
           </div>
           <div>
-            <div class="label">Cubist Overview</div>
-            <div class="mini-stack">
-              <div class="mini-card">
-                <p>Partition data with rules, like a tree.</p>
-              </div>
-              <div class="mini-card">
-                <p>Fit a linear model inside each region instead of using only a flat leaf average.</p>
-              </div>
-              <div class="mini-card">
-                <p>Average committees, then optionally adjust with nearest neighbors.</p>
-              </div>
-            </div>
+            <div class="label">Why This Beats A Flat Leaf</div>
+            <pre class="output-block"><code>Leaf mean only: one value for every case in a region
+Cubist: region + local linear correction + committee averaging</code></pre>
           </div>
         </div>
       </section>
 
-      <section class="slide" data-step="16" data-accent="intro">
+      <section class="slide" data-step="18" data-accent="intro">
         <div class="eyebrow">IV. Transition</div>
         <h1>Single Trees Explain More Clearly, But Prediction Pressure Pushes Us Forward</h1>
         <p class="subtitle">
           The squirrel and urban-tree examples explain the family structure. The
           wildfire problem shifts the emphasis from interpretability toward
-          predictive strength.
+          predictive performance.
         </p>
         <div class="chart-panel large">
           <canvas id="crossDatasetChart" aria-label="Cross dataset comparison chart"></canvas>
         </div>
       </section>
 
-      <section class="slide" data-step="17" data-accent="fire">
-        <div class="eyebrow">IV. Modern Boosting Variants</div>
-        <h1>Wildfire Data Is Where Boosting Starts To Make The Strongest Case</h1>
-        <p class="subtitle">
-          The USGS release is larger, more geospatial, and more prediction
-          oriented, so it naturally rewards stronger ensembles.
-        </p>
-        <div class="two-col">
-          <div>
-            <h2>Wildfire Pipeline</h2>
-            <ul class="clean-list">
-              <li>Official USGS polygon release loaded from the geodatabase.</li>
-              <li>18,000 fires sampled from 65,862 total records.</li>
-              <li>Target: <code>log1p(Combined_Acres)</code>.</li>
-              <li>Features include cause, dates, geometry, centroid, source, and duration.</li>
-            </ul>
-          </div>
-          <div class="stat-grid">
-            <div class="stat">
-              <div class="stat-label">Raw rows</div>
-              <div class="stat-value">65,862</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Modeled rows</div>
-              <div class="stat-value">18,000</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Train split</div>
-              <div class="stat-value">13,500</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Test split</div>
-              <div class="stat-value">4,500</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section class="slide" data-step="19" data-accent="fire">
+
+  <div class="eyebrow">IV. Boosting</div>
+  <h1>Boosting</h1>
+  <p class="subtitle">
+    The USGS release is larger, more geospatial, and more prediction
+    oriented, so it naturally rewards stronger ensembles.
+  </p>
+
+  <div class="wildfire-top-row">
+    <div class="wildfire-pipeline">
+      <h2>Wildfire Pipeline</h2>
+      <ul class="clean-list">
+        <li>Official USGS polygon release loaded from the geodatabase.</li>
+        <li>18,000 fires sampled from 65,862 total records.</li>
+        <li>Target: <code>log1p(Combined_Acres)</code>.</li>
+        <li>Features include cause, dates, geometry, centroid, source, and duration.</li>
+      </ul>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">Raw rows</div>
+        <div class="stat-value">65,862</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Modeled rows</div>
+        <div class="stat-value">18,000</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Train split</div>
+        <div class="stat-value">13,500</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Test split</div>
+        <div class="stat-value">4,500</div>
+      </div>
+    </div>
+  </div>
+
+  <figure class="tree-figure map-figure inline-map-figure wildfire-map-full">
+    <div
+      id="wildfireUsMapViz"
+      class="custom-chart custom-chart-map"
+      aria-label="United States map with wildfire geography overview"
+    ></div>
+    <figcaption>
+      The sample is national, but geography is predictive: western
+      longitudes separate a different large-fire regime before
+      duration and geometry refine the model.
+    </figcaption>
+  </figure>
+
+</section>
 
       <section class="slide" data-step="18" data-accent="fire">
         <div class="eyebrow">IV. Features</div>
         <h1>Thoughtful Features Still Matter, Even For Flexible Tree Models</h1>
         <p class="subtitle">
           Trees are forgiving, but better summaries of when and where a fire
-          happens still improve the model’s view of the problem.
+          happens still improve the model’s understanding of the problem.
         </p>
         <div class="two-col">
           <div class="chart-panel large">
@@ -611,7 +1028,7 @@ Rule 2:
               <div class="equation">log(1 + acres)</div>
               <p>
                 The log transform stabilizes the extreme spread in wildfire
-                sizes and makes the benchmark easier to interpret.
+                sizes and makes the error comparison easier to interpret.
               </p>
             </div>
             <div class="formula-card compact-card">
@@ -630,12 +1047,13 @@ Rule 2:
         <h1>One Regression Tree Gives A Clear Baseline Before We Add Ensembles</h1>
         <p class="subtitle">
           The baseline remains interpretable, but it is only the first step in a
-          prediction-heavy workflow.
+          prediction-focused workflow.
         </p>
-        <div class="feature-split">
-          <div class="stack-block">
-            <div class="label">Python Code</div>
-            <pre class="code-block compact-code"><code>baseline_tree = DecisionTreeRegressor(
+        <div class="workflow-compare wildfire-compare">
+          <div class="workflow-code-column">
+            <div class="stack-block">
+              <div class="label">Python Equivalent (`DecisionTreeRegressor`)</div>
+              <pre class="code-block compact-code"><code>baseline_tree = DecisionTreeRegressor(
   max_depth=8,
   min_samples_leaf=30,
   random_state=42
@@ -645,8 +1063,18 @@ pipeline = Pipeline([
   ("preprocess", preprocessor),
   ("model", baseline_tree)
 ])</code></pre>
+            </div>
+            <div class="stack-block">
+              <div class="label">R Equivalent (`rpart`)</div>
+              <pre class="code-block compact-code"><code>baseline_tree &lt;- rpart(
+  log1p(Burned_Acres) ~ .,
+  data = wildfire_train,
+  method = "anova",
+  control = rpart.control(cp = 0.01, maxdepth = 8, minsplit = 30)
+)</code></pre>
+            </div>
           </div>
-          <div class="tree-wide-block">
+          <div class="tree-wide-block workflow-tree-block">
             <div class="label">Animated Tree</div>
             <button class="replay-button" data-tree-replay="wildfireTreeViz">
               Tree Build
@@ -658,7 +1086,7 @@ pipeline = Pipeline([
             ></div>
             <p class="viz-caption">
               This is still interpretable, but the strongest wildfire results do
-              not come from relying on one tree alone.
+              not come from stopping at one tree.
             </p>
           </div>
         </div>
@@ -668,8 +1096,9 @@ pipeline = Pipeline([
         <div class="eyebrow">IV. Boosting Mechanics</div>
         <h1>Boosting Builds An Additive Model By Correcting Residuals In Sequence</h1>
         <p class="subtitle">
-          The PDF’s stagewise view fits perfectly here: each tree is a small
-          correction to what the earlier trees still miss.
+          The stagewise view matters here: each tree is a small correction to
+          what the earlier trees still miss, so the animation mirrors the
+          additive math.
         </p>
         <div class="two-col">
           <div
@@ -683,17 +1112,38 @@ pipeline = Pipeline([
               <div class="equation">F<sub>M</sub>(x) = Σ ν f<sub>m</sub>(x)</div>
               <p>
                 Each new learner contributes a small correction rather than a
-                whole new independent prediction.
+                completely independent prediction.
               </p>
             </div>
             <div class="formula-card compact-card">
               <div class="label">Interpretation</div>
               <p>
                 Bagging averages many independent trees. Boosting fits them one
-                after another so each tree focuses on what remains hard.
+                after another so each tree focuses on what remains difficult.
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="slide interactive-slide" data-step="21" data-accent="fire">
+        <div class="eyebrow">IV. Interactive Boosting</div>
+        <h1>Boosting Explorer</h1>
+        <p class="subtitle">
+          Boosting is the next step in the progression: instead of averaging
+          trees, it adds them sequentially so each new fit repairs what the
+          earlier ones missed.
+        </p>
+        <div class="interactive-layout">
+          <div class="focus-card">
+            <div class="label">What To Change</div>
+            <ul class="clean-list">
+              <li>Increase <code>n.trees</code> and watch test RMSE evolve.</li>
+              <li>Try smaller shrinkage values to slow the additive fit.</li>
+              <li>Raise interaction depth to allow richer tree interactions.</li>
+            </ul>
+          </div>
+          <div class="pyodide-shell pyodide-shell-boosting" data-pyodide-app="gbm"></div>
         </div>
       </section>
 
@@ -727,15 +1177,15 @@ pipeline = Pipeline([
       </section>
 
       <section class="slide dense-slide" data-step="22" data-accent="fire">
-        <div class="eyebrow">V. Practical Demo</div>
+        <div class="eyebrow">IV. Practical Demo</div>
         <h1>One Pipeline Can Train Several Tree Regressors And Expose The Tradeoff Clearly</h1>
         <p class="subtitle">
           The preprocessing stays fixed while the estimator changes, which makes
-          the speed-versus-accuracy tradeoff easy to compare.
+          the speed-versus-accuracy tradeoff easy to see.
         </p>
         <div class="code-grid compact">
           <div>
-            <div class="label">Python Code</div>
+            <div class="label">Python Equivalent (`Pipeline` + estimators)</div>
             <pre class="code-block"><code>preprocessor = ColumnTransformer([...])
 models = {
   "Decision Tree": DecisionTreeRegressor(...),
@@ -744,6 +1194,18 @@ models = {
   "HistGradientBoosting": HistGradientBoostingRegressor(...)
 }
 pipeline = Pipeline([("preprocess", preprocessor), ("model", estimator)])</code></pre>
+          </div>
+          <div>
+            <div class="label">R Equivalent (`caret` + estimators)</div>
+            <pre class="code-block"><code>ctrl &lt;- trainControl(method = "cv", number = 5)
+models &lt;- list(
+  "Decision Tree" = train(log1p(Burned_Acres) ~ ., data = wildfire_train,
+    method = "rpart", trControl = ctrl, tuneLength = 5),
+  "Random Forest" = train(log1p(Burned_Acres) ~ ., data = wildfire_train,
+    method = "rf", trControl = ctrl, tuneLength = 3),
+  "Gradient Boosting" = train(log1p(Burned_Acres) ~ ., data = wildfire_train,
+    method = "gbm", trControl = ctrl, verbose = FALSE, tuneLength = 5)
+)</code></pre>
           </div>
           <div>
             <div class="label">Console Output</div>
@@ -763,18 +1225,19 @@ Decision Tree         fit 0.065s  RMSE 0.040</code></pre>
               <li>The single tree is fastest.</li>
               <li>Random forest is the quickest strong ensemble.</li>
               <li>Gradient boosting is the most accurate here.</li>
-              <li>Modern histogram boosting is the scalable next step to mention alongside XGBoost and LightGBM.</li>
+              <li>Histogram boosting is a good bridge to modern production tools such as XGBoost and LightGBM.</li>
             </ul>
           </div>
         </div>
       </section>
 
       <section class="slide" data-step="23" data-accent="intro">
-        <div class="eyebrow">VI. Conclusion</div>
+        <div class="eyebrow">V. Outro</div>
         <h1>The Story Arc Is Now Complete: Splits, Loss, Ensembles, And Model Choice</h1>
         <p class="subtitle">
-          The HTML deck keeps the applied story. The PDF material now gives each
-          stage a mathematical and methodological explanation.
+          The applied story and the supporting math now move together: the
+          graphics show what each method is doing, and the equations explain why
+          those patterns emerge.
         </p>
         <div class="three-col">
           <div class="mini-card">
@@ -795,25 +1258,26 @@ Decision Tree         fit 0.065s  RMSE 0.040</code></pre>
           <p>
             Tree methods form a family, not a single model. The right choice
             depends on whether the job is explanation, stability, or raw
-            predictive strength.
+            predictive accuracy.
           </p>
         </div>
       </section>
 
       <section class="slide" data-step="24" data-accent="intro">
         <div class="eyebrow">Sources</div>
-        <h1>Data, Course Material, And Project Files</h1>
+        <h1>Data Sources And Modeling Ideas</h1>
         <p class="subtitle">
-          These slides now synthesize both the original workspace analyses and
-          the course PDF examples on tree mechanics.
+          These slides combine three applied datasets with the core modeling
+          ideas that explain split quality, regression loss, pruning, averaging,
+          and boosting.
         </p>
         <div class="two-col">
           <div>
             <ul class="clean-list">
-              <li>Central Park Squirrel Census local CSV and <code>squirrel_tree_analyis.rmd</code>.</li>
-              <li>USDA urban tree database and <code>tree_tree_analysis.rmd</code>.</li>
-              <li>USGS wildfire polygon release and the Python benchmark artifacts in this folder.</li>
-              <li><code>Data 624 Tree Models.pdf</code> for split criteria, pruning, ensemble mechanics, and Cubist context.</li>
+              <li>Central Park Squirrel Census analysis, used to show how intuitive behavioral splits become readable classification and regression trees.</li>
+              <li>USDA urban tree data, used to show when variance reduction and ensemble averaging start to outperform one readable tree.</li>
+              <li>USGS wildfire polygons, used to show why boosting and stronger regressors matter when prediction error becomes the main goal.</li>
+              <li>Core tree-model ideas: impurity reduction, RSS, cost-complexity pruning, bagging, random forests, boosting, and rule-based local models.</li>
             </ul>
           </div>
           <aside class="roadmap">
@@ -829,6 +1293,15 @@ Decision Tree         fit 0.065s  RMSE 0.040</code></pre>
             <a class="button" href="../artifacts/Trees.zip">Complete Project (ZIP)</a>
           </aside>
         </div>
+        <div class="focus-card" style="margin-top: 1.25rem;">
+          <div class="label">Built With</div>
+          <p>
+            This deck is served from Next.js and the interactive model sandboxes
+            run entirely in the browser with Pyodide and scikit-learn. The
+            slides, charts, and data live alongside the site so the presentation
+            stays self-contained once the page is loaded.
+          </p>
+        </div>
       </section>
     </main>
 
@@ -837,6 +1310,7 @@ Decision Tree         fit 0.065s  RMSE 0.040</code></pre>
 
     <div class="pager" id="pager"></div>
 
+    <script src="./pyodide-sandbox.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

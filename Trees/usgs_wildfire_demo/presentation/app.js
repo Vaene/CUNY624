@@ -170,12 +170,12 @@ let currentSlide = 0;
 const chartState = {};
 const treeState = {};
 const deferredSlideCharts = {
-  5: [initSquirrelMethods],
-  11: [initTreeMethods],
-  13: [initTreeBenchmark],
-  15: [initCrossDataset],
-  20: [initRmseChart],
-  21: [initTradeoffChart],
+  7: [initSquirrelMethods],
+  10: [initSquirrelBenchmark],
+  17: [initTreeMethods],
+  20: [initTreeBenchmark],
+  30: [initRmseChart],
+  31: [initTradeoffChart],
 };
 
 const squirrelTreeData = {
@@ -351,6 +351,9 @@ function showSlide(index) {
   renderPager();
   initChartsForSlide(currentSlide);
   animateSlideMedia(currentSlide);
+  if (window.TreeDemoSandbox?.mountSlide) {
+    window.TreeDemoSandbox.mountSlide(currentSlide);
+  }
   maybeRunDeferredCharts();
 }
 
@@ -389,22 +392,27 @@ function maybeRunDeferredCharts() {
 
 function chartDefaults() {
   Chart.defaults.font.family = 'Georgia, "Times New Roman", serif';
+  Chart.defaults.font.size = 14;
   Chart.defaults.color = palette.muted;
   Chart.defaults.animation.duration = 850;
   Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.font = { size: 13 };
+  Chart.defaults.plugins.title.font = { size: 18, weight: "600" };
   Chart.defaults.borderColor = palette.line;
   Chart.defaults.scale.grid.display = false;
+  Chart.defaults.scale.ticks.font = { size: 13 };
+  Chart.defaults.scale.title.font = { size: 14, weight: "600" };
   Chart.defaults.animations.colors = { duration: 650 };
   Chart.defaults.animations.x = { duration: 850, easing: "easeOutQuart" };
   Chart.defaults.animations.y = { duration: 850, easing: "easeOutQuart" };
 }
 
 function animateSlideMedia(index) {
-  if (index === 3 || index === 10) return;
+  if (index === 5 || index === 15) return;
   const slide = slides[index];
   if (!slide) return;
   const targets = slide.querySelectorAll(
-    ".chart-panel, .image-grid .tree-figure, .stat, .focus-card, .boost-sequence-chart"
+    ".chart-panel, .image-grid .tree-figure, .stat, .focus-card, .boost-sequence-chart, .pyodide-shell"
   );
   if (!targets.length) return;
   targets.forEach((el) => el.classList.add("media-reveal"));
@@ -477,22 +485,22 @@ function renderAnimatedTree(containerId, data, accent) {
   container.innerHTML = "";
 
   const width = container.clientWidth || 560;
-  const height = 360;
+  const height = container.clientHeight || 360;
   const margin = { top: 28, right: 36, bottom: 28, left: 36 };
 
   const root = d3.hierarchy(data);
   const layout = d3
     .tree()
     .nodeSize([104, 84])
-    .separation((a, b) => (a.parent === b.parent ? 1.2 : 1.7));
+    .separation((a, b) => {
+      const sameParent = a.parent === b.parent;
+      const leafBoost = !a.children && !b.children ? 1.25 : 1;
+      return (sameParent ? 1.2 : 1.7) * leafBoost;
+    });
   layout(root);
 
   const nodes = root.descendants();
   const links = root.links();
-  const xExtent = d3.extent(nodes, (d) => d.x);
-  const yExtent = d3.extent(nodes, (d) => d.y);
-  const xShift = margin.left + (width - margin.left - margin.right) / 2 - (xExtent[0] + xExtent[1]) / 2;
-  const yShift = margin.top - yExtent[0];
 
   const svg = d3
     .select(container)
@@ -501,8 +509,7 @@ function renderAnimatedTree(containerId, data, accent) {
     .attr("role", "img");
 
   const g = svg
-    .append("g")
-    .attr("transform", `translate(${xShift},${yShift})`);
+    .append("g");
 
   const color = accent;
 
@@ -571,7 +578,7 @@ function renderAnimatedTree(containerId, data, accent) {
     .append("text")
     .attr("class", "tree-node-label")
     .attr("text-anchor", "middle")
-    .attr("font-size", 11.5)
+    .attr("font-size", width < 900 ? 10.5 : 11.5)
     .attr("font-weight", (d) => (d.depth === 0 ? 600 : 500));
 
   textNodes.each(function (d) {
@@ -593,11 +600,22 @@ function renderAnimatedTree(containerId, data, accent) {
       .attr("class", "tree-node-bg")
       .attr("x", textBox.x - 10)
       .attr("y", textBox.y - 7)
-      .attr("width", Math.max(textBox.width + 20, 108))
+      .attr("width", Math.max(textBox.width + 20, 94))
       .attr("height", textBox.height + 14)
       .attr("rx", 12)
       .attr("ry", 12);
   });
+
+  const gBox = nodeGroup.node().getBBox();
+  const availableWidth = Math.max(1, width - margin.left - margin.right);
+  const availableHeight = Math.max(1, height - margin.top - margin.bottom);
+  const fitScale = Math.min(
+    availableWidth / Math.max(1, gBox.width),
+    availableHeight / Math.max(1, gBox.height)
+  ) * 0.985;
+  const fitX = margin.left + (availableWidth - gBox.width * fitScale) / 2 - gBox.x * fitScale;
+  const fitY = margin.top + (availableHeight - gBox.height * fitScale) / 2 - gBox.y * fitScale;
+  g.attr("transform", `translate(${fitX},${fitY}) scale(${fitScale})`);
 
   const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
@@ -649,9 +667,9 @@ function renderSquirrelLocationMix() {
   if (chartState[id]) return;
   const container = document.getElementById(id);
   if (!container) return;
-  const width = container.clientWidth || 480;
-  const height = 290;
-  const margin = { top: 28, right: 36, bottom: 34, left: 88 };
+  const width = container.clientWidth || 540;
+  const height = 340;
+  const margin = { top: 28, right: 36, bottom: 48, left: 104 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
 
@@ -669,12 +687,20 @@ function renderSquirrelLocationMix() {
     .attr("transform", `translate(0,${innerH})`)
     .call(d3.axisBottom(x).tickValues([0, 0.1, 0.2, 0.3]).tickFormat(d3.format(".0%")))
     .call((sel) => sel.selectAll("path,line").attr("stroke", "rgba(31,41,51,0.14)"))
-    .call((sel) => sel.selectAll("text").attr("fill", palette.muted));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.muted).attr("font-size", 13));
 
   g.append("g")
     .call(d3.axisLeft(y).tickSize(0))
     .call((sel) => sel.selectAll("path,line").remove())
-    .call((sel) => sel.selectAll("text").attr("fill", palette.ink));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.ink).attr("font-size", 13.5));
+
+  g.append("text")
+    .attr("x", innerW / 2)
+    .attr("y", innerH + 40)
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Share of sightings (%)");
 
   g.selectAll(".guide")
     .data(squirrelLocationMix)
@@ -704,7 +730,7 @@ function renderSquirrelLocationMix() {
     .attr("x", (d) => x(d.share) + 8)
     .attr("y", (d) => y(d.color) + y.bandwidth() / 2 + 4)
     .attr("fill", palette.ink)
-    .attr("font-size", 12)
+    .attr("font-size", 13.5)
     .attr("opacity", 0)
     .text((d) => d3.format(".1%")(d.share));
 
@@ -734,27 +760,52 @@ function renderSquirrelPerchBox() {
   if (chartState[id]) return;
   const container = document.getElementById(id);
   if (!container) return;
-  const width = container.clientWidth || 480;
-  const height = 290;
-  const margin = { top: 24, right: 24, bottom: 34, left: 54 };
+  const width = container.clientWidth || 540;
+  const height = 340;
+  const margin = { top: 24, right: 24, bottom: 54, left: 66 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
   const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
   const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
   const x = d3.scaleBand().domain(squirrelPerchStats.map((d) => d.shift)).range([0, innerW]).padding(0.45);
-  const y = d3.scaleLinear().domain([0, 190]).range([innerH, 0]);
+  const y = d3.scaleLinear().domain([0, 30]).range([innerH, 0]);
 
   g.append("g")
     .attr("transform", `translate(0,${innerH})`)
     .call(d3.axisBottom(x).tickSize(0))
     .call((sel) => sel.selectAll("path,line").attr("stroke", "rgba(31,41,51,0.14)"))
-    .call((sel) => sel.selectAll("text").attr("fill", palette.ink));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.ink).attr("font-size", 13.5));
 
   g.append("g")
-    .call(d3.axisLeft(y).tickValues([0, 50, 100, 150]).tickSize(-innerW))
+    .call(d3.axisLeft(y).tickValues([0, 5, 10, 15, 20, 25, 30]).tickSize(-innerW))
     .call((sel) => sel.selectAll(".domain").remove())
     .call((sel) => sel.selectAll("line").remove())
-    .call((sel) => sel.selectAll("text").attr("fill", palette.muted));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.muted).attr("font-size", 13));
+
+  g.append("text")
+    .attr("x", -innerH / 2)
+    .attr("y", -48)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Perch height (ft)");
+
+  g.append("text")
+    .attr("x", innerW / 2)
+    .attr("y", innerH + 42)
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Shift");
+
+  g.append("text")
+    .attr("x", innerW)
+    .attr("y", innerH + 42)
+    .attr("text-anchor", "end")
+    .attr("fill", palette.muted)
+    .attr("font-size", 11.5)
+    .text("Axis capped at 30 ft for readability");
 
   const groups = g.selectAll(".boxgroup")
     .data(squirrelPerchStats)
@@ -800,23 +851,23 @@ function renderSquirrelPerchBox() {
     .attr("class", "cap-bottom")
     .attr("x1", -10)
     .attr("x2", 10)
-    .attr("y1", (d) => y(d.max))
-    .attr("y2", (d) => y(d.max))
+    .attr("y1", (d) => y(Math.min(d.max, 30)))
+    .attr("y2", (d) => y(Math.min(d.max, 30)))
     .attr("stroke", palette.smoke)
     .attr("stroke-width", 1.2);
 
   const labels = groups.append("text")
-    .attr("y", (d) => y(d.max) - 8)
+    .attr("y", (d) => y(Math.min(d.max, 30)) - 8)
     .attr("text-anchor", "middle")
     .attr("fill", palette.ink)
-    .attr("font-size", 12)
+    .attr("font-size", 13.5)
     .attr("opacity", 0)
     .text((d) => `n=${d.n}`);
 
   gsap.to(groups.selectAll(".whisker").nodes(), {
     attr: {
       y1: (_i) => y(squirrelPerchStats[_i].min),
-      y2: (_i) => y(squirrelPerchStats[_i].max),
+      y2: (_i) => y(Math.min(squirrelPerchStats[_i].max, 30)),
     },
     duration: 0.8,
     stagger: 0.12,
@@ -854,12 +905,29 @@ function renderTreeSiteMix() {
     .attr("transform", `translate(0,${innerH})`)
     .call(d3.axisBottom(x).tickValues([0, 0.25, 0.5, 0.75, 1]).tickFormat(d3.format(".0%")))
     .call((sel) => sel.selectAll("path,line").attr("stroke", "rgba(31,41,51,0.14)"))
-    .call((sel) => sel.selectAll("text").attr("fill", palette.muted));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.muted).attr("font-size", 13));
 
   g.append("g")
     .call(d3.axisLeft(y).tickSize(0))
     .call((sel) => sel.selectAll("path,line").remove())
-    .call((sel) => sel.selectAll("text").attr("fill", palette.ink).attr("font-size", 11));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.ink).attr("font-size", 13));
+
+  g.append("text")
+    .attr("x", innerW / 2)
+    .attr("y", innerH + 40)
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Share of trees (%)");
+
+  g.append("text")
+    .attr("x", -innerH / 2)
+    .attr("y", -58)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Climate region");
 
   const guides = g.selectAll(".guide")
     .data(treeSiteMix)
@@ -916,13 +984,30 @@ function renderTreeHeightProfile() {
     .attr("transform", `translate(0,${innerH})`)
     .call(d3.axisBottom(x).tickValues([0, 25, 50, 75, 100, 125]))
     .call((sel) => sel.selectAll("path,line").attr("stroke", "rgba(31,41,51,0.14)"))
-    .call((sel) => sel.selectAll("text").attr("fill", palette.muted));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.muted).attr("font-size", 13));
 
   g.append("g")
     .call(d3.axisLeft(y).tickValues([0, 5, 10, 15, 20, 25]).tickSize(-innerW))
     .call((sel) => sel.selectAll(".domain").remove())
     .call((sel) => sel.selectAll("line").remove())
-    .call((sel) => sel.selectAll("text").attr("fill", palette.muted));
+    .call((sel) => sel.selectAll("text").attr("fill", palette.muted).attr("font-size", 13));
+
+  g.append("text")
+    .attr("x", innerW / 2)
+    .attr("y", innerH + 42)
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("DBH (cm)");
+
+  g.append("text")
+    .attr("x", -innerH / 2)
+    .attr("y", -44)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "middle")
+    .attr("fill", palette.ink)
+    .attr("font-size", 13.5)
+    .text("Height (m)");
 
   ["Street", "Park-like"].forEach((site) => {
     const data = treeHeightProfile.filter((d) => d.site === site).sort((a, b) => a.dbh - b.dbh);
@@ -954,7 +1039,7 @@ function renderTreeHeightProfile() {
   [["Street", palette.tree], ["Park-like", palette.smoke]].forEach((item, i) => {
     const row = legend.append("g").attr("transform", `translate(0,${i * 18})`);
     row.append("line").attr("x1", 0).attr("x2", 18).attr("y1", 0).attr("y2", 0).attr("stroke", item[1]).attr("stroke-width", 2);
-    row.append("text").attr("x", 24).attr("y", 4).attr("fill", palette.ink).attr("font-size", 11.5).text(item[0]);
+    row.append("text").attr("x", 24).attr("y", 4).attr("fill", palette.ink).attr("font-size", 13).text(item[0]);
   });
   chartState[id] = true;
 }
@@ -966,9 +1051,11 @@ function minimalBar(canvasId, labels, data, colors, title, formatValue, options 
   }
   const ctx = document.getElementById(canvasId);
   const yTitle = options.yTitle || "";
+  const xTitle = options.xTitle || "";
   const yMin = options.yMin;
   const yMax = options.yMax;
   const topPadding = options.topPadding ?? 18;
+  const yTickFormat = options.yTickFormat;
   chartState[canvasId] = new Chart(ctx, {
     type: "bar",
     data: {
@@ -993,15 +1080,16 @@ function minimalBar(canvasId, labels, data, colors, title, formatValue, options 
           display: true,
           text: title,
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
-        x: { grid: { display: false }, border: { display: false } },
+        x: xTitle ? { title: { display: true, text: xTitle }, grid: { display: false }, border: { display: false } } : { grid: { display: false }, border: { display: false } },
         y: {
           min: yMin,
           max: yMax,
           title: yTitle ? { display: true, text: yTitle } : { display: false },
+          ticks: yTickFormat ? { callback: yTickFormat } : undefined,
           grid: { color: palette.line },
           border: { display: false },
         },
@@ -1018,7 +1106,7 @@ function valueLabelPlugin(formatValue) {
       const { ctx } = chart;
       ctx.save();
       ctx.fillStyle = palette.ink;
-      ctx.font = '12px Georgia, "Times New Roman", serif';
+      ctx.font = '13.5px Georgia, "Times New Roman", serif';
       chart.data.datasets[0].data.forEach((value, i) => {
         const meta = chart.getDatasetMeta(0).data[i];
         const label = formatValue ? formatValue(value) : String(value);
@@ -1041,7 +1129,7 @@ function initSquirrelOverview() {
     [palette.squirrel, palette.tree, palette.gold],
     "Central Park Squirrel Census: Simple Targets For Tree Models",
     (v) => v.toLocaleString(),
-    { yTitle: "Observations", yMax: 2400, topPadding: 12 }
+    { yTitle: "Observations", yMax: 2400, topPadding: 12, xTitle: "Outcome" }
   );
 }
 
@@ -1081,16 +1169,21 @@ function initSquirrelMethods() {
           display: true,
           text: "One Dataset, Three Tree Tasks: Classification, Regression, Rules",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
-        x: { grid: { display: false }, border: { display: false } },
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          title: { display: true, text: "Task / target" },
+        },
         y: {
           position: "left",
           min: 0,
           max: 1,
-          title: { display: true, text: "Accuracy" },
+          title: { display: true, text: "Accuracy (%)" },
+          ticks: { callback: (v) => `${Math.round(v * 100)}%` },
           grid: { color: palette.line },
           border: { display: false },
         },
@@ -1098,7 +1191,7 @@ function initSquirrelMethods() {
           position: "right",
           min: 0,
           max: 15,
-          title: { display: true, text: "RMSE" },
+          title: { display: true, text: "RMSE (ft)" },
           grid: { drawOnChartArea: false },
           border: { display: false },
         },
@@ -1137,13 +1230,13 @@ function initSquirrelBenchmark() {
           display: true,
           text: "Harder Squirrel Task: Fur Color Benchmark",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
         tooltip: {
           callbacks: {
             label: (context) => {
               const raw = context.raw;
-              return `${raw.model}: fit ${raw.x}s, accuracy ${raw.y}`;
+              return `${raw.model}: fit ${raw.x}s, accuracy ${(raw.y * 100).toFixed(1)}%`;
             },
           },
         },
@@ -1155,9 +1248,10 @@ function initSquirrelBenchmark() {
           border: { display: false },
         },
         y: {
-          title: { display: true, text: "Accuracy" },
+          title: { display: true, text: "Accuracy (%)" },
           min: 0.82,
           max: 0.845,
+          ticks: { callback: (v) => `${Math.round(v * 100)}%` },
           grid: { display: false },
           border: { display: false },
         },
@@ -1184,7 +1278,7 @@ function initTreeOverview() {
     [palette.tree, palette.gold],
     "USDA Urban Trees: Street vs Park-Like Sites",
     (v) => v.toLocaleString(),
-    { yTitle: "Observations", yMax: 10000, topPadding: 12 }
+    { yTitle: "Observations", yMax: 10000, topPadding: 12, xTitle: "Site class" }
   );
 }
 
@@ -1196,7 +1290,7 @@ function initTreeMethods() {
     [palette.smoke, palette.tree, palette.gold],
     "Urban Tree Methods: Easy Tasks Already Favor Tree Ensembles",
     (v) => v.toFixed(3),
-    { yTitle: "Accuracy", yMin: 0, yMax: 1.08, topPadding: 22 }
+    { yTitle: "Accuracy (%)", yMin: 0, yMax: 1.08, topPadding: 22, xTitle: "Method", yTickFormat: (v) => `${Math.round(v * 100)}%` }
   );
 }
 
@@ -1230,7 +1324,7 @@ function initTreeBenchmark() {
           display: true,
           text: "Hard Urban-Tree Task: Predicting TreeType",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
@@ -1240,9 +1334,10 @@ function initTreeBenchmark() {
           border: { display: false },
         },
         y: {
-          title: { display: true, text: "Accuracy" },
+          title: { display: true, text: "Accuracy (%)" },
           min: 0.48,
           max: 0.69,
+          ticks: { callback: (v) => `${Math.round(v * 100)}%` },
           grid: { color: palette.line },
           border: { display: false },
         },
@@ -1297,7 +1392,7 @@ function initCrossDataset() {
           display: true,
           text: "Why Prediction-Focused Problems Push Us Toward Stronger Ensembles",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
@@ -1305,7 +1400,8 @@ function initCrossDataset() {
         y: {
           min: 0.7,
           max: 1.02,
-          title: { display: true, text: "Accuracy-oriented tasks" },
+          title: { display: true, text: "Accuracy (%)" },
+          ticks: { callback: (v) => `${Math.round(v * 100)}%` },
           grid: { display: false },
           border: { display: false },
         },
@@ -1313,7 +1409,7 @@ function initCrossDataset() {
           position: "right",
           min: 0,
           max: 0.05,
-          title: { display: true, text: "Wildfire RMSE (lower is better)" },
+          title: { display: true, text: "Wildfire RMSE (log acres + 1)" },
           grid: { display: false },
           border: { display: false },
           reverse: true,
@@ -1351,7 +1447,7 @@ function initImportanceChart() {
           display: true,
           text: "Wildfire Feature Signals Used By The Modern Demo",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
@@ -1375,7 +1471,7 @@ function initRmseChart() {
     [...wildfireMetrics].sort((a, b) => b.rmseLog - a.rmseLog).map((d) => modelColors[d.model]),
     "Wildfire Regression: Lower Error For Boosting Methods",
     (v) => v.toFixed(3),
-    { yTitle: "RMSE on log(acres + 1)", yMin: 0, yMax: 0.05, topPadding: 20 }
+    { yTitle: "RMSE (log acres + 1)", yMin: 0, yMax: 0.05, topPadding: 20, xTitle: "Model", yTickFormat: (v) => v.toFixed(3) }
   );
 }
 
@@ -1409,7 +1505,7 @@ function initTradeoffChart() {
           display: true,
           text: "Wildfire Demo: Fit Time vs Error",
           color: palette.ink,
-          font: { size: 16, weight: "600" },
+          font: { size: 18, weight: "600" },
         },
       },
       scales: {
@@ -1419,7 +1515,7 @@ function initTradeoffChart() {
           border: { display: false },
         },
         y: {
-          title: { display: true, text: "RMSE on log(acres + 1)" },
+          title: { display: true, text: "RMSE (log acres + 1)" },
           reverse: true,
           min: 0.01,
           max: 0.045,
@@ -1439,7 +1535,7 @@ function pointLabelPlugin(offsets = {}) {
       const { ctx } = chart;
       ctx.save();
       ctx.fillStyle = palette.ink;
-      ctx.font = '12px Georgia, "Times New Roman", serif';
+      ctx.font = '13.5px Georgia, "Times New Roman", serif';
       chart.data.datasets[0].data.forEach((point, i) => {
         const meta = chart.getDatasetMeta(0).data[i];
         const tweak = offsets[point.model] || { dx: 8, dy: -8 };
@@ -1451,27 +1547,226 @@ function pointLabelPlugin(offsets = {}) {
 }
 
 function initChartsForSlide(index) {
-  if (index === 1) initSquirrelOverview();
-  if (index === 3) animateVisualBriefing(
-    3,
+  if (index === 2) initSquirrelOverview();
+  if (index === 5) animateVisualBriefing(
+    5,
     ["squirrelLocationMixViz", "squirrelPerchBoxViz"],
     [renderSquirrelLocationMix, renderSquirrelPerchBox]
   );
-  if (index === 5) maybeRunDeferredCharts();
-  if (index === 6) initSquirrelBenchmark();
-  if (index === 8) initTreeOverview();
-  if (index === 10) animateVisualBriefing(
-    10,
+  if (index === 7) maybeRunDeferredCharts();
+  if (index === 10) initSquirrelBenchmark();
+  if (index === 13) initTreeOverview();
+  if (index === 11) animateVisualBriefing(
+    11,
     ["treeSiteMixViz", "treeHeightProfileViz"],
     [renderTreeSiteMix, renderTreeHeightProfile]
   );
-  if (index === 11) maybeRunDeferredCharts();
-  if (index === 13) maybeRunDeferredCharts();
-  if (index === 15) maybeRunDeferredCharts();
-  if (index === 17) initImportanceChart();
-  if (index === 19) animateBoostFlow();
+  if (index === 17) maybeRunDeferredCharts();
   if (index === 20) maybeRunDeferredCharts();
-  if (index === 21) maybeRunDeferredCharts();
+  if (index === 24) initCrossDataset();
+  if (index === 25) renderWildfireUsMap();
+  if (index === 26) initImportanceChart();
+  if (index === 28) animateBoostFlow();
+  if (index === 30) maybeRunDeferredCharts();
+  if (index === 31) maybeRunDeferredCharts();
+}
+
+async function renderWildfireUsMap() {
+  const id = "wildfireUsMapViz";
+  const container = document.getElementById(id);
+  if (!container || chartState[id]) return;
+
+  container.innerHTML = "";
+  const width = container.clientWidth || 560;
+  const height = container.clientHeight || 225;
+  const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+
+  const westPoints = [
+    [-124.2, 47.6], [-122.7, 45.8], [-121.1, 43.8], [-119.6, 39.4], [-118.4, 37.2],
+    [-116.8, 45.1], [-115.4, 43.5], [-114.7, 41.5], [-113.6, 39.2], [-112.3, 34.6],
+    [-111.6, 46.8], [-109.8, 44.5], [-108.4, 37.8], [-106.2, 35.6], [-104.8, 32.8],
+    [-122.1, 40.8], [-120.4, 38.9], [-118.9, 34.1], [-117.4, 33.1], [-113.1, 48.1],
+  ];
+  const plainsPoints = [
+    [-104.9, 47.0], [-102.6, 44.2], [-100.3, 41.1], [-99.2, 38.8], [-98.5, 35.3],
+    [-97.7, 32.6], [-101.7, 29.8], [-96.4, 43.5], [-94.6, 39.2], [-92.8, 36.5],
+  ];
+  const southPoints = [
+    [-90.3, 31.2], [-88.6, 32.4], [-86.9, 33.3], [-85.1, 30.9], [-83.5, 32.1],
+    [-82.4, 29.7], [-81.1, 28.2], [-84.5, 35.4], [-80.9, 34.6], [-79.2, 35.8],
+    [-77.8, 37.1], [-91.8, 34.7], [-89.4, 30.8],
+  ];
+
+  const annotationData = [
+    {
+      name: "Western Interior",
+      detail: "large-fire signal",
+      lon: -116,
+      lat: 42.5,
+      dx: -52,
+      dy: 10,
+    },
+    {
+      name: "Great Plains",
+      detail: "transition band",
+      lon: -99,
+      lat: 39,
+      dx: -10,
+      dy: -24,
+    },
+    {
+      name: "Southeast",
+      detail: "different regime",
+      lon: -84,
+      lat: 32.5,
+      dx: 16,
+      dy: 12,
+    },
+  ];
+
+  try {
+    const us = await d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json");
+    const nation = topojson.feature(us, us.objects.nation);
+    const states = topojson.feature(us, us.objects.states);
+
+    const projection = d3.geoAlbersUsa().fitExtent([[8, 8], [width - 8, height - 8]], states);
+    const geoPath = d3.geoPath(projection);
+
+    svg.append("path")
+      .datum(nation)
+      .attr("class", "us-map-nation")
+      .attr("d", geoPath);
+
+    svg.append("g")
+      .selectAll("path")
+      .data(states.features)
+      .enter()
+      .append("path")
+      .attr("class", "us-map-state")
+      .attr("d", geoPath);
+
+    const drawPoints = (points, className, radius) => {
+      svg.append("g")
+        .selectAll("circle")
+        .data(points.map(([lon, lat]) => ({ lon, lat })).filter((d) => projection([d.lon, d.lat])))
+        .enter()
+        .append("circle")
+        .attr("class", className)
+        .attr("cx", (d) => projection([d.lon, d.lat])[0])
+        .attr("cy", (d) => projection([d.lon, d.lat])[1])
+        .attr("r", 0)
+        .attr("opacity", 0.95);
+
+      const nodes = svg.selectAll(`.${className}`).nodes();
+      gsap.to(nodes, {
+        attr: { r: radius },
+        duration: 0.55,
+        stagger: 0.03,
+        ease: "power2.out",
+      });
+    };
+
+    drawPoints(westPoints, "us-map-point-west", 4.3);
+    drawPoints(plainsPoints, "us-map-point-plains", 3.6);
+    drawPoints(southPoints, "us-map-point-south", 3.4);
+
+    const ann = svg.append("g");
+    annotationData.forEach((d, index) => {
+      const projected = projection([d.lon, d.lat]);
+      if (!projected) return;
+      const [x, y] = projected;
+      ann.append("line")
+        .attr("x1", x)
+        .attr("y1", y)
+        .attr("x2", x + d.dx)
+        .attr("y2", y + d.dy)
+        .attr("stroke", palette.fire)
+        .attr("stroke-width", 1.2)
+        .attr("opacity", 0)
+        .transition()
+        .delay(260 + index * 110)
+        .duration(320)
+        .attr("opacity", 0.8);
+
+      const boxX = x + d.dx - 2;
+      const boxY = y + d.dy - 28;
+      ann.append("rect")
+        .attr("class", "us-map-annotation")
+        .attr("x", boxX)
+        .attr("y", boxY)
+        .attr("width", 112)
+        .attr("height", 34)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("opacity", 0)
+        .transition()
+        .delay(330 + index * 110)
+        .duration(280)
+        .attr("opacity", 1);
+
+      ann.append("text")
+        .attr("class", "us-map-annotation-text")
+        .attr("x", boxX + 9)
+        .attr("y", boxY + 13)
+        .attr("font-size", 10.6)
+        .attr("font-weight", 600)
+        .attr("opacity", 0)
+        .text(d.name)
+        .transition()
+        .delay(360 + index * 110)
+        .duration(220)
+        .attr("opacity", 1);
+
+      ann.append("text")
+        .attr("class", "us-map-annotation-text")
+        .attr("x", boxX + 9)
+        .attr("y", boxY + 25)
+        .attr("font-size", 8.2)
+        .attr("fill", palette.muted)
+        .attr("opacity", 0)
+        .text(d.detail)
+        .transition()
+        .delay(390 + index * 110)
+        .duration(220)
+        .attr("opacity", 1);
+    });
+
+    chartState[id] = { loaded: true };
+  } catch (error) {
+    svg.append("rect")
+      .attr("x", 8)
+      .attr("y", 8)
+      .attr("width", width - 16)
+      .attr("height", height - 16)
+      .attr("rx", 16)
+      .attr("ry", 16)
+      .attr("fill", "rgba(255, 252, 245, 0.88)")
+      .attr("stroke", "rgba(130, 117, 94, 0.18)");
+
+    svg.append("text")
+      .attr("x", 18)
+      .attr("y", 34)
+      .attr("fill", palette.ink)
+      .attr("font-size", 13)
+      .attr("font-weight", 600)
+      .text("National Fire Geography");
+
+    svg.append("text")
+      .attr("x", 18)
+      .attr("y", 58)
+      .attr("fill", palette.muted)
+      .attr("font-size", 10)
+      .text("USGS fire records span the country, but western longitude");
+
+    svg.append("text")
+      .attr("x", 18)
+      .attr("y", 72)
+      .attr("fill", palette.muted)
+      .attr("font-size", 10)
+      .text("still becomes an early split because geography changes fire behavior.");
+
+    chartState[id] = { loaded: true, fallback: true, error };
+  }
 }
 
 function animateBoostFlow() {
