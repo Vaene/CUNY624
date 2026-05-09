@@ -3,17 +3,17 @@ title: "Applied Predictive Modeling — Chapter 6 Solutions"
 author: "Randy Howk"
 date: "`r Sys.Date()`"
 output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
   pdf_document:
     latex_engine: xelatex
     toc: true
     number_sections: true
     keep_tex: true
     fig_caption: true
-  html_document:
-    self_contained: false
-    toc: true
-    toc_depth: 2
-    number_sections: true
 geometry: "margin=0.5in"
 fontsize: 11pt
 linkcolor: blue
@@ -78,12 +78,6 @@ theme_set(
 update_geom_defaults("line", list(linewidth = 0.45))
 update_geom_defaults("point", list(size = 1.2))
 ```
-
-# How to use this file
-
-This R Markdown file contains **worked solutions** for all Chapter 6 exercises from *Applied Predictive Modeling*: 6.1 (Tecator fat prediction), 6.2 (permeability), and 6.3 (chemical manufacturing process). The chapter covers ordinary linear regression, partial least squares (PLS), and penalized linear models such as ridge, lasso, and elastic net. The exercises appear at the end of Chapter 6 and ask the reader to use those model families on three regression problems. fileciteturn0file0
-
-The code is written to be executable in a standard R setup with the listed packages installed. Where the chapter asks for judgments such as “which model would you choose?”, the text below gives a direct answer and the code computes the relevant summaries.
 
 # Chapter 6 in one paragraph
 

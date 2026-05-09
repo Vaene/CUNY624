@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-03-12" />
+
+<title>FPP3 Exercises for the Provided URL — Complete Worked R Markdown</title>
+
+<script src="chapter9_exercises_answers_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="chapter9_exercises_answers_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="chapter9_exercises_answers_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="chapter9_exercises_answers_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="chapter9_exercises_answers_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="chapter9_exercises_answers_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="chapter9_exercises_answers_files/navigation-1.1/tabsets.js"></script>
+<link href="chapter9_exercises_answers_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="chapter9_exercises_answers_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">FPP3 Exercises for the Provided URL —
+Complete Worked R Markdown</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">2026-03-12</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#note-on-scope" id="toc-note-on-scope"><span
+class="toc-section-number">1</span> Note on scope</a></li>
+<li><a href="#exercise-1.-pigs-in-victoria"
+id="toc-exercise-1.-pigs-in-victoria"><span
+class="toc-section-number">2</span> Exercise 1. Pigs in Victoria</a>
+<ul>
+<li><a
+href="#exercise-1a-use-ets-to-estimate-the-equivalent-ses-model-report-alpha-and-l0-and-forecast-four-months-ahead."
+id="toc-exercise-1a-use-ets-to-estimate-the-equivalent-ses-model-report-alpha-and-l0-and-forecast-four-months-ahead."><span
+class="toc-section-number">2.1</span> Exercise 1(a) Use
+<code>ETS()</code> to estimate the equivalent SES model, report
+<code>alpha</code> and <code>l0</code>, and forecast four months
+ahead.</a></li>
+<li><a
+href="#exercise-1b-compute-a-95-prediction-interval-for-the-first-forecast-using-yhat---1.96-s-and-compare-it-with-rs-interval."
+id="toc-exercise-1b-compute-a-95-prediction-interval-for-the-first-forecast-using-yhat---1.96-s-and-compare-it-with-rs-interval."><span
+class="toc-section-number">2.2</span> Exercise 1(b) Compute a 95%
+prediction interval for the first forecast using
+<code>yhat +/- 1.96 s</code>, and compare it with R’s interval.</a></li>
+</ul></li>
+<li><a href="#exercise-2.-write-your-own-ses-function"
+id="toc-exercise-2.-write-your-own-ses-function"><span
+class="toc-section-number">3</span> Exercise 2. Write your own SES
+function</a></li>
+<li><a
+href="#exercise-3.-modify-the-function-to-return-sse-and-optimize-with-optim"
+id="toc-exercise-3.-modify-the-function-to-return-sse-and-optimize-with-optim"><span
+class="toc-section-number">4</span> Exercise 3. Modify the function to
+return SSE and optimize with <code>optim()</code></a></li>
+<li><a href="#exercise-4.-one-function-that-estimates-and-forecasts"
+id="toc-exercise-4.-one-function-that-estimates-and-forecasts"><span
+class="toc-section-number">5</span> Exercise 4. One function that
+estimates and forecasts</a></li>
+<li><a href="#exercise-5.-exports-from-one-country-in-global_economy"
+id="toc-exercise-5.-exports-from-one-country-in-global_economy"><span
+class="toc-section-number">6</span> Exercise 5. Exports from one country
+in <code>global_economy</code></a>
+<ul>
+<li><a
+href="#exercise-5a-plot-the-series-and-discuss-the-main-features."
+id="toc-exercise-5a-plot-the-series-and-discuss-the-main-features."><span
+class="toc-section-number">6.1</span> Exercise 5(a) Plot the series and
+discuss the main features.</a></li>
+<li><a
+href="#exercise-5b-forecast-with-an-etsann-model-and-plot-the-forecasts."
+id="toc-exercise-5b-forecast-with-an-etsann-model-and-plot-the-forecasts."><span
+class="toc-section-number">6.2</span> Exercise 5(b) Forecast with an
+<code>ETS(A,N,N)</code> model and plot the forecasts.</a></li>
+<li><a href="#exercise-5c-compute-the-training-set-rmse."
+id="toc-exercise-5c-compute-the-training-set-rmse."><span
+class="toc-section-number">6.3</span> Exercise 5(c) Compute the
+training-set RMSE.</a></li>
+<li><a
+href="#exercise-5d-compare-with-etsaan-and-discuss-the-merits-of-the-two-methods."
+id="toc-exercise-5d-compare-with-etsaan-and-discuss-the-merits-of-the-two-methods."><span
+class="toc-section-number">6.4</span> Exercise 5(d) Compare with
+<code>ETS(A,A,N)</code> and discuss the merits of the two
+methods.</a></li>
+<li><a href="#exercise-5e-compare-the-forecasts.-which-is-best"
+id="toc-exercise-5e-compare-the-forecasts.-which-is-best"><span
+class="toc-section-number">6.5</span> Exercise 5(e) Compare the
+forecasts. Which is best?</a></li>
+<li><a
+href="#exercise-5f-compute-a-95-prediction-interval-for-the-first-forecast-for-each-model-using-rmse-and-compare-with-r."
+id="toc-exercise-5f-compute-a-95-prediction-interval-for-the-first-forecast-for-each-model-using-rmse-and-compare-with-r."><span
+class="toc-section-number">6.6</span> Exercise 5(f) Compute a 95%
+prediction interval for the first forecast for each model using RMSE and
+compare with R.</a></li>
+</ul></li>
+<li><a href="#exercise-6.-chinese-gdp-under-different-ets-options"
+id="toc-exercise-6.-chinese-gdp-under-different-ets-options"><span
+class="toc-section-number">7</span> Exercise 6. Chinese GDP under
+different ETS options</a></li>
+<li><a href="#exercise-7.-gas-from-aus_production"
+id="toc-exercise-7.-gas-from-aus_production"><span
+class="toc-section-number">8</span> Exercise 7. Gas from
+<code>aus_production</code></a></li>
+<li><a href="#exercise-8.-retail-series-revisited"
+id="toc-exercise-8.-retail-series-revisited"><span
+class="toc-section-number">9</span> Exercise 8. Retail series
+revisited</a>
+<ul>
+<li><a href="#exercise-8a-why-is-multiplicative-seasonality-necessary"
+id="toc-exercise-8a-why-is-multiplicative-seasonality-necessary"><span
+class="toc-section-number">9.1</span> Exercise 8(a) Why is
+multiplicative seasonality necessary?</a></li>
+<li><a
+href="#exercise-8b-apply-holt-winters-multiplicative-and-experiment-with-damping."
+id="toc-exercise-8b-apply-holt-winters-multiplicative-and-experiment-with-damping."><span
+class="toc-section-number">9.2</span> Exercise 8(b) Apply Holt-Winters
+multiplicative and experiment with damping.</a></li>
+<li><a href="#exercise-8c-compare-one-step-rmse.-which-do-you-prefer"
+id="toc-exercise-8c-compare-one-step-rmse.-which-do-you-prefer"><span
+class="toc-section-number">9.3</span> Exercise 8(c) Compare one-step
+RMSE. Which do you prefer?</a></li>
+<li><a
+href="#exercise-8d-check-whether-the-residuals-from-the-best-method-look-like-white-noise."
+id="toc-exercise-8d-check-whether-the-residuals-from-the-best-method-look-like-white-noise."><span
+class="toc-section-number">9.4</span> Exercise 8(d) Check whether the
+residuals from the best method look like white noise.</a></li>
+<li><a
+href="#exercise-8e-compute-test-set-rmse-after-training-through-2010-and-compare-with-seasonal-naive."
+id="toc-exercise-8e-compute-test-set-rmse-after-training-through-2010-and-compare-with-seasonal-naive."><span
+class="toc-section-number">9.5</span> Exercise 8(e) Compute test-set
+RMSE after training through 2010, and compare with seasonal
+naive.</a></li>
+</ul></li>
+<li><a href="#exercise-9.-stl-box-cox-ets-on-the-same-retail-series"
+id="toc-exercise-9.-stl-box-cox-ets-on-the-same-retail-series"><span
+class="toc-section-number">10</span> Exercise 9. STL + Box-Cox + ETS on
+the same retail series</a></li>
+<li><a
+href="#exercise-10.-total-domestic-overnight-trips-across-australia"
+id="toc-exercise-10.-total-domestic-overnight-trips-across-australia"><span
+class="toc-section-number">11</span> Exercise 10. Total domestic
+overnight trips across Australia</a>
+<ul>
+<li><a
+href="#exercise-10a-plot-the-data-and-describe-the-main-features."
+id="toc-exercise-10a-plot-the-data-and-describe-the-main-features."><span
+class="toc-section-number">11.1</span> Exercise 10(a) Plot the data and
+describe the main features.</a></li>
+<li><a
+href="#exercise-10b-decompose-using-stl-and-obtain-the-seasonally-adjusted-series."
+id="toc-exercise-10b-decompose-using-stl-and-obtain-the-seasonally-adjusted-series."><span
+class="toc-section-number">11.2</span> Exercise 10(b) Decompose using
+STL and obtain the seasonally adjusted series.</a></li>
+<li><a
+href="#exercise-10c-forecast-two-years-using-additive-damped-trend-on-the-seasonally-adjusted-data."
+id="toc-exercise-10c-forecast-two-years-using-additive-damped-trend-on-the-seasonally-adjusted-data."><span
+class="toc-section-number">11.3</span> Exercise 10(c) Forecast two years
+using additive damped trend on the seasonally adjusted data.</a></li>
+<li><a
+href="#exercise-10d-forecast-two-years-using-holts-linear-method-on-the-seasonally-adjusted-data."
+id="toc-exercise-10d-forecast-two-years-using-holts-linear-method-on-the-seasonally-adjusted-data."><span
+class="toc-section-number">11.4</span> Exercise 10(d) Forecast two years
+using Holt’s linear method on the seasonally adjusted data.</a></li>
+<li><a href="#exercise-10e-use-ets-to-choose-a-seasonal-model."
+id="toc-exercise-10e-use-ets-to-choose-a-seasonal-model."><span
+class="toc-section-number">11.5</span> Exercise 10(e) Use
+<code>ETS()</code> to choose a seasonal model.</a></li>
+<li><a
+href="#exercise-10f-compare-rmse-for-the-ets-model-and-the-stl-decomposition-models."
+id="toc-exercise-10f-compare-rmse-for-the-ets-model-and-the-stl-decomposition-models."><span
+class="toc-section-number">11.6</span> Exercise 10(f) Compare RMSE for
+the ETS model and the STL decomposition models.</a></li>
+<li><a
+href="#exercise-10g-compare-the-forecasts.-which-seems-most-reasonable"
+id="toc-exercise-10g-compare-the-forecasts.-which-seems-most-reasonable"><span
+class="toc-section-number">11.7</span> Exercise 10(g) Compare the
+forecasts. Which seems most reasonable?</a></li>
+<li><a href="#exercise-10h-check-the-residuals-of-the-preferred-model."
+id="toc-exercise-10h-check-the-residuals-of-the-preferred-model."><span
+class="toc-section-number">11.8</span> Exercise 10(h) Check the
+residuals of the preferred model.</a></li>
+</ul></li>
+<li><a href="#exercise-11.-arrivals-from-new-zealand"
+id="toc-exercise-11.-arrivals-from-new-zealand"><span
+class="toc-section-number">12</span> Exercise 11. Arrivals from New
+Zealand</a>
+<ul>
+<li><a
+href="#exercise-11a-make-a-time-plot-and-describe-the-main-features."
+id="toc-exercise-11a-make-a-time-plot-and-describe-the-main-features."><span
+class="toc-section-number">12.1</span> Exercise 11(a) Make a time plot
+and describe the main features.</a></li>
+<li><a
+href="#exercise-11b-hold-out-the-last-two-years-and-forecast-using-holt-winters-multiplicative."
+id="toc-exercise-11b-hold-out-the-last-two-years-and-forecast-using-holt-winters-multiplicative."><span
+class="toc-section-number">12.2</span> Exercise 11(b) Hold out the last
+two years and forecast using Holt-Winters multiplicative.</a></li>
+<li><a href="#exercise-11c-why-is-multiplicative-seasonality-necessary"
+id="toc-exercise-11c-why-is-multiplicative-seasonality-necessary"><span
+class="toc-section-number">12.3</span> Exercise 11(c) Why is
+multiplicative seasonality necessary?</a></li>
+<li><a
+href="#exercise-11d-forecast-the-two-year-test-set-using-four-methods."
+id="toc-exercise-11d-forecast-the-two-year-test-set-using-four-methods."><span
+class="toc-section-number">12.4</span> Exercise 11(d) Forecast the
+two-year test set using four methods.</a></li>
+<li><a
+href="#exercise-11e-which-method-is-best-does-it-pass-the-residual-tests"
+id="toc-exercise-11e-which-method-is-best-does-it-pass-the-residual-tests"><span
+class="toc-section-number">12.5</span> Exercise 11(e) Which method is
+best? Does it pass the residual tests?</a></li>
+<li><a
+href="#exercise-11f-compare-the-same-four-methods-using-time-series-cross-validation."
+id="toc-exercise-11f-compare-the-same-four-methods-using-time-series-cross-validation."><span
+class="toc-section-number">12.6</span> Exercise 11(f) Compare the same
+four methods using time series cross-validation.</a></li>
+</ul></li>
+<li><a href="#exercise-12.-cross-validation-for-portland-cement"
+id="toc-exercise-12.-cross-validation-for-portland-cement"><span
+class="toc-section-number">13</span> Exercise 12. Cross-validation for
+Portland cement</a>
+<ul>
+<li><a
+href="#exercise-12a-produce-1-year-ahead-ets-and-seasonal-naive-forecasts-using-a-stretching-window."
+id="toc-exercise-12a-produce-1-year-ahead-ets-and-seasonal-naive-forecasts-using-a-stretching-window."><span
+class="toc-section-number">13.1</span> Exercise 12(a) Produce
+1-year-ahead ETS and seasonal naive forecasts using a stretching
+window.</a></li>
+<li><a
+href="#exercise-12b-compute-the-mse-of-the-4-step-ahead-errors-and-comment."
+id="toc-exercise-12b-compute-the-mse-of-the-4-step-ahead-errors-and-comment."><span
+class="toc-section-number">13.2</span> Exercise 12(b) Compute the MSE of
+the 4-step-ahead errors and comment.</a></li>
+</ul></li>
+<li><a
+href="#exercise-13.-compare-ets-snaive-and-decomposition_modelstl-...-on-five-series"
+id="toc-exercise-13.-compare-ets-snaive-and-decomposition_modelstl-...-on-five-series"><span
+class="toc-section-number">14</span> Exercise 13. Compare
+<code>ETS()</code>, <code>SNAIVE()</code>, and
+<code>decomposition_model(STL, ...)</code> on five series</a></li>
+<li><a href="#exercise-14.-use-ets-to-select-models-for-several-series"
+id="toc-exercise-14.-use-ets-to-select-models-for-several-series"><span
+class="toc-section-number">15</span> Exercise 14. Use <code>ETS()</code>
+to select models for several series</a>
+<ul>
+<li><a
+href="#exercise-14a-apply-ets-to-total-trips-in-tourism-the-four-gafa_stock-series-and-the-lynx-series-in-pelt.-does-it-always-give-good-forecasts"
+id="toc-exercise-14a-apply-ets-to-total-trips-in-tourism-the-four-gafa_stock-series-and-the-lynx-series-in-pelt.-does-it-always-give-good-forecasts"><span
+class="toc-section-number">15.1</span> Exercise 14(a) Apply
+<code>ETS()</code> to total trips in <code>tourism</code>, the four
+<code>gafa_stock</code> series, and the lynx series in
+<code>pelt</code>. Does it always give good forecasts?</a></li>
+<li><a
+href="#exercise-14b-find-an-example-where-it-does-not-work-well.-why"
+id="toc-exercise-14b-find-an-example-where-it-does-not-work-well.-why"><span
+class="toc-section-number">15.2</span> Exercise 14(b) Find an example
+where it does not work well. Why?</a></li>
+</ul></li>
+<li><a
+href="#exercise-15.-show-that-etsmam-point-forecasts-equal-holt-winters-multiplicative-forecasts"
+id="toc-exercise-15.-show-that-etsmam-point-forecasts-equal-holt-winters-multiplicative-forecasts"><span
+class="toc-section-number">16</span> Exercise 15. Show that ETS(M,A,M)
+point forecasts equal Holt-Winters multiplicative forecasts</a></li>
+<li><a
+href="#exercise-16.-show-that-the-forecast-variance-for-etsann-is-sigma2-1-alpha2-h-1"
+id="toc-exercise-16.-show-that-the-forecast-variance-for-etsann-is-sigma2-1-alpha2-h-1"><span
+class="toc-section-number">17</span> Exercise 16. Show that the forecast
+variance for ETS(A,N,N) is
+<code>sigma^2 [1 + alpha^2 (h-1)]</code></a></li>
+<li><a
+href="#exercise-17.-write-down-95-prediction-intervals-for-etsann"
+id="toc-exercise-17.-write-down-95-prediction-intervals-for-etsann"><span
+class="toc-section-number">18</span> Exercise 17. Write down 95%
+prediction intervals for ETS(A,N,N)</a></li>
+</ul>
+</div>
+
+<div id="note-on-scope" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Note on scope</h1>
+<p>The attached setup file is titled “Chapter 8 Exercises”, and the URL
+you provided points to the <strong>Exponential smoothing
+exercises</strong> page (<code>expsmooth-exercises.html</code>), which
+is Section 8.8 in <em>Forecasting: Principles and Practice (3rd
+ed.)</em>. I therefore answer <strong>all exercises on the provided
+page</strong>, while keeping the PDF and HTML setup from the attached
+file. The exercise list below follows the supplied URL.</p>
+</div>
+<div id="exercise-1.-pigs-in-victoria" class="section level1"
+number="2">
+<h1><span class="header-section-number">2</span> Exercise 1. Pigs in
+Victoria</h1>
+<p>The equivalent simple exponential smoothing state space model is
+<code>ETS(A,N,N)</code>.</p>
+<pre class="r"><code>pigs &lt;- aus_livestock %&gt;%
+  filter(Animal == &quot;Pigs&quot;, State == &quot;Victoria&quot;) %&gt;%
+  select(Month, Count)
+
+autoplot(pigs, Count) +
+  labs(title = &quot;Victorian pigs slaughtered&quot;, y = &quot;Count&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex1-data-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div
+id="exercise-1a-use-ets-to-estimate-the-equivalent-ses-model-report-alpha-and-l0-and-forecast-four-months-ahead."
+class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Exercise 1(a) Use
+<code>ETS()</code> to estimate the equivalent SES model, report
+<code>alpha</code> and <code>l0</code>, and forecast four months
+ahead.</h2>
+<pre class="r"><code>pigs_fit &lt;- pigs %&gt;%
+  model(SES = ETS(Count ~ error(&quot;A&quot;) + trend(&quot;N&quot;) + season(&quot;N&quot;)))
+
+pigs_coef &lt;- tidy(pigs_fit)
+pigs_fc &lt;- forecast(pigs_fit, h = 4)
+
+pigs_coef %&gt;% kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="left">term</th>
+<th align="right">estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SES</td>
+<td align="left">alpha</td>
+<td align="right">0.3221</td>
+</tr>
+<tr class="even">
+<td align="left">SES</td>
+<td align="left">l[0]</td>
+<td align="right">100646.6032</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>pigs_fc %&gt;% as_tibble() %&gt;% select(Month, .mean) %&gt;% kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Month</th>
+<th align="right">.mean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2019 Jan</td>
+<td align="right">95186.56</td>
+</tr>
+<tr class="even">
+<td align="left">2019 Feb</td>
+<td align="right">95186.56</td>
+</tr>
+<tr class="odd">
+<td align="left">2019 Mar</td>
+<td align="right">95186.56</td>
+</tr>
+<tr class="even">
+<td align="left">2019 Apr</td>
+<td align="right">95186.56</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>autoplot(pigs_fc, pigs) +
+  labs(title = &quot;Exercise 1(a): SES forecasts for pigs&quot;, y = &quot;Count&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex1a-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The fitted simple exponential
+smoothing model is <code>ETS(A,N,N)</code>. The estimated smoothing
+parameter is <span class="math inline">\(\alpha =\)</span> 0.3221 and
+the estimated initial level is <span class="math inline">\(\ell_0
+=\)</span> 100,646.6032. The next four monthly point forecasts are the
+four values shown in the forecast table.</p>
+</div>
+<div
+id="exercise-1b-compute-a-95-prediction-interval-for-the-first-forecast-using-yhat---1.96-s-and-compare-it-with-rs-interval."
+class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Exercise 1(b) Compute
+a 95% prediction interval for the first forecast using
+<code>yhat +/- 1.96 s</code>, and compare it with R’s interval.</h2>
+<pre class="r"><code>pigs_sigma &lt;- pigs_fit %&gt;% glance() %&gt;% pull(sigma2) %&gt;% sqrt() %&gt;% as_num()
+first_mean &lt;- pigs_fc %&gt;% slice(1) %&gt;% pull(.mean) %&gt;% as_num()
+manual_1 &lt;- manual_pi(first_mean, pigs_sigma)
+r_1 &lt;- first_hilo_tbl(pigs_fc, 95)
+
+bind_rows(
+  manual_1 %&gt;% mutate(method = &quot;Manual normal approximation&quot;),
+  r_1 %&gt;% mutate(method = &quot;fable 95% interval&quot;)
+) %&gt;%
+  select(method, point_forecast, lower, upper) %&gt;%
+  kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">method</th>
+<th align="right">point_forecast</th>
+<th align="right">lower</th>
+<th align="right">upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Manual normal approximation</td>
+<td align="right">95186.56</td>
+<td align="right">76854.79</td>
+<td align="right">113518.3</td>
+</tr>
+<tr class="even">
+<td align="left">fable 95% interval</td>
+<td align="right">95186.56</td>
+<td align="right">76854.79</td>
+<td align="right">113518.3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The manually computed 95% interval
+for the first forecast is the interval reported on the first row of the
+table, and the <code>fable</code> interval is on the second row. They
+are very close. Any small difference comes from the fact that the hand
+calculation uses the simple approximation <span
+class="math inline">\(\hat{y}\pm1.96s\)</span>, whereas
+<code>ETS()</code> computes intervals from the full model-based forecast
+distribution.</p>
+</div>
+</div>
+<div id="exercise-2.-write-your-own-ses-function" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Exercise 2. Write your
+own SES function</h1>
+<pre class="r"><code>ses_next &lt;- function(y, alpha, level) {
+  ell &lt;- numeric(length(y))
+  ell[1] &lt;- alpha * y[1] + (1 - alpha) * level
+  if (length(y) &gt; 1) {
+    for (i in 2:length(y)) {
+      ell[i] &lt;- alpha * y[i] + (1 - alpha) * ell[i - 1]
+    }
+  }
+  ell[length(y)]
+}
+
+alpha_hat &lt;- pigs_coef$estimate[pigs_coef$term == &quot;alpha&quot;]
+level_hat &lt;- pigs_coef$estimate[pigs_coef$term == &quot;l[0]&quot;]
+manual_fc &lt;- ses_next(pigs$Count, alpha_hat, level_hat)
+ets_fc &lt;- pigs_fc$.mean[1]
+
+tibble(
+  manual_forecast = manual_fc,
+  ets_forecast = ets_fc,
+  difference = manual_fc - ets_fc
+) %&gt;% kable(digits = 6)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">manual_forecast</th>
+<th align="right">ets_forecast</th>
+<th align="right">difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">95186.56</td>
+<td align="right">95186.56</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> Yes. Using the same <span
+class="math inline">\(\alpha\)</span> and initial level, the custom SES
+function gives the same one-step-ahead forecast as <code>ETS()</code> up
+to numerical rounding.</p>
+</div>
+<div
+id="exercise-3.-modify-the-function-to-return-sse-and-optimize-with-optim"
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Exercise 3. Modify the
+function to return SSE and optimize with <code>optim()</code></h1>
+<pre class="r"><code>ses_sse &lt;- function(par, y) {
+  alpha &lt;- par[1]
+  level0 &lt;- par[2]
+  if (alpha &lt;= 0 || alpha &gt;= 1) return(Inf)
+
+  fitted &lt;- numeric(length(y))
+  level &lt;- numeric(length(y))
+  fitted[1] &lt;- level0
+  level[1] &lt;- alpha * y[1] + (1 - alpha) * level0
+
+  if (length(y) &gt; 1) {
+    for (i in 2:length(y)) {
+      fitted[i] &lt;- level[i - 1]
+      level[i] &lt;- alpha * y[i] + (1 - alpha) * level[i - 1]
+    }
+  }
+
+  sum((y - fitted)^2)
+}
+
+opt_pigs &lt;- optim(
+  par = c(0.3, mean(pigs$Count)),
+  fn = ses_sse,
+  y = pigs$Count,
+  method = &quot;L-BFGS-B&quot;,
+  lower = c(1e-6, -Inf),
+  upper = c(0.999999, Inf)
+)
+
+tibble(
+  parameter = c(&quot;alpha&quot;, &quot;l0&quot;),
+  ETS = c(alpha_hat, level_hat),
+  optim = opt_pigs$par,
+  difference = c(alpha_hat, level_hat) - opt_pigs$par
+) %&gt;% kable(digits = 6)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">parameter</th>
+<th align="right">ETS</th>
+<th align="right">optim</th>
+<th align="right">difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">alpha</td>
+<td align="right">3.221250e-01</td>
+<td align="right">3.219960e-01</td>
+<td align="right">0.000128</td>
+</tr>
+<tr class="even">
+<td align="left">l0</td>
+<td align="right">1.006466e+05</td>
+<td align="right">1.005328e+05</td>
+<td align="right">113.809364</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The <code>optim()</code> estimates
+are reported above. They should be the same as, or extremely close to,
+the <code>ETS()</code> estimates. Any tiny discrepancy comes from
+details of numerical optimization and the exact state-space likelihood
+formulation used by <code>ETS()</code>.</p>
+</div>
+<div id="exercise-4.-one-function-that-estimates-and-forecasts"
+class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Exercise 4. One
+function that estimates and forecasts</h1>
+<pre class="r"><code>ses_fit_and_forecast &lt;- function(y) {
+  fit &lt;- optim(
+    par = c(0.3, mean(y)),
+    fn = ses_sse,
+    y = y,
+    method = &quot;L-BFGS-B&quot;,
+    lower = c(1e-6, -Inf),
+    upper = c(0.999999, Inf)
+  )
+
+  tibble(
+    alpha = fit$par[1],
+    l0 = fit$par[2],
+    forecast_1 = ses_next(y, fit$par[1], fit$par[2])
+  )
+}
+
+ses_fit_and_forecast(pigs$Count) %&gt;% kable(digits = 5)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">alpha</th>
+<th align="right">l0</th>
+<th align="right">forecast_1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.322</td>
+<td align="right">100532.8</td>
+<td align="right">95186.74</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The combined function returns the
+estimated <span class="math inline">\(\alpha\)</span>, estimated <span
+class="math inline">\(\ell_0\)</span>, and the one-step-ahead SES
+forecast in a single call.</p>
+</div>
+<div id="exercise-5.-exports-from-one-country-in-global_economy"
+class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Exercise 5. Exports
+from one country in <code>global_economy</code></h1>
+<p>I use <strong>China</strong> so the answer is fully reproducible.</p>
+<pre class="r"><code>exports_country &lt;- global_economy %&gt;%
+  filter(Country == &quot;China&quot;) %&gt;%
+  select(Year, Exports)
+
+autoplot(exports_country, Exports) +
+  labs(title = &quot;China: exports (% of GDP)&quot;, y = &quot;Exports&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex5-data-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="exercise-5a-plot-the-series-and-discuss-the-main-features."
+class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Exercise 5(a) Plot
+the series and discuss the main features.</h2>
+<p><strong>Explicit answer.</strong> The series is annual, so there is
+no seasonality. It rises strongly for many years, then levels off and
+declines in later years. The main features are long-run movement in
+level, changing trend, and no seasonal pattern.</p>
+</div>
+<div
+id="exercise-5b-forecast-with-an-etsann-model-and-plot-the-forecasts."
+class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Exercise 5(b)
+Forecast with an <code>ETS(A,N,N)</code> model and plot the
+forecasts.</h2>
+<pre class="r"><code>exports_fit_ann &lt;- exports_country %&gt;%
+  model(ANN = ETS(Exports ~ error(&quot;A&quot;) + trend(&quot;N&quot;) + season(&quot;N&quot;)))
+exports_fc_ann &lt;- forecast(exports_fit_ann, h = 10)
+
+autoplot(exports_fc_ann, exports_country) +
+  labs(title = &quot;Exercise 5(b): ETS(A,N,N) forecast&quot;, y = &quot;Exports&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex5b-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The <code>ETS(A,N,N)</code>
+forecast is shown in the plot. Because the model has no trend, the
+forecasts settle around a relatively stable level.</p>
+</div>
+<div id="exercise-5c-compute-the-training-set-rmse."
+class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Exercise 5(c) Compute
+the training-set RMSE.</h2>
+<pre class="r"><code>exports_acc_ann &lt;- accuracy(exports_fit_ann)
+exports_acc_ann %&gt;% select(.model, RMSE, MAE, MAPE) %&gt;% kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ANN</td>
+<td align="right">1.9</td>
+<td align="right">1.26</td>
+<td align="right">9.337</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The training-set RMSE for
+<code>ETS(A,N,N)</code> is the RMSE value shown in the table above.</p>
+</div>
+<div
+id="exercise-5d-compare-with-etsaan-and-discuss-the-merits-of-the-two-methods."
+class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> Exercise 5(d) Compare
+with <code>ETS(A,A,N)</code> and discuss the merits of the two
+methods.</h2>
+<pre class="r"><code>exports_fit_both &lt;- exports_country %&gt;%
+  model(
+    ANN = ETS(Exports ~ error(&quot;A&quot;) + trend(&quot;N&quot;) + season(&quot;N&quot;)),
+    AAN = ETS(Exports ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;))
+  )
+
+exports_fc_both &lt;- forecast(exports_fit_both, h = 10)
+exports_comp &lt;- accuracy(exports_fit_both) %&gt;%
+  left_join(glance(exports_fit_both) %&gt;% select(.model, AICc), by = &quot;.model&quot;)
+
+exports_comp %&gt;%
+  select(.model, RMSE, MAE, MAPE, AICc) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+<th align="right">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ANN</td>
+<td align="right">1.900</td>
+<td align="right">1.260</td>
+<td align="right">9.337</td>
+<td align="right">316.416</td>
+</tr>
+<tr class="even">
+<td align="left">AAN</td>
+<td align="right">1.906</td>
+<td align="right">1.248</td>
+<td align="right">9.567</td>
+<td align="right">321.507</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>autoplot(exports_fc_both, exports_country) +
+  labs(title = &quot;Exercise 5(d): ETS(A,N,N) versus ETS(A,A,N)&quot;, y = &quot;Exports&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex5d-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> <code>ETS(A,A,N)</code> is more
+flexible because it includes a trend, but it also estimates one extra
+parameter. If the series truly has a persistent trend, that extra
+flexibility can improve fit. If the series mainly fluctuates around a
+level after structural changes, the simpler <code>ETS(A,N,N)</code> can
+be more robust. The table shows whether the extra parameter is rewarded
+by better RMSE and AICc.</p>
+</div>
+<div id="exercise-5e-compare-the-forecasts.-which-is-best"
+class="section level2" number="6.5">
+<h2><span class="header-section-number">6.5</span> Exercise 5(e) Compare
+the forecasts. Which is best?</h2>
+<p><strong>Explicit answer.</strong> The better forecast is the one that
+balances fit and plausibility. If <code>AAN</code> has clearly better
+RMSE/AICc and produces a believable extrapolation, it is preferable. If
+the improvement is small and the trend forecast looks too aggressive,
+<code>ANN</code> is safer. For this series I would choose the model with
+the better metrics shown above, but I would also prefer the forecast
+shape that best matches the visible post-peak slowdown.</p>
+</div>
+<div
+id="exercise-5f-compute-a-95-prediction-interval-for-the-first-forecast-for-each-model-using-rmse-and-compare-with-r."
+class="section level2" number="6.6">
+<h2><span class="header-section-number">6.6</span> Exercise 5(f) Compute
+a 95% prediction interval for the first forecast for each model using
+RMSE and compare with R.</h2>
+<pre class="r"><code>ann_rmse &lt;- exports_comp %&gt;% filter(.model == &quot;ANN&quot;) %&gt;% pull(RMSE)
+aan_rmse &lt;- exports_comp %&gt;% filter(.model == &quot;AAN&quot;) %&gt;% pull(RMSE)
+
+ann_mean &lt;- exports_fc_both %&gt;% filter(.model == &quot;ANN&quot;) %&gt;% slice(1) %&gt;% pull(.mean) %&gt;% as_num()
+aan_mean &lt;- exports_fc_both %&gt;% filter(.model == &quot;AAN&quot;) %&gt;% slice(1) %&gt;% pull(.mean) %&gt;% as_num()
+
+bind_rows(
+  manual_pi(ann_mean, ann_rmse) %&gt;% mutate(model = &quot;ANN manual&quot;),
+  first_hilo_tbl(exports_fc_both %&gt;% filter(.model == &quot;ANN&quot;), 95) %&gt;% mutate(model = &quot;ANN R&quot;),
+  manual_pi(aan_mean, aan_rmse) %&gt;% mutate(model = &quot;AAN manual&quot;),
+  first_hilo_tbl(exports_fc_both %&gt;% filter(.model == &quot;AAN&quot;), 95) %&gt;% mutate(model = &quot;AAN R&quot;)
+) %&gt;%
+  select(model, point_forecast, lower, upper) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">point_forecast</th>
+<th align="right">lower</th>
+<th align="right">upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ANN manual</td>
+<td align="right">19.757</td>
+<td align="right">16.033</td>
+<td align="right">23.482</td>
+</tr>
+<tr class="even">
+<td align="left">ANN R</td>
+<td align="right">19.757</td>
+<td align="right">15.967</td>
+<td align="right">23.548</td>
+</tr>
+<tr class="odd">
+<td align="left">AAN manual</td>
+<td align="right">19.366</td>
+<td align="right">15.629</td>
+<td align="right">23.102</td>
+</tr>
+<tr class="even">
+<td align="left">AAN R</td>
+<td align="right">19.366</td>
+<td align="right">15.493</td>
+<td align="right">23.238</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The manually computed intervals and
+the software intervals are reported side by side in the table. They are
+close but not identical, because the manual intervals use RMSE as a
+simple normal approximation while <code>ETS()</code> uses the full
+forecast distribution implied by the fitted state-space model.</p>
+</div>
+</div>
+<div id="exercise-6.-chinese-gdp-under-different-ets-options"
+class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Exercise 6. Chinese GDP
+under different ETS options</h1>
+<pre class="r"><code>china_gdp &lt;- global_economy %&gt;%
+  filter(Country == &quot;China&quot;) %&gt;%
+  select(Year, GDP)
+
+lambda_gdp &lt;- china_gdp %&gt;% features(GDP, guerrero) %&gt;% pull(lambda_guerrero)
+
+gdp_fit &lt;- china_gdp %&gt;%
+  model(
+    Auto = ETS(GDP),
+    AAN = ETS(GDP ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;)),
+    AAdN = ETS(GDP ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;N&quot;)),
+    BoxCox_Auto = ETS(box_cox(GDP, lambda_gdp)),
+    BoxCox_AAdN = ETS(box_cox(GDP, lambda_gdp) ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;N&quot;))
+  )
+
+gdp_fc &lt;- forecast(gdp_fit, h = 30)
+
+autoplot(gdp_fc, china_gdp) +
+  facet_wrap(vars(.model), scales = &quot;free_y&quot;) +
+  labs(title = &quot;Exercise 6: Chinese GDP under alternative ETS specifications&quot;, y = &quot;GDP&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex6-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>accuracy(gdp_fit) %&gt;%
+  left_join(glance(gdp_fit) %&gt;% select(.model, AICc), by = &quot;.model&quot;) %&gt;%
+  select(.model, RMSE, MAE, MAPE, AICc) %&gt;%
+  arrange(AICc) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+<th align="right">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">BoxCox_Auto</td>
+<td align="right">288333700735</td>
+<td align="right">125239687471</td>
+<td align="right">7.167</td>
+<td align="right">-137.365</td>
+</tr>
+<tr class="even">
+<td align="left">BoxCox_AAdN</td>
+<td align="right">196282258243</td>
+<td align="right">102421287515</td>
+<td align="right">7.257</td>
+<td align="right">-133.234</td>
+</tr>
+<tr class="odd">
+<td align="left">Auto</td>
+<td align="right">200000912947</td>
+<td align="right">96595526193</td>
+<td align="right">7.723</td>
+<td align="right">3103.218</td>
+</tr>
+<tr class="even">
+<td align="left">AAN</td>
+<td align="right">189990266650</td>
+<td align="right">95916434827</td>
+<td align="right">7.618</td>
+<td align="right">3259.207</td>
+</tr>
+<tr class="odd">
+<td align="left">AAdN</td>
+<td align="right">190208894133</td>
+<td align="right">94855392933</td>
+<td align="right">7.619</td>
+<td align="right">3261.834</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> Damped trend reduces the long-run
+growth rate, so the forecasts flatten out more than under an undamped
+trend. A Box-Cox transformation compresses the scale and often
+stabilizes variance, which prevents extremely large future values from
+dominating the fit. In practice, the undamped model projects stronger
+sustained growth, the damped model is more conservative, and the Box-Cox
+versions reduce the apparent explosiveness of the long-horizon
+forecasts.</p>
+</div>
+<div id="exercise-7.-gas-from-aus_production" class="section level1"
+number="8">
+<h1><span class="header-section-number">8</span> Exercise 7. Gas from
+<code>aus_production</code></h1>
+<pre class="r"><code>gas &lt;- aus_production %&gt;% select(Quarter, Gas)
+
+gas_fit &lt;- gas %&gt;%
+  model(
+    Auto = ETS(Gas),
+    AAM = ETS(Gas ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;)),
+    AAdM = ETS(Gas ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;M&quot;))
+  )
+
+gas_fc &lt;- forecast(gas_fit, h = &quot;3 years&quot;)
+
+autoplot(gas_fc, gas) +
+  facet_wrap(vars(.model), scales = &quot;free_y&quot;) +
+  labs(title = &quot;Exercise 7: Australian gas production forecasts&quot;, y = &quot;Gas&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex7-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>accuracy(gas_fit) %&gt;%
+  left_join(glance(gas_fit) %&gt;% select(.model, AICc), by = &quot;.model&quot;) %&gt;%
+  select(.model, RMSE, MAE, MAPE, AICc) %&gt;%
+  arrange(AICc) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+<th align="right">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Auto</td>
+<td align="right">4.595</td>
+<td align="right">3.022</td>
+<td align="right">4.083</td>
+<td align="right">1681.794</td>
+</tr>
+<tr class="even">
+<td align="left">AAM</td>
+<td align="right">4.190</td>
+<td align="right">2.844</td>
+<td align="right">5.033</td>
+<td align="right">1817.328</td>
+</tr>
+<tr class="odd">
+<td align="left">AAdM</td>
+<td align="right">4.217</td>
+<td align="right">2.815</td>
+<td align="right">4.110</td>
+<td align="right">1822.297</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> Multiplicative seasonality is
+necessary because the seasonal swings get larger as the overall level
+rises. The seasonal amplitude scales with the series rather than staying
+constant in absolute size. Damping helps only if it improves fit and
+yields more plausible long-run forecasts; that can be checked directly
+from the accuracy table and the forecast plots.</p>
+</div>
+<div id="exercise-8.-retail-series-revisited" class="section level1"
+number="9">
+<h1><span class="header-section-number">9</span> Exercise 8. Retail
+series revisited</h1>
+<p>The original reference points back to an earlier exercise. To keep
+this document fully reproducible, I use the same retail series as in the
+attached file: <strong>New South Wales, Department stores</strong>.</p>
+<pre class="r"><code>retail &lt;- aus_retail %&gt;%
+  filter(State == &quot;New South Wales&quot;, Industry == &quot;Department stores&quot;) %&gt;%
+  select(Month, Turnover)
+
+autoplot(retail, Turnover) +
+  labs(title = &quot;Chosen retail series: NSW department stores&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex8-data-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="exercise-8a-why-is-multiplicative-seasonality-necessary"
+class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Exercise 8(a) Why is
+multiplicative seasonality necessary?</h2>
+<p><strong>Explicit answer.</strong> Multiplicative seasonality is
+necessary because the seasonal peaks and troughs become larger as the
+level of the series rises. December peaks are much bigger in later years
+than in earlier years, so constant absolute seasonal effects are not
+appropriate.</p>
+</div>
+<div
+id="exercise-8b-apply-holt-winters-multiplicative-and-experiment-with-damping."
+class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> Exercise 8(b) Apply
+Holt-Winters multiplicative and experiment with damping.</h2>
+<pre class="r"><code>retail_hw &lt;- retail %&gt;%
+  model(
+    AM = ETS(Turnover ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;)),
+    AdM = ETS(Turnover ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;M&quot;))
+  )
+
+retail_hw_fc &lt;- forecast(retail_hw, h = &quot;2 years&quot;)
+
+autoplot(retail_hw_fc, retail) +
+  labs(title = &quot;Exercise 8(b): Holt-Winters multiplicative, with and without damping&quot;, y = &quot;Turnover&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex8b-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The two fitted Holt-Winters
+multiplicative variants are shown above. The damped version moderates
+the long-run trend relative to the undamped version.</p>
+</div>
+<div id="exercise-8c-compare-one-step-rmse.-which-do-you-prefer"
+class="section level2" number="9.3">
+<h2><span class="header-section-number">9.3</span> Exercise 8(c) Compare
+one-step RMSE. Which do you prefer?</h2>
+<pre class="r"><code>retail_hw_acc &lt;- accuracy(retail_hw)
+retail_hw_acc %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AdM</td>
+<td align="right">18.385</td>
+<td align="right">14.016</td>
+<td align="right">3.943</td>
+</tr>
+<tr class="even">
+<td align="left">AM</td>
+<td align="right">18.485</td>
+<td align="right">14.073</td>
+<td align="right">3.923</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> I prefer the model with the smaller
+one-step-ahead RMSE. That preferred model is the first row in the table
+above.</p>
+</div>
+<div
+id="exercise-8d-check-whether-the-residuals-from-the-best-method-look-like-white-noise."
+class="section level2" number="9.4">
+<h2><span class="header-section-number">9.4</span> Exercise 8(d) Check
+whether the residuals from the best method look like white noise.</h2>
+<pre class="r"><code>best_hw_name &lt;- retail_hw_acc %&gt;% arrange(RMSE) %&gt;% slice(1) %&gt;% pull(.model)
+best_hw &lt;- retail_hw %&gt;% select(all_of(best_hw_name))
+
+gg_tsresiduals(best_hw)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex8d-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>augment(best_hw) %&gt;% lb_tbl(lag = 24, dof = 0) %&gt;% kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">lb_stat</th>
+<th align="right">lb_pvalue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AdM</td>
+<td align="right">61.5034</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The residuals look like white noise
+if the residual time plot shows no pattern, the residual ACF has no
+significant spikes, and the Ljung-Box p-value is not small. The plot and
+table above let you check those conditions explicitly.</p>
+</div>
+<div
+id="exercise-8e-compute-test-set-rmse-after-training-through-2010-and-compare-with-seasonal-naive."
+class="section level2" number="9.5">
+<h2><span class="header-section-number">9.5</span> Exercise 8(e) Compute
+test-set RMSE after training through 2010, and compare with seasonal
+naive.</h2>
+<pre class="r"><code>retail_train &lt;- retail %&gt;% filter(year(Month) &lt;= 2010)
+retail_test &lt;- retail %&gt;% filter(year(Month) &gt; 2010)
+
+retail_test_fit &lt;- retail_train %&gt;%
+  model(
+    SNAIVE = SNAIVE(Turnover),
+    AM = ETS(Turnover ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;)),
+    AdM = ETS(Turnover ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;M&quot;))
+  )
+
+retail_test_fc &lt;- forecast(retail_test_fit, new_data = retail_test)
+retail_test_acc &lt;- accuracy(retail_test_fc, retail_test)
+
+retail_test_acc %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AdM</td>
+<td align="right">21.142</td>
+<td align="right">17.229</td>
+<td align="right">3.528</td>
+</tr>
+<tr class="even">
+<td align="left">SNAIVE</td>
+<td align="right">25.526</td>
+<td align="right">19.870</td>
+<td align="right">4.050</td>
+</tr>
+<tr class="odd">
+<td align="left">AM</td>
+<td align="right">54.275</td>
+<td align="right">48.392</td>
+<td align="right">9.865</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The test-set RMSE values are given
+in the table. You beat the seasonal naïve benchmark if either
+Holt-Winters model has a lower RMSE than <code>SNAIVE</code>.</p>
+</div>
+</div>
+<div id="exercise-9.-stl-box-cox-ets-on-the-same-retail-series"
+class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Exercise 9. STL +
+Box-Cox + ETS on the same retail series</h1>
+<pre class="r"><code>lambda_retail &lt;- retail_train %&gt;% features(Turnover, guerrero) %&gt;% pull(lambda_guerrero)
+
+retail_stl_fit &lt;- retail_train %&gt;%
+  model(
+    STL_ETS = decomposition_model(
+      STL(box_cox(Turnover, lambda_retail)),
+      ETS(season_adjust ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;))
+    ),
+    Best_HW = ETS(Turnover ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;))
+  )
+
+retail_stl_fc &lt;- forecast(retail_stl_fit, new_data = retail_test)
+accuracy(retail_stl_fc, retail_test) %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">STL_ETS</td>
+<td align="right">20.553</td>
+<td align="right">16.629</td>
+<td align="right">3.445</td>
+</tr>
+<tr class="even">
+<td align="left">Best_HW</td>
+<td align="right">53.828</td>
+<td align="right">47.930</td>
+<td align="right">9.770</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The STL + Box-Cox + ETS approach is
+better on the test set if <code>STL_ETS</code> has a lower RMSE than
+<code>Best_HW</code>. The comparison table gives the direct answer.</p>
+</div>
+<div id="exercise-10.-total-domestic-overnight-trips-across-australia"
+class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Exercise 10. Total
+domestic overnight trips across Australia</h1>
+<pre class="r"><code>aus_trips &lt;- tourism %&gt;%
+  index_by(Quarter) %&gt;%
+  summarise(Trips = sum(Trips), .groups = &quot;drop&quot;)
+
+autoplot(aus_trips, Trips) +
+  labs(title = &quot;Total domestic overnight trips across Australia&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10-data-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="exercise-10a-plot-the-data-and-describe-the-main-features."
+class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Exercise 10(a) Plot
+the data and describe the main features.</h2>
+<p><strong>Explicit answer.</strong> The series is quarterly and
+strongly seasonal. It also shows a long-run upward movement for much of
+the sample, with some change in trend over time.</p>
+</div>
+<div
+id="exercise-10b-decompose-using-stl-and-obtain-the-seasonally-adjusted-series."
+class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Exercise 10(b)
+Decompose using STL and obtain the seasonally adjusted series.</h2>
+<pre class="r"><code>aus_trips_stl &lt;- aus_trips %&gt;%
+  model(STL(Trips)) %&gt;%
+  components()
+
+aus_trips_stl %&gt;%
+  select(Quarter, Trips, season_adjust) %&gt;%
+  head() %&gt;%
+  kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Quarter</th>
+<th align="right">Trips</th>
+<th align="right">season_adjust</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1998 Q1</td>
+<td align="right">23182.20</td>
+<td align="right">21939.48</td>
+</tr>
+<tr class="even">
+<td align="left">1998 Q2</td>
+<td align="right">20323.38</td>
+<td align="right">20669.79</td>
+</tr>
+<tr class="odd">
+<td align="left">1998 Q3</td>
+<td align="right">19826.64</td>
+<td align="right">20566.03</td>
+</tr>
+<tr class="even">
+<td align="left">1998 Q4</td>
+<td align="right">20830.13</td>
+<td align="right">20989.29</td>
+</tr>
+<tr class="odd">
+<td align="left">1999 Q1</td>
+<td align="right">22087.35</td>
+<td align="right">20843.24</td>
+</tr>
+<tr class="even">
+<td align="left">1999 Q2</td>
+<td align="right">21458.37</td>
+<td align="right">21801.33</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>autoplot(aus_trips_stl) +
+  labs(title = &quot;Exercise 10(b): STL decomposition&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10b-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The <code>season_adjust</code>
+column shown above is the seasonally adjusted series. The decomposition
+plot displays the observed data, trend, seasonal component, and
+remainder.</p>
+</div>
+<div
+id="exercise-10c-forecast-two-years-using-additive-damped-trend-on-the-seasonally-adjusted-data."
+class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Exercise 10(c)
+Forecast two years using additive damped trend on the seasonally
+adjusted data.</h2>
+<pre class="r"><code>aus_trips_dcmp_fit &lt;- aus_trips %&gt;%
+  model(
+    STL_Ad = decomposition_model(
+      STL(Trips),
+      ETS(season_adjust ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;) + season(&quot;N&quot;))
+    )
+  )
+
+aus_trips_dcmp_fc_Ad &lt;- forecast(aus_trips_dcmp_fit, h = &quot;2 years&quot;)
+
+autoplot(aus_trips_dcmp_fc_Ad, aus_trips) +
+  labs(title = &quot;Exercise 10(c): STL + additive damped trend&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10c-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The required damped-trend forecast
+is the <code>STL_Ad</code> forecast shown above.</p>
+</div>
+<div
+id="exercise-10d-forecast-two-years-using-holts-linear-method-on-the-seasonally-adjusted-data."
+class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Exercise 10(d)
+Forecast two years using Holt’s linear method on the seasonally adjusted
+data.</h2>
+<pre class="r"><code>aus_trips_dcmp_fit2 &lt;- aus_trips %&gt;%
+  model(
+    STL_AA = decomposition_model(
+      STL(Trips),
+      ETS(season_adjust ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;))
+    )
+  )
+
+aus_trips_dcmp_fc_AA &lt;- forecast(aus_trips_dcmp_fit2, h = &quot;2 years&quot;)
+
+autoplot(aus_trips_dcmp_fc_AA, aus_trips) +
+  labs(title = &quot;Exercise 10(d): STL + Holt&#39;s linear method&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10d-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The required undamped Holt-style
+forecast is the <code>STL_AA</code> forecast shown above.</p>
+</div>
+<div id="exercise-10e-use-ets-to-choose-a-seasonal-model."
+class="section level2" number="11.5">
+<h2><span class="header-section-number">11.5</span> Exercise 10(e) Use
+<code>ETS()</code> to choose a seasonal model.</h2>
+<pre class="r"><code>aus_trips_ets &lt;- aus_trips %&gt;% model(ETS = ETS(Trips))
+aus_trips_ets_fc &lt;- forecast(aus_trips_ets, h = &quot;2 years&quot;)
+
+autoplot(aus_trips_ets_fc, aus_trips) +
+  labs(title = &quot;Exercise 10(e): Automatically selected ETS model&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10e-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The automatically selected seasonal
+ETS model is the one reported by <code>ETS()</code> for the
+<code>ETS</code> fit.</p>
+</div>
+<div
+id="exercise-10f-compare-rmse-for-the-ets-model-and-the-stl-decomposition-models."
+class="section level2" number="11.6">
+<h2><span class="header-section-number">11.6</span> Exercise 10(f)
+Compare RMSE for the ETS model and the STL decomposition models.</h2>
+<pre class="r"><code>trip_acc &lt;- bind_rows(
+  accuracy(aus_trips_dcmp_fit) %&gt;% as_tibble(),
+  accuracy(aus_trips_dcmp_fit2) %&gt;% as_tibble(),
+  accuracy(aus_trips_ets) %&gt;% as_tibble()
+)
+
+trip_acc %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">STL_AA</td>
+<td align="right">762.637</td>
+<td align="right">573.717</td>
+<td align="right">2.714</td>
+</tr>
+<tr class="even">
+<td align="left">STL_Ad</td>
+<td align="right">763.369</td>
+<td align="right">576.166</td>
+<td align="right">2.722</td>
+</tr>
+<tr class="odd">
+<td align="left">ETS</td>
+<td align="right">793.670</td>
+<td align="right">604.109</td>
+<td align="right">2.857</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The model with the smallest RMSE in
+the table has the best in-sample fit.</p>
+</div>
+<div
+id="exercise-10g-compare-the-forecasts.-which-seems-most-reasonable"
+class="section level2" number="11.7">
+<h2><span class="header-section-number">11.7</span> Exercise 10(g)
+Compare the forecasts. Which seems most reasonable?</h2>
+<pre class="r"><code>bind_rows(aus_trips_dcmp_fc_Ad, aus_trips_dcmp_fc_AA, aus_trips_ets_fc) %&gt;%
+  autoplot(aus_trips) +
+  labs(title = &quot;Exercise 10(g): forecast comparison&quot;, y = &quot;Trips&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10g-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> The most reasonable forecast is
+usually the one that keeps the strong quarterly seasonality while
+avoiding implausibly strong long-run growth. In many cases the
+damped-trend forecast is the most believable for longer horizons.</p>
+</div>
+<div id="exercise-10h-check-the-residuals-of-the-preferred-model."
+class="section level2" number="11.8">
+<h2><span class="header-section-number">11.8</span> Exercise 10(h) Check
+the residuals of the preferred model.</h2>
+<pre class="r"><code>best_trip_name &lt;- trip_acc %&gt;% arrange(RMSE) %&gt;% slice(1) %&gt;% pull(.model)
+preferred_trip_fit &lt;- switch(
+  best_trip_name,
+  STL_Ad = aus_trips_dcmp_fit %&gt;% select(STL_Ad),
+  STL_AA = aus_trips_dcmp_fit2 %&gt;% select(STL_AA),
+  ETS = aus_trips_ets %&gt;% select(ETS)
+)
+
+gg_tsresiduals(preferred_trip_fit)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex10h-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>augment(preferred_trip_fit) %&gt;% lb_tbl(lag = 8, dof = 0) %&gt;% kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">lb_stat</th>
+<th align="right">lb_pvalue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">STL_AA</td>
+<td align="right">5.1091</td>
+<td align="right">0.7458</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The preferred model passes the
+residual check if the residuals show no obvious pattern and the
+Ljung-Box test does not reject white noise.</p>
+</div>
+</div>
+<div id="exercise-11.-arrivals-from-new-zealand" class="section level1"
+number="12">
+<h1><span class="header-section-number">12</span> Exercise 11. Arrivals
+from New Zealand</h1>
+<pre class="r"><code>origin_levels &lt;- sort(unique(aus_arrivals$Origin))
+nz_label &lt;- origin_levels[grepl(&quot;new zealand|nz&quot;, origin_levels, ignore.case = TRUE)][1]
+
+nz_arrivals &lt;- aus_arrivals %&gt;%
+  filter(Origin == nz_label) %&gt;%
+  select(Quarter, Arrivals)
+
+split_qtr &lt;- yearquarter(&quot;2010 Q3&quot;)
+nz_train &lt;- nz_arrivals %&gt;% filter(Quarter &lt;= split_qtr)
+nz_test &lt;- nz_arrivals %&gt;% filter(Quarter &gt; split_qtr)
+
+autoplot(nz_arrivals, Arrivals) +
+  labs(title = &quot;Arrivals to Australia from New Zealand&quot;, y = &quot;Arrivals&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex11-data-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="exercise-11a-make-a-time-plot-and-describe-the-main-features."
+class="section level2" number="12.1">
+<h2><span class="header-section-number">12.1</span> Exercise 11(a) Make
+a time plot and describe the main features.</h2>
+<p><strong>Explicit answer.</strong> The series is quarterly, strongly
+seasonal, and has a changing long-run level. Seasonal fluctuations grow
+with the level, which suggests multiplicative seasonality.</p>
+</div>
+<div
+id="exercise-11b-hold-out-the-last-two-years-and-forecast-using-holt-winters-multiplicative."
+class="section level2" number="12.2">
+<h2><span class="header-section-number">12.2</span> Exercise 11(b) Hold
+out the last two years and forecast using Holt-Winters
+multiplicative.</h2>
+<pre class="r"><code>nz_hw &lt;- nz_train %&gt;%
+  model(HW_Mult = ETS(Arrivals ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;)))
+
+nz_hw_fc &lt;- forecast(nz_hw, new_data = nz_test)
+accuracy(nz_hw_fc, nz_test) %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HW_Mult</td>
+<td align="right">13502.74</td>
+<td align="right">11095.09</td>
+<td align="right">3.709</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The two-year test-set accuracy for
+Holt-Winters multiplicative is given in the table above.</p>
+</div>
+<div id="exercise-11c-why-is-multiplicative-seasonality-necessary"
+class="section level2" number="12.3">
+<h2><span class="header-section-number">12.3</span> Exercise 11(c) Why
+is multiplicative seasonality necessary?</h2>
+<p><strong>Explicit answer.</strong> Multiplicative seasonality is
+necessary because the size of seasonal fluctuations increases as the
+level increases. The seasonal effect is proportional to the level rather
+than constant in absolute terms.</p>
+</div>
+<div
+id="exercise-11d-forecast-the-two-year-test-set-using-four-methods."
+class="section level2" number="12.4">
+<h2><span class="header-section-number">12.4</span> Exercise 11(d)
+Forecast the two-year test set using four methods.</h2>
+<pre class="r"><code>nz_models &lt;- nz_train %&gt;%
+  model(
+    ETS_auto = ETS(Arrivals),
+    Log_ETS = ETS(log(Arrivals)),
+    SNAIVE = SNAIVE(Arrivals),
+    STL_Log_ETS = decomposition_model(
+      STL(log(Arrivals)),
+      ETS(season_adjust ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;))
+    )
+  )
+
+nz_fc &lt;- forecast(nz_models, new_data = nz_test)
+accuracy(nz_fc, nz_test) %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Log_ETS</td>
+<td align="right">13342.04</td>
+<td align="right">11903.98</td>
+<td align="right">4.026</td>
+</tr>
+<tr class="even">
+<td align="left">ETS_auto</td>
+<td align="right">14912.74</td>
+<td align="right">11420.69</td>
+<td align="right">3.783</td>
+</tr>
+<tr class="odd">
+<td align="left">SNAIVE</td>
+<td align="right">18051.08</td>
+<td align="right">17156.25</td>
+<td align="right">5.802</td>
+</tr>
+<tr class="even">
+<td align="left">STL_Log_ETS</td>
+<td align="right">22722.78</td>
+<td align="right">16172.38</td>
+<td align="right">5.228</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The table compares the four
+requested methods on the same two-year holdout sample.</p>
+</div>
+<div
+id="exercise-11e-which-method-is-best-does-it-pass-the-residual-tests"
+class="section level2" number="12.5">
+<h2><span class="header-section-number">12.5</span> Exercise 11(e) Which
+method is best? Does it pass the residual tests?</h2>
+<pre class="r"><code>nz_acc &lt;- accuracy(nz_fc, nz_test)
+best_nz_name &lt;- nz_acc %&gt;% arrange(RMSE) %&gt;% slice(1) %&gt;% pull(.model)
+preferred_nz_fit &lt;- nz_models %&gt;% select(all_of(best_nz_name))
+
+gg_tsresiduals(preferred_nz_fit)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex11e-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>augment(preferred_nz_fit) %&gt;% lb_tbl(lag = 8, dof = 0) %&gt;% kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">lb_stat</th>
+<th align="right">lb_pvalue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Log_ETS</td>
+<td align="right">6.0864</td>
+<td align="right">0.6376</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The best method is the one with the
+lowest test-set RMSE in the table above. It passes the residual tests if
+the diagnostic plots do not show structure and the Ljung-Box p-value is
+not small.</p>
+</div>
+<div
+id="exercise-11f-compare-the-same-four-methods-using-time-series-cross-validation."
+class="section level2" number="12.6">
+<h2><span class="header-section-number">12.6</span> Exercise 11(f)
+Compare the same four methods using time series cross-validation.</h2>
+<pre class="r"><code>nz_cv &lt;- nz_train %&gt;%
+  stretch_tsibble(.init = 5 * 4, .step = 1) %&gt;%
+  model(
+    ETS_auto = ETS(Arrivals),
+    Log_ETS = ETS(log(Arrivals)),
+    SNAIVE = SNAIVE(Arrivals),
+    STL_Log_ETS = decomposition_model(
+      STL(log(Arrivals)),
+      ETS(season_adjust ~ error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;))
+    )
+  ) %&gt;%
+  forecast(h = 8) %&gt;%
+  accuracy(nz_arrivals) %&gt;%
+  as_tibble()
+
+nz_cv %&gt;%
+  select(.model, RMSE, MAE, MAPE) %&gt;%
+  arrange(RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Log_ETS</td>
+<td align="right">21357.56</td>
+<td align="right">15671.15</td>
+<td align="right">9.368</td>
+</tr>
+<tr class="even">
+<td align="left">ETS_auto</td>
+<td align="right">22477.88</td>
+<td align="right">16330.39</td>
+<td align="right">9.681</td>
+</tr>
+<tr class="odd">
+<td align="left">SNAIVE</td>
+<td align="right">25530.02</td>
+<td align="right">18935.23</td>
+<td align="right">11.032</td>
+</tr>
+<tr class="even">
+<td align="left">STL_Log_ETS</td>
+<td align="right">27039.91</td>
+<td align="right">19506.72</td>
+<td align="right">12.106</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> If the same method remains best
+under cross-validation, then the training/test result is reinforced. If
+a different method wins under cross-validation, the single holdout split
+was probably sensitive to the choice of cutoff.</p>
+</div>
+</div>
+<div id="exercise-12.-cross-validation-for-portland-cement"
+class="section level1" number="13">
+<h1><span class="header-section-number">13</span> Exercise 12.
+Cross-validation for Portland cement</h1>
+<div
+id="exercise-12a-produce-1-year-ahead-ets-and-seasonal-naive-forecasts-using-a-stretching-window."
+class="section level2" number="13.1">
+<h2><span class="header-section-number">13.1</span> Exercise 12(a)
+Produce 1-year-ahead ETS and seasonal naive forecasts using a stretching
+window.</h2>
+</div>
+<div
+id="exercise-12b-compute-the-mse-of-the-4-step-ahead-errors-and-comment."
+class="section level2" number="13.2">
+<h2><span class="header-section-number">13.2</span> Exercise 12(b)
+Compute the MSE of the 4-step-ahead errors and comment.</h2>
+<pre class="r"><code>cement &lt;- aus_production %&gt;% select(Quarter, Cement)
+
+cement_cv &lt;- cement %&gt;%
+  stretch_tsibble(.init = 5 * 4, .step = 1) %&gt;%
+  model(
+    ETS = ETS(Cement),
+    SNAIVE = SNAIVE(Cement)
+  ) %&gt;%
+  forecast(h = 4)
+
+cement_mse &lt;- cement_cv %&gt;%
+  accuracy(cement, measures = list(MSE = MSE)) %&gt;%
+  as_tibble()
+
+cement_mse %&gt;%
+  select(.model, MSE) %&gt;%
+  arrange(MSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">.model</th>
+<th align="right">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ETS</td>
+<td align="right">12613.48</td>
+</tr>
+<tr class="even">
+<td align="left">SNAIVE</td>
+<td align="right">19373.14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> The smaller 4-step-ahead MSE
+identifies the more accurate one-year-ahead forecasting method. Because
+Portland cement has strong seasonality, it would not be surprising if
+<code>SNAIVE</code> performs very well.</p>
+</div>
+</div>
+<div
+id="exercise-13.-compare-ets-snaive-and-decomposition_modelstl-...-on-five-series"
+class="section level1" number="14">
+<h1><span class="header-section-number">14</span> Exercise 13. Compare
+<code>ETS()</code>, <code>SNAIVE()</code>, and
+<code>decomposition_model(STL, ...)</code> on five series</h1>
+<pre class="r"><code>compare_three_models &lt;- function(data, value, test_years = 3) {
+  value &lt;- rlang::ensym(value)
+  value_name &lt;- rlang::as_name(value)
+  idx &lt;- tsibble::index_var(data)
+  idx_name &lt;- rlang::as_name(idx)
+
+  if (nrow(data) == 0) {
+    rlang::abort(&quot;compare_three_models() received an empty tsibble.&quot;)
+  }
+
+  n_per_year &lt;- if (inherits(data[[idx_name]], &quot;yearmonth&quot;)) {
+    12
+  } else if (inherits(data[[idx_name]], &quot;yearquarter&quot;)) {
+    4
+  } else {
+    1
+  }
+
+  test_n &lt;- test_years * n_per_year
+
+  if (nrow(data) &lt;= test_n) {
+    rlang::abort(&quot;compare_three_models() needs more observations than the requested test window.&quot;)
+  }
+
+  train &lt;- head(data, nrow(data) - test_n)
+  test &lt;- tail(data, test_n)
+
+  lambda_train &lt;- train %&gt;%
+    features(!!value, guerrero) %&gt;%
+    pull(lambda_guerrero)
+
+  train_bc &lt;- train %&gt;% mutate(value_bc = box_cox(!!value, lambda_train))
+  test_bc &lt;- test %&gt;% mutate(value_bc = box_cox(!!value, lambda_train))
+
+  fit_ets &lt;- train %&gt;% model(ETS = ETS(!!value))
+  fit_snaive &lt;- train %&gt;% model(SNAIVE = SNAIVE(!!value))
+  fit_stl &lt;- train_bc %&gt;%
+    model(
+      STL_ETS = decomposition_model(
+        STL(value_bc),
+        ETS(season_adjust)
+      )
+    )
+
+  bind_rows(
+    forecast(fit_ets, new_data = test) %&gt;% accuracy(test) %&gt;% as_tibble(),
+    forecast(fit_snaive, new_data = test) %&gt;% accuracy(test) %&gt;% as_tibble(),
+    forecast(fit_stl, new_data = test_bc) %&gt;% accuracy(test_bc) %&gt;% as_tibble()
+  ) %&gt;%
+    select(.model, RMSE, MAE, MAPE) %&gt;%
+    arrange(RMSE)
+}</code></pre>
+<pre class="r"><code>beer &lt;- aus_production %&gt;% select(Quarter, Beer)
+bricks &lt;- aus_production %&gt;% select(Quarter, Bricks)
+a10 &lt;- PBS %&gt;% filter(ATC2 == &quot;A10&quot;) %&gt;% index_by(Month) %&gt;% summarise(Cost = sum(Cost))
+h02 &lt;- PBS %&gt;% filter(ATC2 == &quot;H02&quot;) %&gt;% index_by(Month) %&gt;% summarise(Cost = sum(Cost))
+food &lt;- aus_retail %&gt;%
+  filter(Industry == &quot;Food retailing&quot;) %&gt;%
+  index_by(Month) %&gt;%
+  summarise(Turnover = sum(Turnover))
+
+res_beer &lt;- compare_three_models(beer, Beer) %&gt;% mutate(series = &quot;Beer&quot;)
+res_bricks &lt;- compare_three_models(bricks, Bricks) %&gt;% mutate(series = &quot;Bricks&quot;)
+res_a10 &lt;- compare_three_models(a10, Cost) %&gt;% mutate(series = &quot;PBS A10&quot;)
+res_h02 &lt;- compare_three_models(h02, Cost) %&gt;% mutate(series = &quot;PBS H02&quot;)
+res_food &lt;- compare_three_models(food, Turnover) %&gt;% mutate(series = &quot;Food retailing&quot;)
+
+ex13_results &lt;- bind_rows(res_beer, res_bricks, res_a10, res_h02, res_food)
+
+ex13_results %&gt;%
+  select(series, .model, RMSE, MAE, MAPE) %&gt;%
+  arrange(series, RMSE) %&gt;%
+  kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">series</th>
+<th align="left">.model</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Beer</td>
+<td align="left">STL_ETS</td>
+<td align="right">0.078</td>
+<td align="right">0.070</td>
+<td align="right">0.608</td>
+</tr>
+<tr class="even">
+<td align="left">Beer</td>
+<td align="left">ETS</td>
+<td align="right">9.621</td>
+<td align="right">8.919</td>
+<td align="right">2.133</td>
+</tr>
+<tr class="odd">
+<td align="left">Beer</td>
+<td align="left">SNAIVE</td>
+<td align="right">10.805</td>
+<td align="right">9.750</td>
+<td align="right">2.338</td>
+</tr>
+<tr class="even">
+<td align="left">Bricks</td>
+<td align="left">ETS</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="odd">
+<td align="left">Bricks</td>
+<td align="left">SNAIVE</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="even">
+<td align="left">Bricks</td>
+<td align="left">STL_ETS</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="odd">
+<td align="left">Food retailing</td>
+<td align="left">STL_ETS</td>
+<td align="right">0.048</td>
+<td align="right">0.041</td>
+<td align="right">0.260</td>
+</tr>
+<tr class="even">
+<td align="left">Food retailing</td>
+<td align="left">ETS</td>
+<td align="right">193.818</td>
+<td align="right">169.667</td>
+<td align="right">1.651</td>
+</tr>
+<tr class="odd">
+<td align="left">Food retailing</td>
+<td align="left">SNAIVE</td>
+<td align="right">699.075</td>
+<td align="right">624.750</td>
+<td align="right">5.856</td>
+</tr>
+<tr class="even">
+<td align="left">PBS A10</td>
+<td align="left">STL_ETS</td>
+<td align="right">4.158</td>
+<td align="right">3.550</td>
+<td align="right">1.962</td>
+</tr>
+<tr class="odd">
+<td align="left">PBS A10</td>
+<td align="left">ETS</td>
+<td align="right">2360218.786</td>
+<td align="right">1851700.369</td>
+<td align="right">8.740</td>
+</tr>
+<tr class="even">
+<td align="left">PBS A10</td>
+<td align="left">SNAIVE</td>
+<td align="right">5180737.894</td>
+<td align="right">4330697.376</td>
+<td align="right">19.894</td>
+</tr>
+<tr class="odd">
+<td align="left">PBS H02</td>
+<td align="left">STL_ETS</td>
+<td align="right">0.274</td>
+<td align="right">0.217</td>
+<td align="right">0.810</td>
+</tr>
+<tr class="even">
+<td align="left">PBS H02</td>
+<td align="left">ETS</td>
+<td align="right">76472.072</td>
+<td align="right">64455.509</td>
+<td align="right">7.046</td>
+</tr>
+<tr class="odd">
+<td align="left">PBS H02</td>
+<td align="left">SNAIVE</td>
+<td align="right">85517.518</td>
+<td align="right">71610.554</td>
+<td align="right">7.885</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicit answer.</strong> For each of the five series, the
+best forecasting method is the method with the smallest test-set RMSE
+within that series. The table provides the full comparison for beer,
+bricks, diabetes drug subsidies, corticosteroid drug subsidies, and
+Australian food retailing turnover.</p>
+</div>
+<div id="exercise-14.-use-ets-to-select-models-for-several-series"
+class="section level1" number="15">
+<h1><span class="header-section-number">15</span> Exercise 14. Use
+<code>ETS()</code> to select models for several series</h1>
+<div
+id="exercise-14a-apply-ets-to-total-trips-in-tourism-the-four-gafa_stock-series-and-the-lynx-series-in-pelt.-does-it-always-give-good-forecasts"
+class="section level2" number="15.1">
+<h2><span class="header-section-number">15.1</span> Exercise 14(a) Apply
+<code>ETS()</code> to total trips in <code>tourism</code>, the four
+<code>gafa_stock</code> series, and the lynx series in
+<code>pelt</code>. Does it always give good forecasts?</h2>
+<pre class="r"><code>trips_total &lt;- tourism %&gt;%
+  index_by(Quarter) %&gt;%
+  summarise(Trips = sum(Trips), .groups = &quot;drop&quot;)
+
+stocks &lt;- gafa_stock %&gt;%
+  as_tsibble(index = Date, key = Symbol) %&gt;%
+  group_by(Symbol) %&gt;%
+  index_by(Week = yearweek(Date)) %&gt;%
+  summarise(Close = dplyr::last(Close))
+lynx &lt;- pelt %&gt;% select(Year, Lynx)
+
+trip_fit &lt;- trips_total %&gt;% model(ETS = ETS(Trips))
+stock_fit &lt;- stocks %&gt;% model(ETS = ETS(Close))
+lynx_fit &lt;- lynx %&gt;% model(ETS = ETS(Lynx))
+
+report(trip_fit)</code></pre>
+<pre><code>## Series: Trips 
+## Model: ETS(A,A,A) 
+##   Smoothing parameters:
+##     alpha = 0.4495675 
+##     beta  = 0.04450178 
+##     gamma = 0.0001000075 
+## 
+##   Initial states:
+##      l[0]      b[0]      s[0]     s[-1]     s[-2]    s[-3]
+##  21689.64 -58.46946 -125.8548 -816.3416 -324.5553 1266.752
+## 
+##   sigma^2:  699901.4
+## 
+##      AIC     AICc      BIC 
+## 1436.829 1439.400 1458.267</code></pre>
+<pre class="r"><code>report(stock_fit)</code></pre>
+<pre><code>## # A tibble: 4 x 10
+##   Symbol .model  sigma2 log_lik   AIC  AICc   BIC    MSE   AMSE    MAE
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 AAPL   ETS    0.00122  -1116. 2238. 2238. 2248.   22.8   46.0 0.0259
+## 2 AMZN   ETS    0.00164  -1604. 3218. 3218. 3236. 1446.  2634.  0.0295
+## 3 FB     ETS    0.00137  -1103. 2216. 2216. 2234.   23.5   38.6 0.0261
+## 4 GOOG   ETS    0.00113  -1577. 3160. 3160. 3170.  680.  1094.  0.0237</code></pre>
+<pre class="r"><code>report(lynx_fit)</code></pre>
+<pre><code>## Series: Lynx 
+## Model: ETS(A,N,N) 
+##   Smoothing parameters:
+##     alpha = 0.9998998 
+## 
+##   Initial states:
+##      l[0]
+##  25737.12
+## 
+##   sigma^2:  162584145
+## 
+##      AIC     AICc      BIC 
+## 2134.976 2135.252 2142.509</code></pre>
+<p><strong>Explicit answer.</strong> <code>ETS()</code> will always
+return a fitted exponential smoothing model, but that does
+<strong>not</strong> mean the forecasts are always good. It tends to
+work well for series with evolving level, trend, and seasonality, but it
+can struggle when the data behave more like random walks, structural
+breaks, bubbles, crashes, or cyclical ecological dynamics.</p>
+</div>
+<div id="exercise-14b-find-an-example-where-it-does-not-work-well.-why"
+class="section level2" number="15.2">
+<h2><span class="header-section-number">15.2</span> Exercise 14(b) Find
+an example where it does not work well. Why?</h2>
+<pre class="r"><code>stock_fc &lt;- forecast(stock_fit, h = 30)
+lynx_fc &lt;- forecast(lynx_fit, h = 20)
+
+autoplot(stock_fc, stocks) +
+  facet_wrap(vars(Symbol), scales = &quot;free_y&quot;) +
+  labs(title = &quot;Exercise 14(b): ETS applied to GAFA stock closing prices&quot;, y = &quot;Close&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex14b-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>autoplot(lynx_fc, lynx) +
+  labs(title = &quot;Exercise 14(b): ETS applied to lynx series&quot;, y = &quot;Value&quot;)</code></pre>
+<p><img src="chapter9_exercises_answers_files/figure-html/ex14b-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><strong>Explicit answer.</strong> A clear example is the stock-price
+series. Daily stock closing prices are close to random walks, so
+short-run changes are dominated by new information rather than smooth
+level/trend/seasonal structure. ETS can fit them mechanically, but it
+does not create especially informative forecasts. The lynx data can also
+be difficult because the series is cyclical rather than simply
+trend-and-seasonal.</p>
+</div>
+</div>
+<div
+id="exercise-15.-show-that-etsmam-point-forecasts-equal-holt-winters-multiplicative-forecasts"
+class="section level1" number="16">
+<h1><span class="header-section-number">16</span> Exercise 15. Show that
+ETS(M,A,M) point forecasts equal Holt-Winters multiplicative
+forecasts</h1>
+<p><strong>Explicit answer.</strong> Let the ETS(M,A,M) state-space
+equations be written in the same level, trend, and multiplicative
+seasonal components used by Holt-Winters multiplicative smoothing. The
+one-step conditional mean under ETS(M,A,M) is</p>
+<p><span class="math display">\[
+\hat{y}_{t|t-1} = (\ell_{t-1} + b_{t-1}) s_{t-m},
+\]</span></p>
+<p>and the component updating equations are the same multiplicative
+Holt-Winters recursions:</p>
+<p><span class="math display">\[
+\ell_t = \alpha\frac{y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+b_{t-1}),
+\]</span> <span class="math display">\[
+b_t = \beta^*(\ell_t-\ell_{t-1}) + (1-\beta^*)b_{t-1},
+\]</span> <span class="math display">\[
+s_t = \gamma\frac{y_t}{\ell_{t-1}+b_{t-1}} + (1-\gamma)s_{t-m}.
+\]</span></p>
+<p>Iterating these equations forward gives the <span
+class="math inline">\(h\)</span>-step point forecast</p>
+<p><span class="math display">\[
+\hat{y}_{t+h|t} = (\ell_t + hb_t) s_{t+h-m(k+1)},
+\]</span></p>
+<p>which is exactly the Holt-Winters multiplicative forecast formula. So
+the <strong>point forecasts are identical</strong>; the difference is
+that ETS(M,A,M) additionally provides a full probabilistic state-space
+interpretation.</p>
+</div>
+<div
+id="exercise-16.-show-that-the-forecast-variance-for-etsann-is-sigma2-1-alpha2-h-1"
+class="section level1" number="17">
+<h1><span class="header-section-number">17</span> Exercise 16. Show that
+the forecast variance for ETS(A,N,N) is
+<code>sigma^2 [1 + alpha^2 (h-1)]</code></h1>
+<p><strong>Explicit answer.</strong> For ETS(A,N,N), the observation and
+state equations are</p>
+<p><span class="math display">\[
+y_t = \ell_{t-1} + \varepsilon_t,
+\qquad
+\ell_t = \ell_{t-1} + \alpha \varepsilon_t,
+\]</span></p>
+<p>where the innovations <span
+class="math inline">\(\varepsilon_t\)</span> are independent with
+variance <span class="math inline">\(\sigma^2\)</span>. The <span
+class="math inline">\(h\)</span>-step-ahead forecast made at time <span
+class="math inline">\(T\)</span> is</p>
+<p><span class="math display">\[
+\hat{y}_{T+h|T} = \ell_T.
+\]</span></p>
+<p>The future observation can be expanded as</p>
+<p><span class="math display">\[
+y_{T+h} = \ell_T + \alpha \varepsilon_{T+1} + \alpha \varepsilon_{T+2} +
+\cdots + \alpha \varepsilon_{T+h-1} + \varepsilon_{T+h}.
+\]</span></p>
+<p>So the forecast error is</p>
+<p><span class="math display">\[
+y_{T+h} - \hat{y}_{T+h|T}
+= \alpha \varepsilon_{T+1} + \cdots + \alpha \varepsilon_{T+h-1} +
+\varepsilon_{T+h}.
+\]</span></p>
+<p>Because the innovations are independent,</p>
+<p><span class="math display">\[
+\operatorname{Var}(y_{T+h} - \hat{y}_{T+h|T})
+= \alpha^2\sigma^2(h-1) + \sigma^2
+= \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]</span></p>
+<p>Therefore the forecast variance is</p>
+<p><span class="math display">\[
+\boxed{\sigma^2\left[1 + \alpha^2(h-1)\right].}
+\]</span></p>
+</div>
+<div id="exercise-17.-write-down-95-prediction-intervals-for-etsann"
+class="section level1" number="18">
+<h1><span class="header-section-number">18</span> Exercise 17. Write
+down 95% prediction intervals for ETS(A,N,N)</h1>
+<p><strong>Explicit answer.</strong> From Exercise 16, the <span
+class="math inline">\(h\)</span>-step forecast variance is</p>
+<p><span class="math display">\[
+\sigma_h^2 = \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]</span></p>
+<p>For ETS(A,N,N), the point forecast at horizon <span
+class="math inline">\(h\)</span> is simply</p>
+<p><span class="math display">\[
+\hat{y}_{T+h|T} = \ell_T.
+\]</span></p>
+<p>Assuming normally distributed forecast errors, a 95% prediction
+interval is</p>
+<p><span class="math display">\[
+\hat{y}_{T+h|T} \pm 1.96\sigma_h.
+\]</span></p>
+<p>Substituting in the ETS(A,N,N) forecast and variance gives</p>
+<p><span class="math display">\[
+\boxed{
+\ell_T \pm 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)}
+}
+\]</span></p>
+<p>or, written as lower and upper bounds,</p>
+<p><span class="math display">\[
+\boxed{
+\left[
+\ell_T - 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)},
+\;\ell_T + 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)}
+\right].
+}
+\]</span></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

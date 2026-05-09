@@ -1,0 +1,1782 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Helvetica}
+  \setmonofont[]{Menlo}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.05}
+\setlength{\emergencystretch}{1em}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\floatplacement{figure}{H}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={FPP3 Exercises Homework 6},
+  pdfauthor={Randy Howk},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{FPP3 Exercises Homework 6}
+\author{Randy Howk}
+\date{2026-04-11}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Exercise 1. Pigs in
+Victoria}\label{exercise-1.-pigs-in-victoria}
+
+The equivalent simple exponential smoothing state space model is
+\texttt{ETS(A,N,N)}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs }\OtherTok{\textless{}{-}}\NormalTok{ aus\_livestock }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(Animal }\SpecialCharTok{==} \StringTok{"Pigs"}\NormalTok{, State }\SpecialCharTok{==} \StringTok{"Victoria"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Month, Count)}
+
+\FunctionTok{autoplot}\NormalTok{(pigs, Count) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Victorian pigs slaughtered"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex1-data-1} \end{center}
+
+\subsection{\texorpdfstring{Exercise 1(a) Use \texttt{ETS()} to estimate
+the equivalent SES model, report \texttt{alpha} and \texttt{l0}, and
+forecast four months
+ahead.}{Exercise 1(a) Use ETS() to estimate the equivalent SES model, report alpha and l0, and forecast four months ahead.}}\label{exercise-1a-use-ets-to-estimate-the-equivalent-ses-model-report-alpha-and-l0-and-forecast-four-months-ahead.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_fit }\OtherTok{\textless{}{-}}\NormalTok{ pigs }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{SES =} \FunctionTok{ETS}\NormalTok{(Count }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"N"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{)))}
+
+\NormalTok{pigs\_coef }\OtherTok{\textless{}{-}} \FunctionTok{tidy}\NormalTok{(pigs\_fit)}
+\NormalTok{pigs\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(pigs\_fit, }\AttributeTok{h =} \DecValTok{4}\NormalTok{)}
+
+\NormalTok{pigs\_coef }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llr@{}}
+\toprule\noalign{}
+.model & term & estimate \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+SES & alpha & 0.3221 \\
+SES & l{[}0{]} & 100646.6032 \\
+\end{longtable}
+}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_fc }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Month, .mean) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+Month & .mean \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2019 Jan & 95186.56 \\
+2019 Feb & 95186.56 \\
+2019 Mar & 95186.56 \\
+2019 Apr & 95186.56 \\
+\end{longtable}
+}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(pigs\_fc, pigs) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 1(a): SES forecasts for pigs"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex1a-1} \end{center}
+
+\textbf{Answer:} The fitted simple exponential smoothing model is
+\texttt{ETS(A,N,N)}. The estimated smoothing parameter is \(\alpha =\)
+0.3221 and the estimated initial level is \(\ell_0 =\) 100,646.6032. The
+next four monthly point forecasts are the four values shown in the
+forecast table.
+
+\subsection{\texorpdfstring{Exercise 1(b) Compute a 95\% prediction
+interval for the first forecast using \texttt{yhat\ +/-\ 1.96\ s}, and
+compare it with R's
+interval.}{Exercise 1(b) Compute a 95\% prediction interval for the first forecast using yhat +/- 1.96 s, and compare it with R's interval.}}\label{exercise-1b-compute-a-95-prediction-interval-for-the-first-forecast-using-yhat---1.96-s-and-compare-it-with-rs-interval.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pigs\_sigma }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_fit }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{glance}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(sigma2) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{sqrt}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_num}\NormalTok{()}
+\NormalTok{first\_mean }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_fc }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.mean) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_num}\NormalTok{()}
+\NormalTok{manual\_1 }\OtherTok{\textless{}{-}} \FunctionTok{manual\_pi}\NormalTok{(first\_mean, pigs\_sigma)}
+\NormalTok{r\_1 }\OtherTok{\textless{}{-}} \FunctionTok{first\_hilo\_tbl}\NormalTok{(pigs\_fc, }\DecValTok{95}\NormalTok{)}
+
+\FunctionTok{bind\_rows}\NormalTok{(}
+\NormalTok{  manual\_1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{method =} \StringTok{"Manual normal approximation"}\NormalTok{),}
+\NormalTok{  r\_1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{method =} \StringTok{"fable 95\% interval"}\NormalTok{)}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(method, point\_forecast, lower, upper) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+method & point\_forecast & lower & upper \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Manual normal approximation & 95186.56 & 76854.79 & 113518.3 \\
+fable 95\% interval & 95186.56 & 76854.79 & 113518.3 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The manually computed 95\% interval for the first
+forecast is the interval reported on the first row of the table, and the
+\texttt{fable} interval is on the second row. They are very close. Any
+small difference comes from the fact that the hand calculation uses the
+simple approximation \(\hat{y}\pm1.96s\), whereas \texttt{ETS()}
+computes intervals from the full model-based forecast distribution.
+
+\section{Exercise 2. Write your own SES
+function}\label{exercise-2.-write-your-own-ses-function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ses\_next }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y, alpha, level) \{}
+\NormalTok{  ell }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(y))}
+\NormalTok{  ell[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ y[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ level}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(y) }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+    \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(y)) \{}
+\NormalTok{      ell[i] }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ y[i] }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ ell[i }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{  ell[}\FunctionTok{length}\NormalTok{(y)]}
+\NormalTok{\}}
+
+\NormalTok{alpha\_hat }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_coef}\SpecialCharTok{$}\NormalTok{estimate[pigs\_coef}\SpecialCharTok{$}\NormalTok{term }\SpecialCharTok{==} \StringTok{"alpha"}\NormalTok{]}
+\NormalTok{level\_hat }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_coef}\SpecialCharTok{$}\NormalTok{estimate[pigs\_coef}\SpecialCharTok{$}\NormalTok{term }\SpecialCharTok{==} \StringTok{"l[0]"}\NormalTok{]}
+\NormalTok{manual\_fc }\OtherTok{\textless{}{-}} \FunctionTok{ses\_next}\NormalTok{(pigs}\SpecialCharTok{$}\NormalTok{Count, alpha\_hat, level\_hat)}
+\NormalTok{ets\_fc }\OtherTok{\textless{}{-}}\NormalTok{ pigs\_fc}\SpecialCharTok{$}\NormalTok{.mean[}\DecValTok{1}\NormalTok{]}
+
+\FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{manual\_forecast =}\NormalTok{ manual\_fc,}
+  \AttributeTok{ets\_forecast =}\NormalTok{ ets\_fc,}
+  \AttributeTok{difference =}\NormalTok{ manual\_fc }\SpecialCharTok{{-}}\NormalTok{ ets\_fc}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}rrr@{}}
+\toprule\noalign{}
+manual\_forecast & ets\_forecast & difference \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+95186.56 & 95186.56 & 0 \\
+\end{longtable}
+}
+
+\textbf{Answer:} Yes. Using the same \(\alpha\) and initial level, the
+custom SES function gives the same one-step-ahead forecast as
+\texttt{ETS()} up to numerical rounding.
+
+\section{\texorpdfstring{Exercise 3. Modify the function to return SSE
+and optimize with
+\texttt{optim()}}{Exercise 3. Modify the function to return SSE and optimize with optim()}}\label{exercise-3.-modify-the-function-to-return-sse-and-optimize-with-optim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ses\_sse }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(par, y) \{}
+\NormalTok{  alpha }\OtherTok{\textless{}{-}}\NormalTok{ par[}\DecValTok{1}\NormalTok{]}
+\NormalTok{  level0 }\OtherTok{\textless{}{-}}\NormalTok{ par[}\DecValTok{2}\NormalTok{]}
+  \ControlFlowTok{if}\NormalTok{ (alpha }\SpecialCharTok{\textless{}=} \DecValTok{0} \SpecialCharTok{||}\NormalTok{ alpha }\SpecialCharTok{\textgreater{}=} \DecValTok{1}\NormalTok{) }\FunctionTok{return}\NormalTok{(}\ConstantTok{Inf}\NormalTok{)}
+
+\NormalTok{  fitted }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(y))}
+\NormalTok{  level }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(y))}
+\NormalTok{  fitted[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ level0}
+\NormalTok{  level[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ y[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ level0}
+
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{length}\NormalTok{(y) }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+    \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(y)) \{}
+\NormalTok{      fitted[i] }\OtherTok{\textless{}{-}}\NormalTok{ level[i }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{      level[i] }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ y[i] }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ alpha) }\SpecialCharTok{*}\NormalTok{ level[i }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+
+  \FunctionTok{sum}\NormalTok{((y }\SpecialCharTok{{-}}\NormalTok{ fitted)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{opt\_pigs }\OtherTok{\textless{}{-}} \FunctionTok{optim}\NormalTok{(}
+  \AttributeTok{par =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.3}\NormalTok{, }\FunctionTok{mean}\NormalTok{(pigs}\SpecialCharTok{$}\NormalTok{Count)),}
+  \AttributeTok{fn =}\NormalTok{ ses\_sse,}
+  \AttributeTok{y =}\NormalTok{ pigs}\SpecialCharTok{$}\NormalTok{Count,}
+  \AttributeTok{method =} \StringTok{"L{-}BFGS{-}B"}\NormalTok{,}
+  \AttributeTok{lower =} \FunctionTok{c}\NormalTok{(}\FloatTok{1e{-}6}\NormalTok{, }\SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{),}
+  \AttributeTok{upper =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.999999}\NormalTok{, }\ConstantTok{Inf}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{parameter =} \FunctionTok{c}\NormalTok{(}\StringTok{"alpha"}\NormalTok{, }\StringTok{"l0"}\NormalTok{),}
+  \AttributeTok{ETS =} \FunctionTok{c}\NormalTok{(alpha\_hat, level\_hat),}
+  \AttributeTok{optim =}\NormalTok{ opt\_pigs}\SpecialCharTok{$}\NormalTok{par,}
+  \AttributeTok{difference =} \FunctionTok{c}\NormalTok{(alpha\_hat, level\_hat) }\SpecialCharTok{{-}}\NormalTok{ opt\_pigs}\SpecialCharTok{$}\NormalTok{par}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+parameter & ETS & optim & difference \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+alpha & 3.221250e-01 & 3.219960e-01 & 0.000128 \\
+l0 & 1.006466e+05 & 1.005328e+05 & 113.809364 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The \texttt{optim()} estimates are reported above. They
+should be the same as, or extremely close to, the \texttt{ETS()}
+estimates. Any tiny discrepancy comes from details of numerical
+optimization and the exact state-space likelihood formulation used by
+\texttt{ETS()}.
+
+\section{Exercise 4. One function that estimates and
+forecasts}\label{exercise-4.-one-function-that-estimates-and-forecasts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ses\_fit\_and\_forecast }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y) \{}
+\NormalTok{  fit }\OtherTok{\textless{}{-}} \FunctionTok{optim}\NormalTok{(}
+    \AttributeTok{par =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.3}\NormalTok{, }\FunctionTok{mean}\NormalTok{(y)),}
+    \AttributeTok{fn =}\NormalTok{ ses\_sse,}
+    \AttributeTok{y =}\NormalTok{ y,}
+    \AttributeTok{method =} \StringTok{"L{-}BFGS{-}B"}\NormalTok{,}
+    \AttributeTok{lower =} \FunctionTok{c}\NormalTok{(}\FloatTok{1e{-}6}\NormalTok{, }\SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{),}
+    \AttributeTok{upper =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.999999}\NormalTok{, }\ConstantTok{Inf}\NormalTok{)}
+\NormalTok{  )}
+
+  \FunctionTok{tibble}\NormalTok{(}
+    \AttributeTok{alpha =}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{par[}\DecValTok{1}\NormalTok{],}
+    \AttributeTok{l0 =}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{par[}\DecValTok{2}\NormalTok{],}
+    \AttributeTok{forecast\_1 =} \FunctionTok{ses\_next}\NormalTok{(y, fit}\SpecialCharTok{$}\NormalTok{par[}\DecValTok{1}\NormalTok{], fit}\SpecialCharTok{$}\NormalTok{par[}\DecValTok{2}\NormalTok{])}
+\NormalTok{  )}
+\NormalTok{\}}
+
+\FunctionTok{ses\_fit\_and\_forecast}\NormalTok{(pigs}\SpecialCharTok{$}\NormalTok{Count) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}rrr@{}}
+\toprule\noalign{}
+alpha & l0 & forecast\_1 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.322 & 100532.8 & 95186.74 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The combined function returns the estimated \(\alpha\),
+estimated \(\ell_0\), and the one-step-ahead SES forecast in a single
+call.
+
+\section{\texorpdfstring{Exercise 5. Exports from one country in
+\texttt{global\_economy}}{Exercise 5. Exports from one country in global\_economy}}\label{exercise-5.-exports-from-one-country-in-global_economy}
+
+I use \textbf{China} so the answer is fully reproducible.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_country }\OtherTok{\textless{}{-}}\NormalTok{ global\_economy }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"China"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Year, Exports)}
+
+\FunctionTok{autoplot}\NormalTok{(exports\_country, Exports) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"China: exports (\% of GDP)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Exports"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex5-data-1} \end{center}
+
+\subsection{Exercise 5(a) Plot the series and discuss the main
+features.}\label{exercise-5a-plot-the-series-and-discuss-the-main-features.}
+
+\textbf{Answer:} The series is annual, so there is no seasonality. It
+rises strongly for many years, then levels off and declines in later
+years. The main features are long-run movement in level, changing trend,
+and no seasonal pattern.
+
+\subsection{\texorpdfstring{Exercise 5(b) Forecast with an
+\texttt{ETS(A,N,N)} model and plot the
+forecasts.}{Exercise 5(b) Forecast with an ETS(A,N,N) model and plot the forecasts.}}\label{exercise-5b-forecast-with-an-etsann-model-and-plot-the-forecasts.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_fit\_ann }\OtherTok{\textless{}{-}}\NormalTok{ exports\_country }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{ANN =} \FunctionTok{ETS}\NormalTok{(Exports }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"N"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{)))}
+\NormalTok{exports\_fc\_ann }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(exports\_fit\_ann, }\AttributeTok{h =} \DecValTok{10}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(exports\_fc\_ann, exports\_country) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 5(b): ETS(A,N,N) forecast"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Exports"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex5b-1} \end{center}
+
+\textbf{Answer:} The \texttt{ETS(A,N,N)} forecast is shown in the plot.
+Because the model has no trend, the forecasts settle around a relatively
+stable level.
+
+\subsection{Exercise 5(c) Compute the training-set
+RMSE.}\label{exercise-5c-compute-the-training-set-rmse.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_acc\_ann }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(exports\_fit\_ann)}
+\NormalTok{exports\_acc\_ann }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ANN & 1.9 & 1.26 & 9.337 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The training-set RMSE for \texttt{ETS(A,N,N)} is the
+RMSE value shown in the table above.
+
+\subsection{\texorpdfstring{Exercise 5(d) Compare with
+\texttt{ETS(A,A,N)} and discuss the merits of the two
+methods.}{Exercise 5(d) Compare with ETS(A,A,N) and discuss the merits of the two methods.}}\label{exercise-5d-compare-with-etsaan-and-discuss-the-merits-of-the-two-methods.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{exports\_fit\_both }\OtherTok{\textless{}{-}}\NormalTok{ exports\_country }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ANN =} \FunctionTok{ETS}\NormalTok{(Exports }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"N"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{)),}
+    \AttributeTok{AAN =} \FunctionTok{ETS}\NormalTok{(Exports }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{exports\_fc\_both }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(exports\_fit\_both, }\AttributeTok{h =} \DecValTok{10}\NormalTok{)}
+\NormalTok{exports\_comp }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(exports\_fit\_both) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{glance}\NormalTok{(exports\_fit\_both) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(.model, AICc), }\AttributeTok{by =} \StringTok{".model"}\NormalTok{)}
+
+\NormalTok{exports\_comp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE, AICc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE & AICc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ANN & 1.900 & 1.260 & 9.337 & 316.416 \\
+AAN & 1.906 & 1.248 & 9.567 & 321.507 \\
+\end{longtable}
+}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(exports\_fc\_both, exports\_country) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 5(d): ETS(A,N,N) versus ETS(A,A,N)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Exports"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex5d-1} \end{center}
+
+\textbf{Answer:} \texttt{ETS(A,A,N)} is more flexible because it
+includes a trend, but it also estimates one extra parameter. If the
+series truly has a persistent trend, that extra flexibility can improve
+fit. If the series mainly fluctuates around a level after structural
+changes, the simpler \texttt{ETS(A,N,N)} can be more robust. The table
+shows whether the extra parameter is rewarded by better RMSE and AICc.
+
+\subsection{Exercise 5(e) Compare the forecasts. Which is
+best?}\label{exercise-5e-compare-the-forecasts.-which-is-best}
+
+\textbf{Answer:} The better forecast is the one that balances fit and
+plausibility. If \texttt{AAN} has clearly better RMSE/AICc and produces
+a believable extrapolation, it is preferable. If the improvement is
+small and the trend forecast looks too aggressive, \texttt{ANN} is
+safer. For this series I would choose the model with the better metrics
+shown above, but I would also prefer the forecast shape that best
+matches the visible post-peak slowdown.
+
+\subsection{Exercise 5(f) Compute a 95\% prediction interval for the
+first forecast for each model using RMSE and compare with
+R.}\label{exercise-5f-compute-a-95-prediction-interval-for-the-first-forecast-for-each-model-using-rmse-and-compare-with-r.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ann\_rmse }\OtherTok{\textless{}{-}}\NormalTok{ exports\_comp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"ANN"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(RMSE)}
+\NormalTok{aan\_rmse }\OtherTok{\textless{}{-}}\NormalTok{ exports\_comp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"AAN"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(RMSE)}
+
+\NormalTok{ann\_mean }\OtherTok{\textless{}{-}}\NormalTok{ exports\_fc\_both }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"ANN"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.mean) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_num}\NormalTok{()}
+\NormalTok{aan\_mean }\OtherTok{\textless{}{-}}\NormalTok{ exports\_fc\_both }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"AAN"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.mean) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_num}\NormalTok{()}
+
+\FunctionTok{bind\_rows}\NormalTok{(}
+  \FunctionTok{manual\_pi}\NormalTok{(ann\_mean, ann\_rmse) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"ANN manual"}\NormalTok{),}
+  \FunctionTok{first\_hilo\_tbl}\NormalTok{(exports\_fc\_both }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"ANN"}\NormalTok{), }\DecValTok{95}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"ANN R"}\NormalTok{),}
+  \FunctionTok{manual\_pi}\NormalTok{(aan\_mean, aan\_rmse) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"AAN manual"}\NormalTok{),}
+  \FunctionTok{first\_hilo\_tbl}\NormalTok{(exports\_fc\_both }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(.model }\SpecialCharTok{==} \StringTok{"AAN"}\NormalTok{), }\DecValTok{95}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"AAN R"}\NormalTok{)}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(model, point\_forecast, lower, upper) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+model & point\_forecast & lower & upper \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ANN manual & 19.757 & 16.033 & 23.482 \\
+ANN R & 19.757 & 15.967 & 23.548 \\
+AAN manual & 19.366 & 15.629 & 23.102 \\
+AAN R & 19.366 & 15.493 & 23.238 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The manually computed intervals and the software
+intervals are reported side by side in the table. They are close but not
+identical, because the manual intervals use RMSE as a simple normal
+approximation while \texttt{ETS()} uses the full forecast distribution
+implied by the fitted state-space model.
+
+\section{Exercise 6. Chinese GDP under different ETS
+options}\label{exercise-6.-chinese-gdp-under-different-ets-options}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{china\_gdp }\OtherTok{\textless{}{-}}\NormalTok{ global\_economy }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"China"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Year, GDP)}
+
+\NormalTok{lambda\_gdp }\OtherTok{\textless{}{-}}\NormalTok{ china\_gdp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{features}\NormalTok{(GDP, guerrero) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(lambda\_guerrero)}
+
+\NormalTok{gdp\_fit }\OtherTok{\textless{}{-}}\NormalTok{ china\_gdp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Auto =} \FunctionTok{ETS}\NormalTok{(GDP),}
+    \AttributeTok{AAN =} \FunctionTok{ETS}\NormalTok{(GDP }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{)),}
+    \AttributeTok{AAdN =} \FunctionTok{ETS}\NormalTok{(GDP }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{)),}
+    \AttributeTok{BoxCox\_Auto =} \FunctionTok{ETS}\NormalTok{(}\FunctionTok{box\_cox}\NormalTok{(GDP, lambda\_gdp)),}
+    \AttributeTok{BoxCox\_AAdN =} \FunctionTok{ETS}\NormalTok{(}\FunctionTok{box\_cox}\NormalTok{(GDP, lambda\_gdp) }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{gdp\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(gdp\_fit, }\AttributeTok{h =} \DecValTok{30}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(gdp\_fc, china\_gdp) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\FunctionTok{vars}\NormalTok{(.model), }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 6: Chinese GDP under alternative ETS specifications"}\NormalTok{, }\AttributeTok{y =} \StringTok{"GDP"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex6-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{accuracy}\NormalTok{(gdp\_fit) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{glance}\NormalTok{(gdp\_fit) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(.model, AICc), }\AttributeTok{by =} \StringTok{".model"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE, AICc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(AICc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE & AICc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+BoxCox\_Auto & 288333700735 & 125239687471 & 7.167 & -137.365 \\
+BoxCox\_AAdN & 196282258243 & 102421287515 & 7.257 & -133.234 \\
+Auto & 200000912947 & 96595526193 & 7.723 & 3103.218 \\
+AAN & 189990266650 & 95916434827 & 7.618 & 3259.207 \\
+AAdN & 190208894133 & 94855392933 & 7.619 & 3261.834 \\
+\end{longtable}
+}
+
+\textbf{Answer:} Damped trend reduces the long-run growth rate, so the
+forecasts flatten out more than under an undamped trend. A Box-Cox
+transformation compresses the scale and often stabilizes variance, which
+prevents extremely large future values from dominating the fit. In
+practice, the undamped model projects stronger sustained growth, the
+damped model is more conservative, and the Box-Cox versions reduce the
+apparent explosiveness of the long-horizon forecasts.
+
+\section{\texorpdfstring{Exercise 7. Gas from
+\texttt{aus\_production}}{Exercise 7. Gas from aus\_production}}\label{exercise-7.-gas-from-aus_production}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gas }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Quarter, Gas)}
+
+\NormalTok{gas\_fit }\OtherTok{\textless{}{-}}\NormalTok{ gas }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{Auto =} \FunctionTok{ETS}\NormalTok{(Gas),}
+    \AttributeTok{AAM =} \FunctionTok{ETS}\NormalTok{(Gas }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{)),}
+    \AttributeTok{AAdM =} \FunctionTok{ETS}\NormalTok{(Gas }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{gas\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(gas\_fit, }\AttributeTok{h =} \StringTok{"3 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(gas\_fc, gas) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\FunctionTok{vars}\NormalTok{(.model), }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 7: Australian gas production forecasts"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Gas"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex7-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{accuracy}\NormalTok{(gas\_fit) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{glance}\NormalTok{(gas\_fit) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(.model, AICc), }\AttributeTok{by =} \StringTok{".model"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE, AICc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(AICc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE & AICc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Auto & 4.595 & 3.022 & 4.083 & 1681.794 \\
+AAM & 4.190 & 2.844 & 5.033 & 1817.328 \\
+AAdM & 4.217 & 2.815 & 4.110 & 1822.297 \\
+\end{longtable}
+}
+
+\textbf{Answer:} Multiplicative seasonality is necessary because the
+seasonal swings get larger as the overall level rises. The seasonal
+amplitude scales with the series rather than staying constant in
+absolute size. Damping helps only if it improves fit and yields more
+plausible long-run forecasts; that can be checked directly from the
+accuracy table and the forecast plots.
+
+\section{Exercise 8. Retail series
+revisited}\label{exercise-8.-retail-series-revisited}
+
+The original reference points back to an earlier exercise. To keep this
+document fully reproducible, I use the same retail series as in the
+attached file: \textbf{New South Wales, Department stores}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{retail }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(State }\SpecialCharTok{==} \StringTok{"New South Wales"}\NormalTok{, Industry }\SpecialCharTok{==} \StringTok{"Department stores"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Month, Turnover)}
+
+\FunctionTok{autoplot}\NormalTok{(retail, Turnover) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Chosen retail series: NSW department stores"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex8-data-1} \end{center}
+
+\subsection{Exercise 8(a) Why is multiplicative seasonality
+necessary?}\label{exercise-8a-why-is-multiplicative-seasonality-necessary}
+
+\textbf{Answer:} Multiplicative seasonality is necessary because the
+seasonal peaks and troughs become larger as the level of the series
+rises. December peaks are much bigger in later years than in earlier
+years, so constant absolute seasonal effects are not appropriate.
+
+\subsection{Exercise 8(b) Apply Holt-Winters multiplicative and
+experiment with
+damping.}\label{exercise-8b-apply-holt-winters-multiplicative-and-experiment-with-damping.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{retail\_hw }\OtherTok{\textless{}{-}}\NormalTok{ retail }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{AM =} \FunctionTok{ETS}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{)),}
+    \AttributeTok{AdM =} \FunctionTok{ETS}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{retail\_hw\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(retail\_hw, }\AttributeTok{h =} \StringTok{"2 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(retail\_hw\_fc, retail) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 8(b): Holt{-}Winters multiplicative, with and without damping"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Turnover"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex8b-1} \end{center}
+
+\textbf{Answer:} The two fitted Holt-Winters multiplicative variants are
+shown above. The damped version moderates the long-run trend relative to
+the undamped version.
+
+\subsection{Exercise 8(c) Compare one-step RMSE. Which do you
+prefer?}\label{exercise-8c-compare-one-step-rmse.-which-do-you-prefer}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{retail\_hw\_acc }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(retail\_hw)}
+\NormalTok{retail\_hw\_acc }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AdM & 18.385 & 14.016 & 3.943 \\
+AM & 18.485 & 14.073 & 3.923 \\
+\end{longtable}
+}
+
+\textbf{Answer:} I prefer the model with the smaller one-step-ahead
+RMSE. That preferred model is the first row in the table above.
+
+\subsection{Exercise 8(d) Check whether the residuals from the best
+method look like white
+noise.}\label{exercise-8d-check-whether-the-residuals-from-the-best-method-look-like-white-noise.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best\_hw\_name }\OtherTok{\textless{}{-}}\NormalTok{ retail\_hw\_acc }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.model)}
+\NormalTok{best\_hw }\OtherTok{\textless{}{-}}\NormalTok{ retail\_hw }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(best\_hw\_name))}
+
+\FunctionTok{gg\_tsresiduals}\NormalTok{(best\_hw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex8d-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(best\_hw) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{lb\_tbl}\NormalTok{(}\AttributeTok{lag =} \DecValTok{24}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+.model & lb\_stat & lb\_pvalue \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AdM & 61.5034 & 0 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The residuals look like white noise if the residual
+time plot shows no pattern, the residual ACF has no significant spikes,
+and the Ljung-Box p-value is not small. The plot and table above let you
+check those conditions explicitly.
+
+\subsection{Exercise 8(e) Compute test-set RMSE after training through
+2010, and compare with seasonal
+naive.}\label{exercise-8e-compute-test-set-rmse-after-training-through-2010-and-compare-with-seasonal-naive.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{retail\_train }\OtherTok{\textless{}{-}}\NormalTok{ retail }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textless{}=} \DecValTok{2010}\NormalTok{)}
+\NormalTok{retail\_test }\OtherTok{\textless{}{-}}\NormalTok{ retail }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Month) }\SpecialCharTok{\textgreater{}} \DecValTok{2010}\NormalTok{)}
+
+\NormalTok{retail\_test\_fit }\OtherTok{\textless{}{-}}\NormalTok{ retail\_train }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{SNAIVE =} \FunctionTok{SNAIVE}\NormalTok{(Turnover),}
+    \AttributeTok{AM =} \FunctionTok{ETS}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{)),}
+    \AttributeTok{AdM =} \FunctionTok{ETS}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{retail\_test\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(retail\_test\_fit, }\AttributeTok{new\_data =}\NormalTok{ retail\_test)}
+\NormalTok{retail\_test\_acc }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(retail\_test\_fc, retail\_test)}
+
+\NormalTok{retail\_test\_acc }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AdM & 21.228 & 17.328 & 3.545 \\
+SNAIVE & 25.526 & 19.870 & 4.050 \\
+AM & 54.187 & 48.292 & 9.845 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The test-set RMSE values are given in the table. You
+beat the seasonal naïve benchmark if either Holt-Winters model has a
+lower RMSE than \texttt{SNAIVE}.
+
+\section{Exercise 9. STL + Box-Cox + ETS on the same retail
+series}\label{exercise-9.-stl-box-cox-ets-on-the-same-retail-series}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lambda\_retail }\OtherTok{\textless{}{-}}\NormalTok{ retail\_train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{features}\NormalTok{(Turnover, guerrero) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(lambda\_guerrero)}
+
+\NormalTok{retail\_stl\_fit }\OtherTok{\textless{}{-}}\NormalTok{ retail\_train }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{STL\_ETS =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(}\FunctionTok{box\_cox}\NormalTok{(Turnover, lambda\_retail)),}
+      \FunctionTok{ETS}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{    ),}
+    \AttributeTok{Best\_HW =} \FunctionTok{ETS}\NormalTok{(Turnover }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{))}
+\NormalTok{  )}
+
+\NormalTok{retail\_stl\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(retail\_stl\_fit, }\AttributeTok{new\_data =}\NormalTok{ retail\_test)}
+\FunctionTok{accuracy}\NormalTok{(retail\_stl\_fc, retail\_test) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+STL\_ETS & 20.553 & 16.629 & 3.445 \\
+Best\_HW & 54.592 & 48.724 & 9.935 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The STL + Box-Cox + ETS approach is better on the test
+set if \texttt{STL\_ETS} has a lower RMSE than \texttt{Best\_HW}. The
+comparison table gives the direct answer.
+
+\section{Exercise 10. Total domestic overnight trips across
+Australia}\label{exercise-10.-total-domestic-overnight-trips-across-australia}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_trips }\OtherTok{\textless{}{-}}\NormalTok{ tourism }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{index\_by}\NormalTok{(Quarter) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Trips =} \FunctionTok{sum}\NormalTok{(Trips), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(aus\_trips, Trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Total domestic overnight trips across Australia"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10-data-1} \end{center}
+
+\subsection{Exercise 10(a) Plot the data and describe the main
+features.}\label{exercise-10a-plot-the-data-and-describe-the-main-features.}
+
+\textbf{Answer:} The series is quarterly and strongly seasonal. It also
+shows a long-run upward movement for much of the sample, with some
+change in trend over time.
+
+\subsection{Exercise 10(b) Decompose using STL and obtain the seasonally
+adjusted
+series.}\label{exercise-10b-decompose-using-stl-and-obtain-the-seasonally-adjusted-series.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_trips\_stl }\OtherTok{\textless{}{-}}\NormalTok{ aus\_trips }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\FunctionTok{STL}\NormalTok{(Trips)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{components}\NormalTok{()}
+
+\NormalTok{aus\_trips\_stl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Quarter, Trips, season\_adjust) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{head}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+Quarter & Trips & season\_adjust \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1998 Q1 & 23182.20 & 21939.48 \\
+1998 Q2 & 20323.38 & 20669.79 \\
+1998 Q3 & 19826.64 & 20566.03 \\
+1998 Q4 & 20830.13 & 20989.29 \\
+1999 Q1 & 22087.35 & 20843.24 \\
+1999 Q2 & 21458.37 & 21801.33 \\
+\end{longtable}
+}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(aus\_trips\_stl) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 10(b): STL decomposition"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10b-1} \end{center}
+
+\textbf{Answer:} The \texttt{season\_adjust} column shown above is the
+seasonally adjusted series. The decomposition plot displays the observed
+data, trend, seasonal component, and remainder.
+
+\subsection{Exercise 10(c) Forecast two years using additive damped
+trend on the seasonally adjusted
+data.}\label{exercise-10c-forecast-two-years-using-additive-damped-trend-on-the-seasonally-adjusted-data.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_trips\_dcmp\_fit }\OtherTok{\textless{}{-}}\NormalTok{ aus\_trips }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{STL\_Ad =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(Trips),}
+      \FunctionTok{ETS}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"Ad"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{    )}
+\NormalTok{  )}
+
+\NormalTok{aus\_trips\_dcmp\_fc\_Ad }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(aus\_trips\_dcmp\_fit, }\AttributeTok{h =} \StringTok{"2 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(aus\_trips\_dcmp\_fc\_Ad, aus\_trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 10(c): STL + additive damped trend"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10c-1} \end{center}
+
+\textbf{Answer:} The required damped-trend forecast is the
+\texttt{STL\_Ad} forecast shown above.
+
+\subsection{Exercise 10(d) Forecast two years using Holt's linear method
+on the seasonally adjusted
+data.}\label{exercise-10d-forecast-two-years-using-holts-linear-method-on-the-seasonally-adjusted-data.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_trips\_dcmp\_fit2 }\OtherTok{\textless{}{-}}\NormalTok{ aus\_trips }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{STL\_AA =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(Trips),}
+      \FunctionTok{ETS}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{    )}
+\NormalTok{  )}
+
+\NormalTok{aus\_trips\_dcmp\_fc\_AA }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(aus\_trips\_dcmp\_fit2, }\AttributeTok{h =} \StringTok{"2 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(aus\_trips\_dcmp\_fc\_AA, aus\_trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 10(d): STL + Holt\textquotesingle{}s linear method"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10d-1} \end{center}
+
+\textbf{Answer:} The required undamped Holt-style forecast is the
+\texttt{STL\_AA} forecast shown above.
+
+\subsection{\texorpdfstring{Exercise 10(e) Use \texttt{ETS()} to choose
+a seasonal
+model.}{Exercise 10(e) Use ETS() to choose a seasonal model.}}\label{exercise-10e-use-ets-to-choose-a-seasonal-model.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aus\_trips\_ets }\OtherTok{\textless{}{-}}\NormalTok{ aus\_trips }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(Trips))}
+\NormalTok{aus\_trips\_ets\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(aus\_trips\_ets, }\AttributeTok{h =} \StringTok{"2 years"}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(aus\_trips\_ets\_fc, aus\_trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 10(e): Automatically selected ETS model"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10e-1} \end{center}
+
+\textbf{Answer:} The automatically selected seasonal ETS model is the
+one reported by \texttt{ETS()} for the \texttt{ETS} fit.
+
+\subsection{Exercise 10(f) Compare RMSE for the ETS model and the STL
+decomposition
+models.}\label{exercise-10f-compare-rmse-for-the-ets-model-and-the-stl-decomposition-models.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{trip\_acc }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}
+  \FunctionTok{accuracy}\NormalTok{(aus\_trips\_dcmp\_fit) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{(),}
+  \FunctionTok{accuracy}\NormalTok{(aus\_trips\_dcmp\_fit2) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{(),}
+  \FunctionTok{accuracy}\NormalTok{(aus\_trips\_ets) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{()}
+\NormalTok{)}
+
+\NormalTok{trip\_acc }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+STL\_AA & 762.637 & 573.717 & 2.714 \\
+STL\_Ad & 763.369 & 576.166 & 2.722 \\
+ETS & 793.670 & 604.109 & 2.857 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The model with the smallest RMSE in the table has the
+best in-sample fit.
+
+\subsection{Exercise 10(g) Compare the forecasts. Which seems most
+reasonable?}\label{exercise-10g-compare-the-forecasts.-which-seems-most-reasonable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{bind\_rows}\NormalTok{(aus\_trips\_dcmp\_fc\_Ad, aus\_trips\_dcmp\_fc\_AA, aus\_trips\_ets\_fc) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(aus\_trips) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 10(g): forecast comparison"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Trips"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10g-1} \end{center}
+
+\textbf{Answer:} The most reasonable forecast is usually the one that
+keeps the strong quarterly seasonality while avoiding implausibly strong
+long-run growth. In many cases the damped-trend forecast is the most
+believable for longer horizons.
+
+\subsection{Exercise 10(h) Check the residuals of the preferred
+model.}\label{exercise-10h-check-the-residuals-of-the-preferred-model.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best\_trip\_name }\OtherTok{\textless{}{-}}\NormalTok{ trip\_acc }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.model)}
+\NormalTok{preferred\_trip\_fit }\OtherTok{\textless{}{-}} \ControlFlowTok{switch}\NormalTok{(}
+\NormalTok{  best\_trip\_name,}
+  \AttributeTok{STL\_Ad =}\NormalTok{ aus\_trips\_dcmp\_fit }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(STL\_Ad),}
+  \AttributeTok{STL\_AA =}\NormalTok{ aus\_trips\_dcmp\_fit2 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(STL\_AA),}
+  \AttributeTok{ETS =}\NormalTok{ aus\_trips\_ets }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(ETS)}
+\NormalTok{)}
+
+\FunctionTok{gg\_tsresiduals}\NormalTok{(preferred\_trip\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex10h-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(preferred\_trip\_fit) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{lb\_tbl}\NormalTok{(}\AttributeTok{lag =} \DecValTok{8}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+.model & lb\_stat & lb\_pvalue \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+STL\_AA & 5.1091 & 0.7458 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The preferred model passes the residual check if the
+residuals show no obvious pattern and the Ljung-Box test does not reject
+white noise.
+
+\section{Exercise 11. Arrivals from New
+Zealand}\label{exercise-11.-arrivals-from-new-zealand}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{origin\_levels }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(}\FunctionTok{unique}\NormalTok{(aus\_arrivals}\SpecialCharTok{$}\NormalTok{Origin))}
+\NormalTok{nz\_label }\OtherTok{\textless{}{-}}\NormalTok{ origin\_levels[}\FunctionTok{grepl}\NormalTok{(}\StringTok{"new zealand|nz"}\NormalTok{, origin\_levels, }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{)][}\DecValTok{1}\NormalTok{]}
+
+\NormalTok{nz\_arrivals }\OtherTok{\textless{}{-}}\NormalTok{ aus\_arrivals }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(Origin }\SpecialCharTok{==}\NormalTok{ nz\_label) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Quarter, Arrivals)}
+
+\NormalTok{split\_qtr }\OtherTok{\textless{}{-}} \FunctionTok{yearquarter}\NormalTok{(}\StringTok{"2010 Q3"}\NormalTok{)}
+\NormalTok{nz\_train }\OtherTok{\textless{}{-}}\NormalTok{ nz\_arrivals }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Quarter }\SpecialCharTok{\textless{}=}\NormalTok{ split\_qtr)}
+\NormalTok{nz\_test }\OtherTok{\textless{}{-}}\NormalTok{ nz\_arrivals }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Quarter }\SpecialCharTok{\textgreater{}}\NormalTok{ split\_qtr)}
+
+\FunctionTok{autoplot}\NormalTok{(nz\_arrivals, Arrivals) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Arrivals to Australia from New Zealand"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Arrivals"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex11-data-1} \end{center}
+
+\subsection{Exercise 11(a) Make a time plot and describe the main
+features.}\label{exercise-11a-make-a-time-plot-and-describe-the-main-features.}
+
+\textbf{Answer:} The series is quarterly, strongly seasonal, and has a
+changing long-run level. Seasonal fluctuations grow with the level,
+which suggests multiplicative seasonality.
+
+\subsection{Exercise 11(b) Hold out the last two years and forecast
+using Holt-Winters
+multiplicative.}\label{exercise-11b-hold-out-the-last-two-years-and-forecast-using-holt-winters-multiplicative.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nz\_hw }\OtherTok{\textless{}{-}}\NormalTok{ nz\_train }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{HW\_Mult =} \FunctionTok{ETS}\NormalTok{(Arrivals }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{)))}
+
+\NormalTok{nz\_hw\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(nz\_hw, }\AttributeTok{new\_data =}\NormalTok{ nz\_test)}
+\FunctionTok{accuracy}\NormalTok{(nz\_hw\_fc, nz\_test) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+HW\_Mult & 13720.4 & 11013.36 & 3.673 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The two-year test-set accuracy for Holt-Winters
+multiplicative is given in the table above.
+
+\subsection{Exercise 11(c) Why is multiplicative seasonality
+necessary?}\label{exercise-11c-why-is-multiplicative-seasonality-necessary}
+
+\textbf{Answer:} Multiplicative seasonality is necessary because the
+size of seasonal fluctuations increases as the level increases. The
+seasonal effect is proportional to the level rather than constant in
+absolute terms.
+
+\subsection{Exercise 11(d) Forecast the two-year test set using four
+methods.}\label{exercise-11d-forecast-the-two-year-test-set-using-four-methods.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nz\_models }\OtherTok{\textless{}{-}}\NormalTok{ nz\_train }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ETS\_auto =} \FunctionTok{ETS}\NormalTok{(Arrivals),}
+    \AttributeTok{Log\_ETS =} \FunctionTok{ETS}\NormalTok{(}\FunctionTok{log}\NormalTok{(Arrivals)),}
+    \AttributeTok{SNAIVE =} \FunctionTok{SNAIVE}\NormalTok{(Arrivals),}
+    \AttributeTok{STL\_Log\_ETS =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(}\FunctionTok{log}\NormalTok{(Arrivals)),}
+      \FunctionTok{ETS}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{    )}
+\NormalTok{  )}
+
+\NormalTok{nz\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(nz\_models, }\AttributeTok{new\_data =}\NormalTok{ nz\_test)}
+\FunctionTok{accuracy}\NormalTok{(nz\_fc, nz\_test) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Log\_ETS & 13342.04 & 11903.98 & 4.026 \\
+ETS\_auto & 14912.74 & 11420.69 & 3.783 \\
+SNAIVE & 18051.08 & 17156.25 & 5.802 \\
+STL\_Log\_ETS & 22722.78 & 16172.38 & 5.228 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The table compares the four requested methods on the
+same two-year holdout sample.
+
+\subsection{Exercise 11(e) Which method is best? Does it pass the
+residual
+tests?}\label{exercise-11e-which-method-is-best-does-it-pass-the-residual-tests}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nz\_acc }\OtherTok{\textless{}{-}} \FunctionTok{accuracy}\NormalTok{(nz\_fc, nz\_test)}
+\NormalTok{best\_nz\_name }\OtherTok{\textless{}{-}}\NormalTok{ nz\_acc }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{slice}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{pull}\NormalTok{(.model)}
+\NormalTok{preferred\_nz\_fit }\OtherTok{\textless{}{-}}\NormalTok{ nz\_models }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(best\_nz\_name))}
+
+\FunctionTok{gg\_tsresiduals}\NormalTok{(preferred\_nz\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex11e-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(preferred\_nz\_fit) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{lb\_tbl}\NormalTok{(}\AttributeTok{lag =} \DecValTok{8}\NormalTok{, }\AttributeTok{dof =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+.model & lb\_stat & lb\_pvalue \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Log\_ETS & 6.0864 & 0.6376 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The best method is the one with the lowest test-set
+RMSE in the table above. It passes the residual tests if the diagnostic
+plots do not show structure and the Ljung-Box p-value is not small.
+
+\subsection{Exercise 11(f) Compare the same four methods using time
+series
+cross-validation.}\label{exercise-11f-compare-the-same-four-methods-using-time-series-cross-validation.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nz\_cv }\OtherTok{\textless{}{-}}\NormalTok{ nz\_train }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{5} \SpecialCharTok{*} \DecValTok{4}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ETS\_auto =} \FunctionTok{ETS}\NormalTok{(Arrivals),}
+    \AttributeTok{Log\_ETS =} \FunctionTok{ETS}\NormalTok{(}\FunctionTok{log}\NormalTok{(Arrivals)),}
+    \AttributeTok{SNAIVE =} \FunctionTok{SNAIVE}\NormalTok{(Arrivals),}
+    \AttributeTok{STL\_Log\_ETS =} \FunctionTok{decomposition\_model}\NormalTok{(}
+      \FunctionTok{STL}\NormalTok{(}\FunctionTok{log}\NormalTok{(Arrivals)),}
+      \FunctionTok{ETS}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"N"}\NormalTok{))}
+\NormalTok{    )}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{accuracy}\NormalTok{(nz\_arrivals) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{()}
+
+\NormalTok{nz\_cv }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+.model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Log\_ETS & 21357.56 & 15671.15 & 9.368 \\
+ETS\_auto & 22477.88 & 16330.39 & 9.681 \\
+SNAIVE & 25530.02 & 18935.23 & 11.032 \\
+STL\_Log\_ETS & 27039.91 & 19506.72 & 12.106 \\
+\end{longtable}
+}
+
+\textbf{Answer:} If the same method remains best under cross-validation,
+then the training/test result is reinforced. If a different method wins
+under cross-validation, the single holdout split was probably sensitive
+to the choice of cutoff.
+
+\section{Exercise 12. Cross-validation for Portland
+cement}\label{exercise-12.-cross-validation-for-portland-cement}
+
+\subsection{Exercise 12(a) Produce 1-year-ahead ETS and seasonal naive
+forecasts using a stretching
+window.}\label{exercise-12a-produce-1-year-ahead-ets-and-seasonal-naive-forecasts-using-a-stretching-window.}
+
+\subsection{Exercise 12(b) Compute the MSE of the 4-step-ahead errors
+and
+comment.}\label{exercise-12b-compute-the-mse-of-the-4-step-ahead-errors-and-comment.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cement }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Quarter, Cement)}
+
+\NormalTok{cement\_cv }\OtherTok{\textless{}{-}}\NormalTok{ cement }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{5} \SpecialCharTok{*} \DecValTok{4}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(Cement),}
+    \AttributeTok{SNAIVE =} \FunctionTok{SNAIVE}\NormalTok{(Cement)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \DecValTok{4}\NormalTok{)}
+
+\NormalTok{cement\_mse }\OtherTok{\textless{}{-}}\NormalTok{ cement\_cv }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{accuracy}\NormalTok{(cement, }\AttributeTok{measures =} \FunctionTok{list}\NormalTok{(}\AttributeTok{MSE =}\NormalTok{ MSE)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{()}
+
+\NormalTok{cement\_mse }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(.model, MSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(MSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lr@{}}
+\toprule\noalign{}
+.model & MSE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ETS & 12613.48 \\
+SNAIVE & 19373.14 \\
+\end{longtable}
+}
+
+\textbf{Answer:} The smaller 4-step-ahead MSE identifies the more
+accurate one-year-ahead forecasting method. Because Portland cement has
+strong seasonality, it would not be surprising if \texttt{SNAIVE}
+performs very well.
+
+\section{\texorpdfstring{Exercise 13. Compare \texttt{ETS()},
+\texttt{SNAIVE()}, and \texttt{decomposition\_model(STL,\ ...)} on five
+series}{Exercise 13. Compare ETS(), SNAIVE(), and decomposition\_model(STL, ...) on five series}}\label{exercise-13.-compare-ets-snaive-and-decomposition_modelstl-...-on-five-series}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{compare\_three\_models }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data, value, }\AttributeTok{test\_years =} \DecValTok{3}\NormalTok{) \{}
+\NormalTok{  value }\OtherTok{\textless{}{-}}\NormalTok{ rlang}\SpecialCharTok{::}\FunctionTok{ensym}\NormalTok{(value)}
+\NormalTok{  value\_name }\OtherTok{\textless{}{-}}\NormalTok{ rlang}\SpecialCharTok{::}\FunctionTok{as\_name}\NormalTok{(value)}
+\NormalTok{  idx }\OtherTok{\textless{}{-}}\NormalTok{ tsibble}\SpecialCharTok{::}\FunctionTok{index\_var}\NormalTok{(data)}
+\NormalTok{  idx\_name }\OtherTok{\textless{}{-}}\NormalTok{ rlang}\SpecialCharTok{::}\FunctionTok{as\_name}\NormalTok{(idx)}
+
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{nrow}\NormalTok{(data) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) \{}
+\NormalTok{    rlang}\SpecialCharTok{::}\FunctionTok{abort}\NormalTok{(}\StringTok{"compare\_three\_models() received an empty tsibble."}\NormalTok{)}
+\NormalTok{  \}}
+
+\NormalTok{  n\_per\_year }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{inherits}\NormalTok{(data[[idx\_name]], }\StringTok{"yearmonth"}\NormalTok{)) \{}
+    \DecValTok{12}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{inherits}\NormalTok{(data[[idx\_name]], }\StringTok{"yearquarter"}\NormalTok{)) \{}
+    \DecValTok{4}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \DecValTok{1}
+\NormalTok{  \}}
+
+\NormalTok{  test\_n }\OtherTok{\textless{}{-}}\NormalTok{ test\_years }\SpecialCharTok{*}\NormalTok{ n\_per\_year}
+
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{nrow}\NormalTok{(data) }\SpecialCharTok{\textless{}=}\NormalTok{ test\_n) \{}
+\NormalTok{    rlang}\SpecialCharTok{::}\FunctionTok{abort}\NormalTok{(}\StringTok{"compare\_three\_models() needs more observations than the requested test window."}\NormalTok{)}
+\NormalTok{  \}}
+
+\NormalTok{  train }\OtherTok{\textless{}{-}} \FunctionTok{head}\NormalTok{(data, }\FunctionTok{nrow}\NormalTok{(data) }\SpecialCharTok{{-}}\NormalTok{ test\_n)}
+\NormalTok{  test }\OtherTok{\textless{}{-}} \FunctionTok{tail}\NormalTok{(data, test\_n)}
+
+\NormalTok{  lambda\_train }\OtherTok{\textless{}{-}}\NormalTok{ train }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{features}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{value, guerrero) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{pull}\NormalTok{(lambda\_guerrero)}
+
+\NormalTok{  train\_bc }\OtherTok{\textless{}{-}}\NormalTok{ train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{value\_bc =} \FunctionTok{box\_cox}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{value, lambda\_train))}
+\NormalTok{  test\_bc }\OtherTok{\textless{}{-}}\NormalTok{ test }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{value\_bc =} \FunctionTok{box\_cox}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{value, lambda\_train))}
+
+\NormalTok{  fit\_ets }\OtherTok{\textless{}{-}}\NormalTok{ train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{value))}
+\NormalTok{  fit\_snaive }\OtherTok{\textless{}{-}}\NormalTok{ train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{SNAIVE =} \FunctionTok{SNAIVE}\NormalTok{(}\SpecialCharTok{!!}\NormalTok{value))}
+\NormalTok{  fit\_stl }\OtherTok{\textless{}{-}}\NormalTok{ train\_bc }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{model}\NormalTok{(}
+      \AttributeTok{STL\_ETS =} \FunctionTok{decomposition\_model}\NormalTok{(}
+        \FunctionTok{STL}\NormalTok{(value\_bc),}
+        \FunctionTok{ETS}\NormalTok{(season\_adjust)}
+\NormalTok{      )}
+\NormalTok{    )}
+
+  \FunctionTok{bind\_rows}\NormalTok{(}
+    \FunctionTok{forecast}\NormalTok{(fit\_ets, }\AttributeTok{new\_data =}\NormalTok{ test) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{accuracy}\NormalTok{(test) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{(),}
+    \FunctionTok{forecast}\NormalTok{(fit\_snaive, }\AttributeTok{new\_data =}\NormalTok{ test) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{accuracy}\NormalTok{(test) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{(),}
+    \FunctionTok{forecast}\NormalTok{(fit\_stl, }\AttributeTok{new\_data =}\NormalTok{ test\_bc) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{accuracy}\NormalTok{(test\_bc) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{as\_tibble}\NormalTok{()}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{select}\NormalTok{(.model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{arrange}\NormalTok{(RMSE)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beer }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Quarter, Beer)}
+\NormalTok{bricks }\OtherTok{\textless{}{-}}\NormalTok{ aus\_production }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Quarter, Bricks)}
+\NormalTok{a10 }\OtherTok{\textless{}{-}}\NormalTok{ PBS }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(ATC2 }\SpecialCharTok{==} \StringTok{"A10"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{index\_by}\NormalTok{(Month) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Cost =} \FunctionTok{sum}\NormalTok{(Cost))}
+\NormalTok{h02 }\OtherTok{\textless{}{-}}\NormalTok{ PBS }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(ATC2 }\SpecialCharTok{==} \StringTok{"H02"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{index\_by}\NormalTok{(Month) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Cost =} \FunctionTok{sum}\NormalTok{(Cost))}
+\NormalTok{food }\OtherTok{\textless{}{-}}\NormalTok{ aus\_retail }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(Industry }\SpecialCharTok{==} \StringTok{"Food retailing"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{index\_by}\NormalTok{(Month) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Turnover =} \FunctionTok{sum}\NormalTok{(Turnover))}
+
+\NormalTok{res\_beer }\OtherTok{\textless{}{-}} \FunctionTok{compare\_three\_models}\NormalTok{(beer, Beer) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{series =} \StringTok{"Beer"}\NormalTok{)}
+\NormalTok{res\_bricks }\OtherTok{\textless{}{-}} \FunctionTok{compare\_three\_models}\NormalTok{(bricks, Bricks) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{series =} \StringTok{"Bricks"}\NormalTok{)}
+\NormalTok{res\_a10 }\OtherTok{\textless{}{-}} \FunctionTok{compare\_three\_models}\NormalTok{(a10, Cost) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{series =} \StringTok{"PBS A10"}\NormalTok{)}
+\NormalTok{res\_h02 }\OtherTok{\textless{}{-}} \FunctionTok{compare\_three\_models}\NormalTok{(h02, Cost) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{series =} \StringTok{"PBS H02"}\NormalTok{)}
+\NormalTok{res\_food }\OtherTok{\textless{}{-}} \FunctionTok{compare\_three\_models}\NormalTok{(food, Turnover) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{series =} \StringTok{"Food retailing"}\NormalTok{)}
+
+\NormalTok{ex13\_results }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(res\_beer, res\_bricks, res\_a10, res\_h02, res\_food)}
+
+\NormalTok{ex13\_results }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(series, .model, RMSE, MAE, MAPE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(series, RMSE) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llrrr@{}}
+\toprule\noalign{}
+series & .model & RMSE & MAE & MAPE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Beer & STL\_ETS & 0.078 & 0.070 & 0.608 \\
+Beer & ETS & 9.621 & 8.919 & 2.133 \\
+Beer & SNAIVE & 10.805 & 9.750 & 2.338 \\
+Bricks & ETS & NaN & NaN & NaN \\
+Bricks & SNAIVE & NaN & NaN & NaN \\
+Bricks & STL\_ETS & NaN & NaN & NaN \\
+Food retailing & STL\_ETS & 0.048 & 0.041 & 0.260 \\
+Food retailing & ETS & 193.818 & 169.667 & 1.651 \\
+Food retailing & SNAIVE & 699.075 & 624.750 & 5.856 \\
+PBS A10 & STL\_ETS & 4.158 & 3.550 & 1.962 \\
+PBS A10 & ETS & 2360218.786 & 1851700.369 & 8.740 \\
+PBS A10 & SNAIVE & 5180737.894 & 4330697.376 & 19.894 \\
+PBS H02 & STL\_ETS & 0.274 & 0.217 & 0.810 \\
+PBS H02 & ETS & 76472.072 & 64455.509 & 7.046 \\
+PBS H02 & SNAIVE & 85517.518 & 71610.554 & 7.885 \\
+\end{longtable}
+}
+
+\textbf{Answer:} For each of the five series, the best forecasting
+method is the method with the smallest test-set RMSE within that series.
+The table provides the full comparison for beer, bricks, diabetes drug
+subsidies, corticosteroid drug subsidies, and Australian food retailing
+turnover.
+
+\section{\texorpdfstring{Exercise 14. Use \texttt{ETS()} to select
+models for several
+series}{Exercise 14. Use ETS() to select models for several series}}\label{exercise-14.-use-ets-to-select-models-for-several-series}
+
+\subsection{\texorpdfstring{Exercise 14(a) Apply \texttt{ETS()} to total
+trips in \texttt{tourism}, the four \texttt{gafa\_stock} series, and the
+lynx series in \texttt{pelt}. Does it always give good
+forecasts?}{Exercise 14(a) Apply ETS() to total trips in tourism, the four gafa\_stock series, and the lynx series in pelt. Does it always give good forecasts?}}\label{exercise-14a-apply-ets-to-total-trips-in-tourism-the-four-gafa_stock-series-and-the-lynx-series-in-pelt.-does-it-always-give-good-forecasts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{trips\_total }\OtherTok{\textless{}{-}}\NormalTok{ tourism }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{index\_by}\NormalTok{(Quarter) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Trips =} \FunctionTok{sum}\NormalTok{(Trips), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)}
+
+\NormalTok{stocks }\OtherTok{\textless{}{-}}\NormalTok{ gafa\_stock }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index =}\NormalTok{ Date, }\AttributeTok{key =}\NormalTok{ Symbol) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Symbol) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{index\_by}\NormalTok{(}\AttributeTok{Week =} \FunctionTok{yearweek}\NormalTok{(Date)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Close =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{last}\NormalTok{(Close))}
+\NormalTok{lynx }\OtherTok{\textless{}{-}}\NormalTok{ pelt }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Year, Lynx)}
+
+\NormalTok{trip\_fit }\OtherTok{\textless{}{-}}\NormalTok{ trips\_total }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(Trips))}
+\NormalTok{stock\_fit }\OtherTok{\textless{}{-}}\NormalTok{ stocks }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(Close))}
+\NormalTok{lynx\_fit }\OtherTok{\textless{}{-}}\NormalTok{ lynx }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ETS =} \FunctionTok{ETS}\NormalTok{(Lynx))}
+
+\FunctionTok{report}\NormalTok{(trip\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: Trips 
+## Model: ETS(A,A,A) 
+##   Smoothing parameters:
+##     alpha = 0.4495675 
+##     beta  = 0.04450178 
+##     gamma = 0.0001000075 
+## 
+##   Initial states:
+##      l[0]      b[0]      s[0]     s[-1]     s[-2]    s[-3]
+##  21689.64 -58.46946 -125.8548 -816.3416 -324.5553 1266.752
+## 
+##   sigma^2:  699901.4
+## 
+##      AIC     AICc      BIC 
+## 1436.829 1439.400 1458.267
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{report}\NormalTok{(stock\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 10
+##   Symbol .model  sigma2 log_lik   AIC  AICc   BIC    MSE   AMSE    MAE
+##   <chr>  <chr>    <dbl>   <dbl> <dbl> <dbl> <dbl>  <dbl>  <dbl>  <dbl>
+## 1 AAPL   ETS    0.00122  -1116. 2238. 2238. 2248.   22.8   46.0 0.0259
+## 2 AMZN   ETS    0.00164  -1604. 3218. 3218. 3236. 1446.  2634.  0.0295
+## 3 FB     ETS    0.00137  -1103. 2216. 2216. 2234.   23.5   38.6 0.0261
+## 4 GOOG   ETS    0.00113  -1577. 3160. 3160. 3170.  680.  1094.  0.0237
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{report}\NormalTok{(lynx\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: Lynx 
+## Model: ETS(A,N,N) 
+##   Smoothing parameters:
+##     alpha = 0.9998998 
+## 
+##   Initial states:
+##      l[0]
+##  25737.12
+## 
+##   sigma^2:  162584145
+## 
+##      AIC     AICc      BIC 
+## 2134.976 2135.252 2142.509
+\end{verbatim}
+
+\textbf{Answer:} \texttt{ETS()} will always return a fitted exponential
+smoothing model, but that does \textbf{not} mean the forecasts are
+always good. It tends to work well for series with evolving level,
+trend, and seasonality, but it can struggle when the data behave more
+like random walks, structural breaks, bubbles, crashes, or cyclical
+ecological dynamics.
+
+\subsection{Exercise 14(b) Find an example where it does not work well.
+Why?}\label{exercise-14b-find-an-example-where-it-does-not-work-well.-why}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stock\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(stock\_fit, }\AttributeTok{h =} \DecValTok{30}\NormalTok{)}
+\NormalTok{lynx\_fc }\OtherTok{\textless{}{-}} \FunctionTok{forecast}\NormalTok{(lynx\_fit, }\AttributeTok{h =} \DecValTok{20}\NormalTok{)}
+
+\FunctionTok{autoplot}\NormalTok{(stock\_fc, stocks) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\FunctionTok{vars}\NormalTok{(Symbol), }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 14(b): ETS applied to GAFA stock closing prices"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Close"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex14b-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{autoplot}\NormalTok{(lynx\_fc, lynx) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Exercise 14(b): ETS applied to lynx series"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Value"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{chapter9_exercises_answers_files/figure-latex/ex14b-2} \end{center}
+
+\textbf{Answer:} A clear example is the stock-price series. Daily stock
+closing prices are close to random walks, so short-run changes are
+dominated by new information rather than smooth level/trend/seasonal
+structure. ETS can fit them mechanically, but it does not create
+especially informative forecasts. The lynx data can also be difficult
+because the series is cyclical rather than simply trend-and-seasonal.
+
+\section{Exercise 15. Show that ETS(M,A,M) point forecasts equal
+Holt-Winters multiplicative
+forecasts}\label{exercise-15.-show-that-etsmam-point-forecasts-equal-holt-winters-multiplicative-forecasts}
+
+\textbf{Answer:} Let the ETS(M,A,M) state-space equations be written in
+the same level, trend, and multiplicative seasonal components used by
+Holt-Winters multiplicative smoothing. The one-step conditional mean
+under ETS(M,A,M) is
+
+\[
+\hat{y}_{t|t-1} = (\ell_{t-1} + b_{t-1}) s_{t-m},
+\]
+
+and the component updating equations are the same multiplicative
+Holt-Winters recursions:
+
+\[
+\ell_t = \alpha\frac{y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+b_{t-1}),
+\] \[
+b_t = \beta^*(\ell_t-\ell_{t-1}) + (1-\beta^*)b_{t-1},
+\] \[
+s_t = \gamma\frac{y_t}{\ell_{t-1}+b_{t-1}} + (1-\gamma)s_{t-m}.
+\]
+
+Iterating these equations forward gives the \(h\)-step point forecast
+
+\[
+\hat{y}_{t+h|t} = (\ell_t + hb_t) s_{t+h-m(k+1)},
+\]
+
+which is exactly the Holt-Winters multiplicative forecast formula. So
+the \textbf{point forecasts are identical}; the difference is that
+ETS(M,A,M) additionally provides a full probabilistic state-space
+interpretation.
+
+\section{\texorpdfstring{Exercise 16. Show that the forecast variance
+for ETS(A,N,N) is
+\texttt{sigma\^{}2\ {[}1\ +\ alpha\^{}2\ (h-1){]}}}{Exercise 16. Show that the forecast variance for ETS(A,N,N) is sigma\^{}2 {[}1 + alpha\^{}2 (h-1){]}}}\label{exercise-16.-show-that-the-forecast-variance-for-etsann-is-sigma2-1-alpha2-h-1}
+
+\textbf{Answer:} For ETS(A,N,N), the observation and state equations are
+
+\[
+y_t = \ell_{t-1} + \varepsilon_t,
+\qquad
+\ell_t = \ell_{t-1} + \alpha \varepsilon_t,
+\]
+
+where the innovations \(\varepsilon_t\) are independent with variance
+\(\sigma^2\). The \(h\)-step-ahead forecast made at time \(T\) is
+
+\[
+\hat{y}_{T+h|T} = \ell_T.
+\]
+
+The future observation can be expanded as
+
+\[
+y_{T+h} = \ell_T + \alpha \varepsilon_{T+1} + \alpha \varepsilon_{T+2} + \cdots + \alpha \varepsilon_{T+h-1} + \varepsilon_{T+h}.
+\]
+
+So the forecast error is
+
+\[
+y_{T+h} - \hat{y}_{T+h|T}
+= \alpha \varepsilon_{T+1} + \cdots + \alpha \varepsilon_{T+h-1} + \varepsilon_{T+h}.
+\]
+
+Because the innovations are independent,
+
+\[
+\operatorname{Var}(y_{T+h} - \hat{y}_{T+h|T})
+= \alpha^2\sigma^2(h-1) + \sigma^2
+= \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]
+
+Therefore the forecast variance is
+
+\[
+\boxed{\sigma^2\left[1 + \alpha^2(h-1)\right].}
+\]
+
+\section{Exercise 17. Write down 95\% prediction intervals for
+ETS(A,N,N)}\label{exercise-17.-write-down-95-prediction-intervals-for-etsann}
+
+\textbf{Answer:} From Exercise 16, the \(h\)-step forecast variance is
+
+\[
+\sigma_h^2 = \sigma^2\left[1 + \alpha^2(h-1)\right].
+\]
+
+For ETS(A,N,N), the point forecast at horizon \(h\) is simply
+
+\[
+\hat{y}_{T+h|T} = \ell_T.
+\]
+
+Assuming normally distributed forecast errors, a 95\% prediction
+interval is
+
+\[
+\hat{y}_{T+h|T} \pm 1.96\sigma_h.
+\]
+
+Substituting in the ETS(A,N,N) forecast and variance gives
+
+\[
+\boxed{
+\ell_T \pm 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)}
+}
+\]
+
+or, written as lower and upper bounds,
+
+\[
+\boxed{
+\left[
+\ell_T - 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)},
+\;\ell_T + 1.96\,\sigma\sqrt{1 + \alpha^2(h-1)}
+\right].
+}
+\]
+
+\end{document}

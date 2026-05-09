@@ -1,5 +1,5 @@
 ---
-title: "FPP3 Exercises for the Provided URL — Complete Worked R Markdown"
+title: "FPP3 Exercises Homework 6"
 author: "Randy Howk"
 date: "`r Sys.Date()`"
 output:
@@ -111,11 +111,7 @@ lb_tbl <- function(x, lag = 24, dof = 0) {
 }
 ```
 
-# Note on scope
-
-The attached setup file is titled "Chapter 8 Exercises", and the URL you provided points to the **Exponential smoothing exercises** page (`expsmooth-exercises.html`), which is Section 8.8 in *Forecasting: Principles and Practice (3rd ed.)*. I therefore answer **all exercises on the provided page**, while keeping the PDF and HTML setup from the attached file. The exercise list below follows the supplied URL.
-
-# 1. Pigs in Victoria
+# Exercise 1. Pigs in Victoria
 
 The equivalent simple exponential smoothing state space model is `ETS(A,N,N)`.
 
@@ -128,7 +124,7 @@ autoplot(pigs, Count) +
   labs(title = "Victorian pigs slaughtered", y = "Count")
 ```
 
-## 1(a) Use `ETS()` to estimate the equivalent SES model, report `alpha` and `l0`, and forecast four months ahead.
+## Exercise 1(a) Use `ETS()` to estimate the equivalent SES model, report `alpha` and `l0`, and forecast four months ahead.
 
 ```{r ex1a}
 pigs_fit <- pigs %>%
@@ -144,9 +140,9 @@ autoplot(pigs_fc, pigs) +
   labs(title = "Exercise 1(a): SES forecasts for pigs", y = "Count")
 ```
 
-**Explicit answer.** The fitted simple exponential smoothing model is `ETS(A,N,N)`. The estimated smoothing parameter is $\alpha =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "alpha"], 4)` and the estimated initial level is $\ell_0 =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "l[0]"], 4)`. The next four monthly point forecasts are the four values shown in the forecast table.
+**Answer:** The fitted simple exponential smoothing model is `ETS(A,N,N)`. The estimated smoothing parameter is $\alpha =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "alpha"], 4)` and the estimated initial level is $\ell_0 =$ `r fmt(pigs_coef$estimate[pigs_coef$term == "l[0]"], 4)`. The next four monthly point forecasts are the four values shown in the forecast table.
 
-## 1(b) Compute a 95% prediction interval for the first forecast using `yhat +/- 1.96 s`, and compare it with R's interval.
+## Exercise 1(b) Compute a 95% prediction interval for the first forecast using `yhat +/- 1.96 s`, and compare it with R's interval.
 
 ```{r ex1b}
 pigs_sigma <- pigs_fit %>% glance() %>% pull(sigma2) %>% sqrt() %>% as_num()
@@ -162,9 +158,9 @@ bind_rows(
   kable(digits = 2)
 ```
 
-**Explicit answer.** The manually computed 95% interval for the first forecast is the interval reported on the first row of the table, and the `fable` interval is on the second row. They are very close. Any small difference comes from the fact that the hand calculation uses the simple approximation $\hat{y}\pm1.96s$, whereas `ETS()` computes intervals from the full model-based forecast distribution.
+**Answer:** The manually computed 95% interval for the first forecast is the interval reported on the first row of the table, and the `fable` interval is on the second row. They are very close. Any small difference comes from the fact that the hand calculation uses the simple approximation $\hat{y}\pm1.96s$, whereas `ETS()` computes intervals from the full model-based forecast distribution.
 
-# 2. Write your own SES function
+# Exercise 2. Write your own SES function
 
 ```{r ex2}
 ses_next <- function(y, alpha, level) {
@@ -190,9 +186,9 @@ tibble(
 ) %>% kable(digits = 6)
 ```
 
-**Explicit answer.** Yes. Using the same $\alpha$ and initial level, the custom SES function gives the same one-step-ahead forecast as `ETS()` up to numerical rounding.
+**Answer:** Yes. Using the same $\alpha$ and initial level, the custom SES function gives the same one-step-ahead forecast as `ETS()` up to numerical rounding.
 
-# 3. Modify the function to return SSE and optimize with `optim()`
+# Exercise 3. Modify the function to return SSE and optimize with `optim()`
 
 ```{r ex3}
 ses_sse <- function(par, y) {
@@ -232,9 +228,9 @@ tibble(
 ) %>% kable(digits = 6)
 ```
 
-**Explicit answer.** The `optim()` estimates are reported above. They should be the same as, or extremely close to, the `ETS()` estimates. Any tiny discrepancy comes from details of numerical optimization and the exact state-space likelihood formulation used by `ETS()`.
+**Answer:** The `optim()` estimates are reported above. They should be the same as, or extremely close to, the `ETS()` estimates. Any tiny discrepancy comes from details of numerical optimization and the exact state-space likelihood formulation used by `ETS()`.
 
-# 4. One function that estimates and forecasts
+# Exercise 4. One function that estimates and forecasts
 
 ```{r ex4}
 ses_fit_and_forecast <- function(y) {
@@ -257,9 +253,9 @@ ses_fit_and_forecast <- function(y) {
 ses_fit_and_forecast(pigs$Count) %>% kable(digits = 5)
 ```
 
-**Explicit answer.** The combined function returns the estimated $\alpha$, estimated $\ell_0$, and the one-step-ahead SES forecast in a single call.
+**Answer:** The combined function returns the estimated $\alpha$, estimated $\ell_0$, and the one-step-ahead SES forecast in a single call.
 
-# 5. Exports from one country in `global_economy`
+# Exercise 5. Exports from one country in `global_economy`
 
 I use **China** so the answer is fully reproducible.
 
@@ -272,11 +268,11 @@ autoplot(exports_country, Exports) +
   labs(title = "China: exports (% of GDP)", y = "Exports")
 ```
 
-## 5(a) Plot the series and discuss the main features.
+## Exercise 5(a) Plot the series and discuss the main features.
 
-**Explicit answer.** The series is annual, so there is no seasonality. It rises strongly for many years, then levels off and declines in later years. The main features are long-run movement in level, changing trend, and no seasonal pattern.
+**Answer:** The series is annual, so there is no seasonality. It rises strongly for many years, then levels off and declines in later years. The main features are long-run movement in level, changing trend, and no seasonal pattern.
 
-## 5(b) Forecast with an `ETS(A,N,N)` model and plot the forecasts.
+## Exercise 5(b) Forecast with an `ETS(A,N,N)` model and plot the forecasts.
 
 ```{r ex5b}
 exports_fit_ann <- exports_country %>%
@@ -287,18 +283,18 @@ autoplot(exports_fc_ann, exports_country) +
   labs(title = "Exercise 5(b): ETS(A,N,N) forecast", y = "Exports")
 ```
 
-**Explicit answer.** The `ETS(A,N,N)` forecast is shown in the plot. Because the model has no trend, the forecasts settle around a relatively stable level.
+**Answer:** The `ETS(A,N,N)` forecast is shown in the plot. Because the model has no trend, the forecasts settle around a relatively stable level.
 
-## 5(c) Compute the training-set RMSE.
+## Exercise 5(c) Compute the training-set RMSE.
 
 ```{r ex5c}
 exports_acc_ann <- accuracy(exports_fit_ann)
 exports_acc_ann %>% select(.model, RMSE, MAE, MAPE) %>% kable(digits = 3)
 ```
 
-**Explicit answer.** The training-set RMSE for `ETS(A,N,N)` is the RMSE value shown in the table above.
+**Answer:** The training-set RMSE for `ETS(A,N,N)` is the RMSE value shown in the table above.
 
-## 5(d) Compare with `ETS(A,A,N)` and discuss the merits of the two methods.
+## Exercise 5(d) Compare with `ETS(A,A,N)` and discuss the merits of the two methods.
 
 ```{r ex5d}
 exports_fit_both <- exports_country %>%
@@ -320,13 +316,13 @@ autoplot(exports_fc_both, exports_country) +
   labs(title = "Exercise 5(d): ETS(A,N,N) versus ETS(A,A,N)", y = "Exports")
 ```
 
-**Explicit answer.** `ETS(A,A,N)` is more flexible because it includes a trend, but it also estimates one extra parameter. If the series truly has a persistent trend, that extra flexibility can improve fit. If the series mainly fluctuates around a level after structural changes, the simpler `ETS(A,N,N)` can be more robust. The table shows whether the extra parameter is rewarded by better RMSE and AICc.
+**Answer:** `ETS(A,A,N)` is more flexible because it includes a trend, but it also estimates one extra parameter. If the series truly has a persistent trend, that extra flexibility can improve fit. If the series mainly fluctuates around a level after structural changes, the simpler `ETS(A,N,N)` can be more robust. The table shows whether the extra parameter is rewarded by better RMSE and AICc.
 
-## 5(e) Compare the forecasts. Which is best?
+## Exercise 5(e) Compare the forecasts. Which is best?
 
-**Explicit answer.** The better forecast is the one that balances fit and plausibility. If `AAN` has clearly better RMSE/AICc and produces a believable extrapolation, it is preferable. If the improvement is small and the trend forecast looks too aggressive, `ANN` is safer. For this series I would choose the model with the better metrics shown above, but I would also prefer the forecast shape that best matches the visible post-peak slowdown.
+**Answer:** The better forecast is the one that balances fit and plausibility. If `AAN` has clearly better RMSE/AICc and produces a believable extrapolation, it is preferable. If the improvement is small and the trend forecast looks too aggressive, `ANN` is safer. For this series I would choose the model with the better metrics shown above, but I would also prefer the forecast shape that best matches the visible post-peak slowdown.
 
-## 5(f) Compute a 95% prediction interval for the first forecast for each model using RMSE and compare with R.
+## Exercise 5(f) Compute a 95% prediction interval for the first forecast for each model using RMSE and compare with R.
 
 ```{r ex5f}
 ann_rmse <- exports_comp %>% filter(.model == "ANN") %>% pull(RMSE)
@@ -345,9 +341,9 @@ bind_rows(
   kable(digits = 3)
 ```
 
-**Explicit answer.** The manually computed intervals and the software intervals are reported side by side in the table. They are close but not identical, because the manual intervals use RMSE as a simple normal approximation while `ETS()` uses the full forecast distribution implied by the fitted state-space model.
+**Answer:** The manually computed intervals and the software intervals are reported side by side in the table. They are close but not identical, because the manual intervals use RMSE as a simple normal approximation while `ETS()` uses the full forecast distribution implied by the fitted state-space model.
 
-# 6. Chinese GDP under different ETS options
+# Exercise 6. Chinese GDP under different ETS options
 
 ```{r ex6}
 china_gdp <- global_economy %>%
@@ -378,9 +374,9 @@ accuracy(gdp_fit) %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** Damped trend reduces the long-run growth rate, so the forecasts flatten out more than under an undamped trend. A Box-Cox transformation compresses the scale and often stabilizes variance, which prevents extremely large future values from dominating the fit. In practice, the undamped model projects stronger sustained growth, the damped model is more conservative, and the Box-Cox versions reduce the apparent explosiveness of the long-horizon forecasts.
+**Answer:** Damped trend reduces the long-run growth rate, so the forecasts flatten out more than under an undamped trend. A Box-Cox transformation compresses the scale and often stabilizes variance, which prevents extremely large future values from dominating the fit. In practice, the undamped model projects stronger sustained growth, the damped model is more conservative, and the Box-Cox versions reduce the apparent explosiveness of the long-horizon forecasts.
 
-# 7. Gas from `aus_production`
+# Exercise 7. Gas from `aus_production`
 
 ```{r ex7}
 gas <- aus_production %>% select(Quarter, Gas)
@@ -405,9 +401,9 @@ accuracy(gas_fit) %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** Multiplicative seasonality is necessary because the seasonal swings get larger as the overall level rises. The seasonal amplitude scales with the series rather than staying constant in absolute size. Damping helps only if it improves fit and yields more plausible long-run forecasts; that can be checked directly from the accuracy table and the forecast plots.
+**Answer:** Multiplicative seasonality is necessary because the seasonal swings get larger as the overall level rises. The seasonal amplitude scales with the series rather than staying constant in absolute size. Damping helps only if it improves fit and yields more plausible long-run forecasts; that can be checked directly from the accuracy table and the forecast plots.
 
-# 8. Retail series revisited
+# Exercise 8. Retail series revisited
 
 The original reference points back to an earlier exercise. To keep this document fully reproducible, I use the same retail series as in the attached file: **New South Wales, Department stores**.
 
@@ -420,11 +416,11 @@ autoplot(retail, Turnover) +
   labs(title = "Chosen retail series: NSW department stores", y = "Turnover")
 ```
 
-## 8(a) Why is multiplicative seasonality necessary?
+## Exercise 8(a) Why is multiplicative seasonality necessary?
 
-**Explicit answer.** Multiplicative seasonality is necessary because the seasonal peaks and troughs become larger as the level of the series rises. December peaks are much bigger in later years than in earlier years, so constant absolute seasonal effects are not appropriate.
+**Answer:** Multiplicative seasonality is necessary because the seasonal peaks and troughs become larger as the level of the series rises. December peaks are much bigger in later years than in earlier years, so constant absolute seasonal effects are not appropriate.
 
-## 8(b) Apply Holt-Winters multiplicative and experiment with damping.
+## Exercise 8(b) Apply Holt-Winters multiplicative and experiment with damping.
 
 ```{r ex8b}
 retail_hw <- retail %>%
@@ -439,9 +435,9 @@ autoplot(retail_hw_fc, retail) +
   labs(title = "Exercise 8(b): Holt-Winters multiplicative, with and without damping", y = "Turnover")
 ```
 
-**Explicit answer.** The two fitted Holt-Winters multiplicative variants are shown above. The damped version moderates the long-run trend relative to the undamped version.
+**Answer:** The two fitted Holt-Winters multiplicative variants are shown above. The damped version moderates the long-run trend relative to the undamped version.
 
-## 8(c) Compare one-step RMSE. Which do you prefer?
+## Exercise 8(c) Compare one-step RMSE. Which do you prefer?
 
 ```{r ex8c}
 retail_hw_acc <- accuracy(retail_hw)
@@ -451,9 +447,9 @@ retail_hw_acc %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** I prefer the model with the smaller one-step-ahead RMSE. That preferred model is the first row in the table above.
+**Answer:** I prefer the model with the smaller one-step-ahead RMSE. That preferred model is the first row in the table above.
 
-## 8(d) Check whether the residuals from the best method look like white noise.
+## Exercise 8(d) Check whether the residuals from the best method look like white noise.
 
 ```{r ex8d}
 best_hw_name <- retail_hw_acc %>% arrange(RMSE) %>% slice(1) %>% pull(.model)
@@ -463,9 +459,9 @@ gg_tsresiduals(best_hw)
 augment(best_hw) %>% lb_tbl(lag = 24, dof = 0) %>% kable(digits = 4)
 ```
 
-**Explicit answer.** The residuals look like white noise if the residual time plot shows no pattern, the residual ACF has no significant spikes, and the Ljung-Box p-value is not small. The plot and table above let you check those conditions explicitly.
+**Answer:** The residuals look like white noise if the residual time plot shows no pattern, the residual ACF has no significant spikes, and the Ljung-Box p-value is not small. The plot and table above let you check those conditions explicitly.
 
-## 8(e) Compute test-set RMSE after training through 2010, and compare with seasonal naïve.
+## Exercise 8(e) Compute test-set RMSE after training through 2010, and compare with seasonal naive.
 
 ```{r ex8e}
 retail_train <- retail %>% filter(year(Month) <= 2010)
@@ -487,9 +483,9 @@ retail_test_acc %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The test-set RMSE values are given in the table. You beat the seasonal naïve benchmark if either Holt-Winters model has a lower RMSE than `SNAIVE`.
+**Answer:** The test-set RMSE values are given in the table. You beat the seasonal naïve benchmark if either Holt-Winters model has a lower RMSE than `SNAIVE`.
 
-# 9. STL + Box-Cox + ETS on the same retail series
+# Exercise 9. STL + Box-Cox + ETS on the same retail series
 
 ```{r ex9}
 lambda_retail <- retail_train %>% features(Turnover, guerrero) %>% pull(lambda_guerrero)
@@ -510,9 +506,9 @@ accuracy(retail_stl_fc, retail_test) %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The STL + Box-Cox + ETS approach is better on the test set if `STL_ETS` has a lower RMSE than `Best_HW`. The comparison table gives the direct answer.
+**Answer:** The STL + Box-Cox + ETS approach is better on the test set if `STL_ETS` has a lower RMSE than `Best_HW`. The comparison table gives the direct answer.
 
-# 10. Total domestic overnight trips across Australia
+# Exercise 10. Total domestic overnight trips across Australia
 
 ```{r ex10-data}
 aus_trips <- tourism %>%
@@ -523,11 +519,11 @@ autoplot(aus_trips, Trips) +
   labs(title = "Total domestic overnight trips across Australia", y = "Trips")
 ```
 
-## 10(a) Plot the data and describe the main features.
+## Exercise 10(a) Plot the data and describe the main features.
 
-**Explicit answer.** The series is quarterly and strongly seasonal. It also shows a long-run upward movement for much of the sample, with some change in trend over time.
+**Answer:** The series is quarterly and strongly seasonal. It also shows a long-run upward movement for much of the sample, with some change in trend over time.
 
-## 10(b) Decompose using STL and obtain the seasonally adjusted series.
+## Exercise 10(b) Decompose using STL and obtain the seasonally adjusted series.
 
 ```{r ex10b}
 aus_trips_stl <- aus_trips %>%
@@ -543,9 +539,9 @@ autoplot(aus_trips_stl) +
   labs(title = "Exercise 10(b): STL decomposition")
 ```
 
-**Explicit answer.** The `season_adjust` column shown above is the seasonally adjusted series. The decomposition plot displays the observed data, trend, seasonal component, and remainder.
+**Answer:** The `season_adjust` column shown above is the seasonally adjusted series. The decomposition plot displays the observed data, trend, seasonal component, and remainder.
 
-## 10(c) Forecast two years using additive damped trend on the seasonally adjusted data.
+## Exercise 10(c) Forecast two years using additive damped trend on the seasonally adjusted data.
 
 ```{r ex10c}
 aus_trips_dcmp_fit <- aus_trips %>%
@@ -562,9 +558,9 @@ autoplot(aus_trips_dcmp_fc_Ad, aus_trips) +
   labs(title = "Exercise 10(c): STL + additive damped trend", y = "Trips")
 ```
 
-**Explicit answer.** The required damped-trend forecast is the `STL_Ad` forecast shown above.
+**Answer:** The required damped-trend forecast is the `STL_Ad` forecast shown above.
 
-## 10(d) Forecast two years using Holt's linear method on the seasonally adjusted data.
+## Exercise 10(d) Forecast two years using Holt's linear method on the seasonally adjusted data.
 
 ```{r ex10d}
 aus_trips_dcmp_fit2 <- aus_trips %>%
@@ -581,9 +577,9 @@ autoplot(aus_trips_dcmp_fc_AA, aus_trips) +
   labs(title = "Exercise 10(d): STL + Holt's linear method", y = "Trips")
 ```
 
-**Explicit answer.** The required undamped Holt-style forecast is the `STL_AA` forecast shown above.
+**Answer:** The required undamped Holt-style forecast is the `STL_AA` forecast shown above.
 
-## 10(e) Use `ETS()` to choose a seasonal model.
+## Exercise 10(e) Use `ETS()` to choose a seasonal model.
 
 ```{r ex10e}
 aus_trips_ets <- aus_trips %>% model(ETS = ETS(Trips))
@@ -593,9 +589,9 @@ autoplot(aus_trips_ets_fc, aus_trips) +
   labs(title = "Exercise 10(e): Automatically selected ETS model", y = "Trips")
 ```
 
-**Explicit answer.** The automatically selected seasonal ETS model is the one reported by `ETS()` for the `ETS` fit.
+**Answer:** The automatically selected seasonal ETS model is the one reported by `ETS()` for the `ETS` fit.
 
-## 10(f) Compare RMSE for the ETS model and the STL decomposition models.
+## Exercise 10(f) Compare RMSE for the ETS model and the STL decomposition models.
 
 ```{r ex10f}
 trip_acc <- bind_rows(
@@ -610,9 +606,9 @@ trip_acc %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The model with the smallest RMSE in the table has the best in-sample fit.
+**Answer:** The model with the smallest RMSE in the table has the best in-sample fit.
 
-## 10(g) Compare the forecasts. Which seems most reasonable?
+## Exercise 10(g) Compare the forecasts. Which seems most reasonable?
 
 ```{r ex10g}
 bind_rows(aus_trips_dcmp_fc_Ad, aus_trips_dcmp_fc_AA, aus_trips_ets_fc) %>%
@@ -620,9 +616,9 @@ bind_rows(aus_trips_dcmp_fc_Ad, aus_trips_dcmp_fc_AA, aus_trips_ets_fc) %>%
   labs(title = "Exercise 10(g): forecast comparison", y = "Trips")
 ```
 
-**Explicit answer.** The most reasonable forecast is usually the one that keeps the strong quarterly seasonality while avoiding implausibly strong long-run growth. In many cases the damped-trend forecast is the most believable for longer horizons.
+**Answer:** The most reasonable forecast is usually the one that keeps the strong quarterly seasonality while avoiding implausibly strong long-run growth. In many cases the damped-trend forecast is the most believable for longer horizons.
 
-## 10(h) Check the residuals of the preferred model.
+## Exercise 10(h) Check the residuals of the preferred model.
 
 ```{r ex10h}
 best_trip_name <- trip_acc %>% arrange(RMSE) %>% slice(1) %>% pull(.model)
@@ -637,9 +633,9 @@ gg_tsresiduals(preferred_trip_fit)
 augment(preferred_trip_fit) %>% lb_tbl(lag = 8, dof = 0) %>% kable(digits = 4)
 ```
 
-**Explicit answer.** The preferred model passes the residual check if the residuals show no obvious pattern and the Ljung-Box test does not reject white noise.
+**Answer:** The preferred model passes the residual check if the residuals show no obvious pattern and the Ljung-Box test does not reject white noise.
 
-# 11. Arrivals from New Zealand
+# Exercise 11. Arrivals from New Zealand
 
 ```{r ex11-data}
 origin_levels <- sort(unique(aus_arrivals$Origin))
@@ -657,11 +653,11 @@ autoplot(nz_arrivals, Arrivals) +
   labs(title = "Arrivals to Australia from New Zealand", y = "Arrivals")
 ```
 
-## 11(a) Make a time plot and describe the main features.
+## Exercise 11(a) Make a time plot and describe the main features.
 
-**Explicit answer.** The series is quarterly, strongly seasonal, and has a changing long-run level. Seasonal fluctuations grow with the level, which suggests multiplicative seasonality.
+**Answer:** The series is quarterly, strongly seasonal, and has a changing long-run level. Seasonal fluctuations grow with the level, which suggests multiplicative seasonality.
 
-## 11(b) Hold out the last two years and forecast using Holt-Winters multiplicative.
+## Exercise 11(b) Hold out the last two years and forecast using Holt-Winters multiplicative.
 
 ```{r ex11b}
 nz_hw <- nz_train %>%
@@ -673,13 +669,13 @@ accuracy(nz_hw_fc, nz_test) %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The two-year test-set accuracy for Holt-Winters multiplicative is given in the table above.
+**Answer:** The two-year test-set accuracy for Holt-Winters multiplicative is given in the table above.
 
-## 11(c) Why is multiplicative seasonality necessary?
+## Exercise 11(c) Why is multiplicative seasonality necessary?
 
-**Explicit answer.** Multiplicative seasonality is necessary because the size of seasonal fluctuations increases as the level increases. The seasonal effect is proportional to the level rather than constant in absolute terms.
+**Answer:** Multiplicative seasonality is necessary because the size of seasonal fluctuations increases as the level increases. The seasonal effect is proportional to the level rather than constant in absolute terms.
 
-## 11(d) Forecast the two-year test set using four methods.
+## Exercise 11(d) Forecast the two-year test set using four methods.
 
 ```{r ex11d}
 nz_models <- nz_train %>%
@@ -700,9 +696,9 @@ accuracy(nz_fc, nz_test) %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The table compares the four requested methods on the same two-year holdout sample.
+**Answer:** The table compares the four requested methods on the same two-year holdout sample.
 
-## 11(e) Which method is best? Does it pass the residual tests?
+## Exercise 11(e) Which method is best? Does it pass the residual tests?
 
 ```{r ex11e}
 nz_acc <- accuracy(nz_fc, nz_test)
@@ -713,9 +709,9 @@ gg_tsresiduals(preferred_nz_fit)
 augment(preferred_nz_fit) %>% lb_tbl(lag = 8, dof = 0) %>% kable(digits = 4)
 ```
 
-**Explicit answer.** The best method is the one with the lowest test-set RMSE in the table above. It passes the residual tests if the diagnostic plots do not show structure and the Ljung-Box p-value is not small.
+**Answer:** The best method is the one with the lowest test-set RMSE in the table above. It passes the residual tests if the diagnostic plots do not show structure and the Ljung-Box p-value is not small.
 
-## 11(f) Compare the same four methods using time series cross-validation.
+## Exercise 11(f) Compare the same four methods using time series cross-validation.
 
 ```{r ex11f}
 nz_cv <- nz_train %>%
@@ -739,13 +735,13 @@ nz_cv %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** If the same method remains best under cross-validation, then the training/test result is reinforced. If a different method wins under cross-validation, the single holdout split was probably sensitive to the choice of cutoff.
+**Answer:** If the same method remains best under cross-validation, then the training/test result is reinforced. If a different method wins under cross-validation, the single holdout split was probably sensitive to the choice of cutoff.
 
-# 12. Cross-validation for Portland cement
+# Exercise 12. Cross-validation for Portland cement
 
-## 12(a) Produce 1-year-ahead ETS and seasonal naïve forecasts using a stretching window.
+## Exercise 12(a) Produce 1-year-ahead ETS and seasonal naive forecasts using a stretching window.
 
-## 12(b) Compute the MSE of the 4-step-ahead errors and comment.
+## Exercise 12(b) Compute the MSE of the 4-step-ahead errors and comment.
 
 ```{r ex12}
 cement <- aus_production %>% select(Quarter, Cement)
@@ -768,9 +764,9 @@ cement_mse %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** The smaller 4-step-ahead MSE identifies the more accurate one-year-ahead forecasting method. Because Portland cement has strong seasonality, it would not be surprising if `SNAIVE` performs very well.
+**Answer:** The smaller 4-step-ahead MSE identifies the more accurate one-year-ahead forecasting method. Because Portland cement has strong seasonality, it would not be surprising if `SNAIVE` performs very well.
 
-# 13. Compare `ETS()`, `SNAIVE()`, and `decomposition_model(STL, ...)` on five series
+# Exercise 13. Compare `ETS()`, `SNAIVE()`, and `decomposition_model(STL, ...)` on five series
 
 ```{r ex13-helper}
 compare_three_models <- function(data, value, test_years = 3) {
@@ -851,32 +847,36 @@ ex13_results %>%
   kable(digits = 3)
 ```
 
-**Explicit answer.** For each of the five series, the best forecasting method is the method with the smallest test-set RMSE within that series. The table provides the full comparison for beer, bricks, diabetes drug subsidies, corticosteroid drug subsidies, and Australian food retailing turnover.
+**Answer:** For each of the five series, the best forecasting method is the method with the smallest test-set RMSE within that series. The table provides the full comparison for beer, bricks, diabetes drug subsidies, corticosteroid drug subsidies, and Australian food retailing turnover.
 
-# 14. Use `ETS()` to select models for several series
+# Exercise 14. Use `ETS()` to select models for several series
 
-## 14(a) Apply `ETS()` to total trips in `tourism`, the four `gafa_stock` series, and the lynx series in `pelt`. Does it always give good forecasts?
+## Exercise 14(a) Apply `ETS()` to total trips in `tourism`, the four `gafa_stock` series, and the lynx series in `pelt`. Does it always give good forecasts?
 
 ```{r ex14}
 trips_total <- tourism %>%
   index_by(Quarter) %>%
   summarise(Trips = sum(Trips), .groups = "drop")
 
-stocks <- gafa_stock %>% as_tsibble(index = Date, key = Symbol)
-lynx <- pelt %>% filter(Series == "Lynx") %>% select(Year, Value)
+stocks <- gafa_stock %>%
+  as_tsibble(index = Date, key = Symbol) %>%
+  group_by(Symbol) %>%
+  index_by(Week = yearweek(Date)) %>%
+  summarise(Close = dplyr::last(Close))
+lynx <- pelt %>% select(Year, Lynx)
 
 trip_fit <- trips_total %>% model(ETS = ETS(Trips))
 stock_fit <- stocks %>% model(ETS = ETS(Close))
-lynx_fit <- lynx %>% model(ETS = ETS(Value))
+lynx_fit <- lynx %>% model(ETS = ETS(Lynx))
 
 report(trip_fit)
 report(stock_fit)
 report(lynx_fit)
 ```
 
-**Explicit answer.** `ETS()` will always return a fitted exponential smoothing model, but that does **not** mean the forecasts are always good. It tends to work well for series with evolving level, trend, and seasonality, but it can struggle when the data behave more like random walks, structural breaks, bubbles, crashes, or cyclical ecological dynamics.
+**Answer:** `ETS()` will always return a fitted exponential smoothing model, but that does **not** mean the forecasts are always good. It tends to work well for series with evolving level, trend, and seasonality, but it can struggle when the data behave more like random walks, structural breaks, bubbles, crashes, or cyclical ecological dynamics.
 
-## 14(b) Find an example where it does not work well. Why?
+## Exercise 14(b) Find an example where it does not work well. Why?
 
 ```{r ex14b}
 stock_fc <- forecast(stock_fit, h = 30)
@@ -890,11 +890,11 @@ autoplot(lynx_fc, lynx) +
   labs(title = "Exercise 14(b): ETS applied to lynx series", y = "Value")
 ```
 
-**Explicit answer.** A clear example is the stock-price series. Daily stock closing prices are close to random walks, so short-run changes are dominated by new information rather than smooth level/trend/seasonal structure. ETS can fit them mechanically, but it does not create especially informative forecasts. The lynx data can also be difficult because the series is cyclical rather than simply trend-and-seasonal.
+**Answer:** A clear example is the stock-price series. Daily stock closing prices are close to random walks, so short-run changes are dominated by new information rather than smooth level/trend/seasonal structure. ETS can fit them mechanically, but it does not create especially informative forecasts. The lynx data can also be difficult because the series is cyclical rather than simply trend-and-seasonal.
 
-# 15. Show that ETS(M,A,M) point forecasts equal Holt-Winters multiplicative forecasts
+# Exercise 15. Show that ETS(M,A,M) point forecasts equal Holt-Winters multiplicative forecasts
 
-**Explicit answer.** Let the ETS(M,A,M) state-space equations be written in the same level, trend, and multiplicative seasonal components used by Holt-Winters multiplicative smoothing. The one-step conditional mean under ETS(M,A,M) is
+**Answer:** Let the ETS(M,A,M) state-space equations be written in the same level, trend, and multiplicative seasonal components used by Holt-Winters multiplicative smoothing. The one-step conditional mean under ETS(M,A,M) is
 
 \[
 \hat{y}_{t|t-1} = (\ell_{t-1} + b_{t-1}) s_{t-m},
@@ -920,9 +920,9 @@ Iterating these equations forward gives the $h$-step point forecast
 
 which is exactly the Holt-Winters multiplicative forecast formula. So the **point forecasts are identical**; the difference is that ETS(M,A,M) additionally provides a full probabilistic state-space interpretation.
 
-# 16. Show that the forecast variance for ETS(A,N,N) is `sigma^2 [1 + alpha^2 (h-1)]`
+# Exercise 16. Show that the forecast variance for ETS(A,N,N) is `sigma^2 [1 + alpha^2 (h-1)]`
 
-**Explicit answer.** For ETS(A,N,N), the observation and state equations are
+**Answer:** For ETS(A,N,N), the observation and state equations are
 
 \[
 y_t = \ell_{t-1} + \varepsilon_t,
@@ -963,9 +963,9 @@ Therefore the forecast variance is
 \boxed{\sigma^2\left[1 + \alpha^2(h-1)\right].}
 \]
 
-# 17. Write down 95% prediction intervals for ETS(A,N,N)
+# Exercise 17. Write down 95% prediction intervals for ETS(A,N,N)
 
-**Explicit answer.** From Exercise 16, the $h$-step forecast variance is
+**Answer:** From Exercise 16, the $h$-step forecast variance is
 
 \[
 \sigma_h^2 = \sigma^2\left[1 + \alpha^2(h-1)\right].

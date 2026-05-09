@@ -2,21 +2,26 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
-%
 \documentclass[
   11pt,
 ]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.5in]{geometry}
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
+\setcounter{secnumdepth}{5}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -34,20 +39,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  pdftitle={Applied Predictive Modeling --- Chapter 6 Solutions},
-  pdfauthor={Randy Howk},
-  colorlinks=true,
-  linkcolor={blue},
-  filecolor={Maroon},
-  citecolor={Blue},
-  urlcolor={blue},
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.5in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -59,13 +50,13 @@
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 \newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
 \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
 \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
 \newcommand{\BuiltInTok}[1]{#1}
 \newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
 \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
@@ -73,7 +64,7 @@
 \newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
 \newcommand{\ExtensionTok}[1]{#1}
 \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
 \newcommand{\ImportTok}[1]{#1}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
@@ -82,7 +73,7 @@
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
 \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
 \newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
 \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
@@ -90,21 +81,22 @@
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{5}
 \usepackage{xcolor}
 \usepackage{fvextra}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
@@ -120,41 +112,31 @@
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 \floatplacement{figure}{H}
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Applied Predictive Modeling --- Chapter 6 Solutions},
+  pdfauthor={Randy Howk},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Applied Predictive Modeling --- Chapter 6 Solutions}
 \author{Randy Howk}
-\date{2026-04-01}
+\date{2026-04-11}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=}
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
-\hypertarget{how-to-use-this-file}{%
-\section{How to use this file}\label{how-to-use-this-file}}
-
-This R Markdown file contains \textbf{worked solutions} for all Chapter
-6 exercises from \emph{Applied Predictive Modeling}: 6.1 (Tecator fat
-prediction), 6.2 (permeability), and 6.3 (chemical manufacturing
-process). The chapter covers ordinary linear regression, partial least
-squares (PLS), and penalized linear models such as ridge, lasso, and
-elastic net. The exercises appear at the end of Chapter 6 and ask the
-reader to use those model families on three regression problems.
-fileciteturn0file0
-
-The code is written to be executable in a standard R setup with the
-listed packages installed. Where the chapter asks for judgments such as
-``which model would you choose?'', the text below gives a direct answer
-and the code computes the relevant summaries.
-
-\hypertarget{chapter-6-in-one-paragraph}{%
-\section{Chapter 6 in one paragraph}\label{chapter-6-in-one-paragraph}}
+\section{Chapter 6 in one paragraph}\label{chapter-6-in-one-paragraph}
 
 Chapter 6 studies models that are linear in the parameters, emphasizing
 three recurring ideas: (1) ordinary least squares is simple and
@@ -167,8 +149,7 @@ The chapter also stresses preprocessing, resampling, and out-of-sample
 evaluation rather than relying only on training-set fit.
 fileciteturn3file1L8-L21 fileciteturn3file8L1-L21
 
-\hypertarget{helper-functions}{%
-\section{Helper functions}\label{helper-functions}}
+\section{Helper functions}\label{helper-functions}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -229,11 +210,9 @@ evaluation rather than relying only on training-set fit.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{tecator-fat-prediction}{%
-\section{6.1 Tecator fat prediction}\label{tecator-fat-prediction}}
+\section{6.1 Tecator fat prediction}\label{tecator-fat-prediction}
 
-\hypertarget{problem-statement}{%
-\subsection{Problem statement}\label{problem-statement}}
+\subsection{Problem statement}\label{problem-statement}
 
 The Tecator exercise uses 215 meat samples measured at 100 infrared
 frequencies to predict fat content. The chapter explicitly notes that
@@ -241,8 +220,7 @@ the predictors are ordered frequencies and therefore highly correlated,
 making this a good setting for PCA, PLS, and penalized linear models.
 fileciteturn0file0
 
-\hypertarget{a-load-the-data}{%
-\subsection{(a) Load the data}\label{a-load-the-data}}
+\subsection{(a) Load the data}\label{a-load-the-data}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -275,9 +253,8 @@ making this a good setting for PCA, PLS, and penalized linear models.
 \textbf{Answer:} the predictors are the 100 absorbance measurements and
 the response is percent fat.
 
-\hypertarget{b-use-pca-to-determine-the-effective-dimension}{%
 \subsection{(b) Use PCA to determine the effective
-dimension}\label{b-use-pca-to-determine-the-effective-dimension}}
+dimension}\label{b-use-pca-to-determine-the-effective-dimension}
 
 Because adjacent wavelengths are physically close and chemically
 related, we expect strong local correlation and a much smaller effective
@@ -331,9 +308,8 @@ variance curve.
 explain about 90--95\% of the variance, since that is the practical
 low-dimensional summary of the ordered spectra.
 
-\hypertarget{c-split-the-data-preprocess-and-fit-all-chapter-6-models}{%
 \subsection{(c) Split the data, preprocess, and fit all Chapter 6
-models}\label{c-split-the-data-preprocess-and-fit-all-chapter-6-models}}
+models}\label{c-split-the-data-preprocess-and-fit-all-chapter-6-models}
 
 We will compare: - ordinary linear regression, - PLS, - ridge
 regression, - lasso, - elastic net.
@@ -352,8 +328,7 @@ regression, - lasso, - elastic net.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{linear-regression}{%
-\subsubsection{Linear regression}\label{linear-regression}}
+\subsubsection{Linear regression}\label{linear-regression}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -389,8 +364,7 @@ regression, - lasso, - elastic net.
 \textbf{Answer:} linear regression has no tuning parameter, so the
 ``optimal'' value is not applicable.
 
-\hypertarget{pls}{%
-\subsubsection{PLS}\label{pls}}
+\subsubsection{PLS}\label{pls}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -452,8 +426,7 @@ regression, - lasso, - elastic net.
 \textbf{Answer:} the optimal number of latent components is the
 \texttt{ncomp} value selected by the model summary above.
 
-\hypertarget{ridge}{%
-\subsubsection{Ridge}\label{ridge}}
+\subsubsection{Ridge}\label{ridge}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -484,7 +457,7 @@ regression, - lasso, - elastic net.
 ## Resampling results across tuning parameters:
 ## 
 ##   lambda      RMSE      Rsquared   MAE     
-##   0.00000000  3.571465  0.9409278  2.377526
+##   0.00000000  3.571313  0.9409317  2.377451
 ##   0.01428571  3.915887  0.9141461  3.249154
 ##   0.02857143  4.272598  0.8994477  3.483134
 ##   0.04285714  4.527516  0.8891768  3.628764
@@ -515,8 +488,7 @@ regression, - lasso, - elastic net.
 \textbf{Answer:} the optimal ridge penalty is the selected
 \texttt{lambda}.
 
-\hypertarget{lasso}{%
-\subsubsection{Lasso}\label{lasso}}
+\subsubsection{Lasso}\label{lasso}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -550,16 +522,16 @@ regression, - lasso, - elastic net.
 ## Resampling results across tuning parameters:
 ## 
 ##   fraction  RMSE      Rsquared   MAE     
-##   0.1       2.907102  0.9431352  1.830585
-##   0.2       2.884305  0.9358443  1.791299
-##   0.3       2.639645  0.9511127  1.768909
-##   0.4       2.556941  0.9574745  1.786130
-##   0.5       2.557584  0.9596900  1.790784
-##   0.6       2.662356  0.9572917  1.868958
-##   0.7       2.838514  0.9530671  1.985267
-##   0.8       3.016933  0.9489860  2.119754
-##   0.9       3.220612  0.9438133  2.271996
-##   1.0       3.455901  0.9370981  2.423820
+##   0.1       2.907088  0.9431358  1.830579
+##   0.2       2.884293  0.9358444  1.791297
+##   0.3       2.639656  0.9511123  1.768922
+##   0.4       2.556940  0.9574745  1.786139
+##   0.5       2.557604  0.9596898  1.790787
+##   0.6       2.662395  0.9572909  1.868982
+##   0.7       2.838583  0.9530653  1.985309
+##   0.8       3.017017  0.9489837  2.119808
+##   0.9       3.220697  0.9438111  2.272052
+##   1.0       3.455985  0.9370960  2.423870
 ## 
 ## Tuning parameter 'lambda' was held constant at a value of 0
 ## RMSE was used to select the optimal model using the smallest value.
@@ -578,8 +550,7 @@ regression, - lasso, - elastic net.
 \texttt{lambda\ =\ 0}, the effective tuning parameter is the selected
 \texttt{fraction}.
 
-\hypertarget{elastic-net}{%
-\subsubsection{Elastic net}\label{elastic-net}}
+\subsubsection{Elastic net}\label{elastic-net}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -613,16 +584,16 @@ regression, - lasso, - elastic net.
 ## Resampling results across tuning parameters:
 ## 
 ##   lambda  fraction  RMSE       Rsquared   MAE     
-##   0.00    0.1        2.332738  0.9703437  1.643515
-##   0.00    0.2        2.311098  0.9726368  1.562452
-##   0.00    0.3        2.262330  0.9739525  1.535520
-##   0.00    0.4        2.214151  0.9752318  1.518391
-##   0.00    0.5        2.321496  0.9730273  1.596747
-##   0.00    0.6        2.509688  0.9681915  1.709508
-##   0.00    0.7        2.680138  0.9629406  1.817880
-##   0.00    0.8        2.970415  0.9530404  1.949865
-##   0.00    0.9        3.343108  0.9377845  2.080041
-##   0.00    1.0        3.803424  0.9158416  2.262305
+##   0.00    0.1        2.334141  0.9703115  1.645609
+##   0.00    0.2        2.309383  0.9726735  1.562914
+##   0.00    0.3        2.261289  0.9739671  1.534457
+##   0.00    0.4        2.217136  0.9751510  1.519087
+##   0.00    0.5        2.318687  0.9731028  1.593142
+##   0.00    0.6        2.506849  0.9682825  1.706405
+##   0.00    0.7        2.675114  0.9630928  1.813542
+##   0.00    0.8        2.962336  0.9532506  1.944560
+##   0.00    0.9        3.333783  0.9380572  2.074690
+##   0.00    1.0        3.790358  0.9162513  2.254608
 ##   0.01    0.1       10.063802  0.4602560  8.105926
 ##   0.01    0.2        8.529842  0.6586425  6.899677
 ##   0.01    0.3        7.144853  0.7749543  5.751698
@@ -660,9 +631,8 @@ regression, - lasso, - elastic net.
 \textbf{Answer:} the optimal elastic-net tuning parameters are the
 selected \texttt{lambda} and \texttt{fraction}.
 
-\hypertarget{d-which-model-has-the-best-predictive-ability}{%
 \subsection{(d) Which model has the best predictive
-ability?}\label{d-which-model-has-the-best-predictive-ability}}
+ability?}\label{d-which-model-has-the-best-predictive-ability}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -692,8 +662,8 @@ ability?}\label{d-which-model-has-the-best-predictive-ability}}
 ## 1 PLS         2.40    0.959
 ## 2 Lasso       4.69    0.861
 ## 3 ElasticNet  4.69    0.861
-## 4 Ridge       5.68    0.803
-## 5 LM          5.68    0.803
+## 4 LM          5.68    0.803
+## 5 Ridge       5.68    0.803
 \end{verbatim}
 
 To compare resampled distributions:
@@ -717,25 +687,25 @@ To compare resampled distributions:
 ##                Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
 ## LM         1.682484 2.116087 2.161943 2.474238 3.083070 3.327607    0
 ## PLS        1.533240 1.572268 1.644400 1.649793 1.649643 1.849416    0
-## Ridge      1.763377 2.407593 2.407842 2.377526 2.487197 2.821621    0
-## Lasso      1.278178 1.398628 1.482443 1.786130 1.717621 3.053780    0
-## ElasticNet 1.329788 1.339883 1.371867 1.518391 1.662829 1.887586    0
+## Ridge      1.763351 2.407408 2.407595 2.377451 2.487301 2.821602    0
+## Lasso      1.278183 1.398662 1.482452 1.786139 1.717617 3.053780    0
+## ElasticNet 1.329744 1.339796 1.371857 1.519087 1.662825 1.891214    0
 ## 
 ## RMSE 
 ##                Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
 ## LM         2.432179 2.697501 3.036375 3.676698 4.922797 5.294640    0
 ## PLS        1.953498 2.023573 2.195984 2.208817 2.289804 2.581229    0
-## Ridge      2.609326 3.448244 3.807463 3.571465 3.979388 4.012902    0
-## Lasso      1.770939 1.949239 1.997812 2.556941 2.357243 4.709474    0
-## ElasticNet 1.803522 1.897477 1.959831 2.214151 2.627699 2.782224    0
+## Ridge      2.609203 3.447896 3.807079 3.571313 3.979348 4.013041    0
+## Lasso      1.770975 1.949238 1.997784 2.556940 2.357226 4.709478    0
+## ElasticNet 1.803365 1.897352 1.959818 2.217136 2.627703 2.797441    0
 ## 
 ## Rsquared 
 ##                 Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
 ## LM         0.8607977 0.8699964 0.9418633 0.9209796 0.9645767 0.9676640    0
 ## PLS        0.9693971 0.9704690 0.9708953 0.9728180 0.9755778 0.9777508    0
-## Ridge      0.9233091 0.9283660 0.9421674 0.9409278 0.9515672 0.9592293    0
-## Lasso      0.8749808 0.9717348 0.9786445 0.9574745 0.9795798 0.9824324    0
-## ElasticNet 0.9646928 0.9749136 0.9750975 0.9752318 0.9761251 0.9853301    0
+## Ridge      0.9233102 0.9283618 0.9421777 0.9409317 0.9515761 0.9592325    0
+## Lasso      0.8749807 0.9717353 0.9786437 0.9574745 0.9795805 0.9824324    0
+## ElasticNet 0.9642845 0.9749158 0.9750973 0.9751510 0.9761254 0.9853321    0
 \end{verbatim}
 
 \begin{Shaded}
@@ -755,27 +725,27 @@ To compare resampled distributions:
 ## 
 ## MAE 
 ##            LM     PLS      Ridge    Lasso    ElasticNet
-## LM                 0.82444  0.09671  0.68811  0.95585  
-## PLS        0.5242          -0.72773 -0.13634  0.13140  
-## Ridge      1.0000 0.1790             0.59140  0.85914  
-## Lasso      0.5457 1.0000   0.8436             0.26774  
-## ElasticNet 0.3335 1.0000   0.1225   1.0000             
+## LM                 0.82444  0.09679  0.68810  0.95515  
+## PLS        0.5242          -0.72766 -0.13635  0.13071  
+## Ridge      1.0000 0.1791             0.59131  0.85836  
+## Lasso      0.5457 1.0000   0.8439             0.26705  
+## ElasticNet 0.3337 1.0000   0.1236   1.0000             
 ## 
 ## RMSE 
 ##            LM      PLS       Ridge     Lasso     ElasticNet
-## LM                  1.467881  0.105234  1.119757  1.462548 
-## PLS        0.63197           -1.362647 -0.348124 -0.005333 
-## Ridge      1.00000 0.16583              1.014523  1.357314 
-## Lasso      0.99476 1.00000   1.00000              0.342791 
-## ElasticNet 0.71075 1.00000   0.09737   1.00000             
+## LM                  1.467881  0.105385  1.119758  1.459562 
+## PLS        0.63197           -1.362496 -0.348123 -0.008318 
+## Ridge      1.00000 0.16591              1.014373  1.354177 
+## Lasso      0.99471 1.00000   1.00000              0.339804 
+## ElasticNet 0.71195 1.00000   0.09927   1.00000             
 ## 
 ## Rsquared 
 ##            LM      PLS       Ridge     Lasso     ElasticNet
-## LM                 -0.051838 -0.019948 -0.036495 -0.054252 
-## PLS        0.76936            0.031890  0.015344 -0.002414 
-## Ridge      1.00000 0.10855             -0.016547 -0.034304 
-## Lasso      1.00000 1.00000   1.00000             -0.017757 
-## ElasticNet 0.66070 1.00000   0.05633   1.00000
+## LM                 -0.051838 -0.019952 -0.036495 -0.054171 
+## PLS        0.76936            0.031886  0.015343 -0.002333 
+## Ridge      1.00000 0.10868             -0.016543 -0.034219 
+## Lasso      1.00000 1.00000   1.00000             -0.017676 
+## ElasticNet 0.66024 1.00000   0.05816   1.00000
 \end{verbatim}
 
 \textbf{Answer:} the best predictive model is the one with the
@@ -784,9 +754,8 @@ To compare resampled distributions:
 differences, then I would prefer the simpler or more stable model among
 the top performers.
 
-\hypertarget{e-which-model-would-i-use}{%
 \subsection{(e) Which model would I
-use?}\label{e-which-model-would-i-use}}
+use?}\label{e-which-model-would-i-use}
 
 \textbf{Direct answer:} for Tecator I would usually choose \textbf{PLS}
 unless ridge or elastic net is clearly better on the test set.
@@ -805,11 +774,9 @@ If ridge or elastic net gives materially smaller test RMSE, I would use
 that instead for pure prediction. If performance is essentially tied, I
 would still pick PLS.
 
-\hypertarget{permeability}{%
-\section{6.2 Permeability}\label{permeability}}
+\section{6.2 Permeability}\label{permeability}
 
-\hypertarget{problem-statement-1}{%
-\subsection{Problem statement}\label{problem-statement-1}}
+\subsection{Problem statement}\label{problem-statement-1}
 
 The permeability exercise uses 1,107 binary molecular fingerprint
 predictors on only 165 compounds. The book describes this data set as a
@@ -817,8 +784,7 @@ classic high-dimensional problem with sparse predictors and a skewed
 response, making it a strong candidate for filtering and latent-variable
 modeling. fileciteturn4file0L24-L26
 
-\hypertarget{a-load-the-data-1}{%
-\subsection{(a) Load the data}\label{a-load-the-data-1}}
+\subsection{(a) Load the data}\label{a-load-the-data-1}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -854,9 +820,8 @@ modeling. fileciteturn4file0L24-L26
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{b-remove-very-sparse-predictors-with-nearzerovar}{%
 \subsection{\texorpdfstring{(b) Remove very sparse predictors with
-\texttt{nearZeroVar}}{(b) Remove very sparse predictors with nearZeroVar}}\label{b-remove-very-sparse-predictors-with-nearzerovar}}
+\texttt{nearZeroVar}}{(b) Remove very sparse predictors with nearZeroVar}}\label{b-remove-very-sparse-predictors-with-nearzerovar}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -883,9 +848,8 @@ modeling. fileciteturn4file0L24-L26
 \textbf{Answer:} the number of predictors left for modeling is
 \texttt{ncol(x\_perm\_filt)}.
 
-\hypertarget{c-split-preprocess-and-tune-a-pls-model}{%
 \subsection{(c) Split, preprocess, and tune a PLS
-model}\label{c-split-preprocess-and-tune-a-pls-model}}
+model}\label{c-split-preprocess-and-tune-a-pls-model}
 
 Because the data are high-dimensional (\(p \gg n\)), ordinary least
 squares is not an attractive primary model. Chapter 6 emphasizes that
@@ -962,9 +926,8 @@ PLS is a strong alternative in exactly this kind of situation.
 \texttt{ncomp}, and the resampled estimate of \(R^2\) is the
 corresponding \texttt{Rsquared} value in the output.
 
-\hypertarget{d-predict-the-test-set-and-estimate-r2}{%
 \subsection{\texorpdfstring{(d) Predict the test set and estimate
-\(R^2\)}{(d) Predict the test set and estimate R\^{}2}}\label{d-predict-the-test-set-and-estimate-r2}}
+\(R^2\)}{(d) Predict the test set and estimate R\^{}2}}\label{d-predict-the-test-set-and-estimate-r2}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -989,9 +952,8 @@ corresponding \texttt{Rsquared} value in the output.
 \textbf{Answer:} the test-set estimate of \(R^2\) is the
 \texttt{Rsquared} value printed above.
 
-\hypertarget{e-try-other-chapter-6-models}{%
 \subsection{(e) Try other Chapter 6
-models}\label{e-try-other-chapter-6-models}}
+models}\label{e-try-other-chapter-6-models}
 
 We will compare PLS with ridge, lasso, and elastic net. A plain linear
 model is not suitable here because the original problem has far more
@@ -1047,10 +1009,10 @@ likely.
 ## # A tibble: 4 x 3
 ##   model       RMSE Rsquared
 ##   <chr>      <dbl>    <dbl>
-## 1 Lasso       9.96    0.532
-## 2 Ridge      10.3     0.560
-## 3 ElasticNet 10.8     0.458
-## 4 PLS        11.2     0.481
+## 1 Ridge       10.3    0.560
+## 2 Lasso       10.5    0.487
+## 3 ElasticNet  10.9    0.450
+## 4 PLS         11.2    0.481
 \end{verbatim}
 
 \begin{Shaded}
@@ -1070,23 +1032,23 @@ likely.
 ## MAE 
 ##                Min.  1st Qu.    Median      Mean   3rd Qu.      Max. NA's
 ## PLS        6.219190 7.605707  8.978883  8.811792 10.220910 11.034269    0
-## Ridge      8.950801 9.743070 10.128185 10.006878 10.348320 10.864012    0
-## Lasso      7.621820 8.004644  8.331757  8.598963  8.926075 10.110517    1
-## ElasticNet 7.761840 8.038931  8.456838  8.527141  9.182913  9.195185    0
+## Ridge      8.950801 9.743070 10.128185 10.005242 10.348320 10.855832    0
+## Lasso      7.197168 8.575461  9.101968 14.053323 14.579830 30.812189    1
+## ElasticNet 8.365008 8.529484  8.693961  8.693961  8.858437  9.022914    3
 ## 
 ## RMSE 
 ##                 Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA's
 ## PLS         9.039098 10.97091 11.97316 11.63672 12.75372 13.44673    0
-## Ridge      11.676698 13.15692 13.66472 13.57347 14.51572 14.85329    0
-## Lasso      10.026190 10.15836 10.52784 11.10009 11.46958 13.31849    1
-## ElasticNet 10.622543 10.65748 11.10502 11.37240 12.08972 12.38721    0
+## Ridge      11.676698 13.15692 13.66472 13.57020 14.51572 14.83691    0
+## Lasso       9.194388 10.60325 11.13404 23.54047 24.07125 62.69942    1
+## ElasticNet 10.597209 10.73678 10.87634 10.87634 11.01591 11.15548    3
 ## 
 ## Rsquared 
-##                 Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
-## PLS        0.4208595 0.4263345 0.4754682 0.5075570 0.5991815 0.6159415    0
-## Ridge      0.3451141 0.3951728 0.4934692 0.4731071 0.5186481 0.6131314    0
-## Lasso      0.4645855 0.4687302 0.4840597 0.5285329 0.5438623 0.6814267    1
-## ElasticNet 0.4136885 0.4711638 0.4842472 0.5362397 0.5986140 0.7134848    0
+##                    Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+## PLS        0.4208595374 0.4263345 0.4754682 0.5075570 0.5991815 0.6159415    0
+## Ridge      0.3453554592 0.3951728 0.4934692 0.4731554 0.5186481 0.6131314    0
+## Lasso      0.0001054162 0.3669739 0.5161360 0.4042742 0.5534363 0.5847193    1
+## ElasticNet 0.4903987675 0.5373106 0.5842224 0.5842224 0.6311342 0.6780460    3
 \end{verbatim}
 
 \begin{Shaded}
@@ -1106,24 +1068,24 @@ likely.
 ## 
 ## MAE 
 ##            PLS    Ridge   Lasso   ElasticNet
-## PLS               -1.1951  0.8610  0.2847   
-## Ridge      0.8884          1.6719  1.4797   
-## Lasso      1.0000 0.5741          -0.1195   
-## ElasticNet 1.0000 0.0210  1.0000            
+## PLS               -1.1935 -5.5938  0.6260   
+## Ridge      0.8898         -4.0788  1.3517   
+## Lasso      1.0000 1.0000          -0.5109   
+## ElasticNet 1.0000 1.0000  1.0000            
 ## 
 ## RMSE 
-##            PLS      Ridge    Lasso    ElasticNet
-## PLS                 -1.9367   1.1860   0.2643   
-## Ridge      0.181762           2.9476   2.2011   
-## Lasso      1.000000 0.281484          -0.4598   
-## ElasticNet 1.000000 0.009394 1.000000           
+##            PLS     Ridge    Lasso    ElasticNet
+## PLS                 -1.9335 -12.1830   1.3325  
+## Ridge      0.18147          -10.2067   2.5345  
+## Lasso      1.00000 1.00000            -0.6816  
+## ElasticNet 1.00000 0.03803  1.00000            
 ## 
 ## Rsquared 
-##            PLS Ridge    Lasso    ElasticNet
-## PLS             0.03445 -0.04388 -0.02868  
-## Ridge      1            -0.09043 -0.06313  
-## Lasso      1   1                 -0.02398  
-## ElasticNet 1   1        1
+##            PLS    Ridge    Lasso    ElasticNet
+## PLS                0.03440  0.11131 -0.06582  
+## Ridge      1.0000           0.08838 -0.07816  
+## Lasso      1.0000 1.0000            -0.02036  
+## ElasticNet 0.2155 1.0000   1.0000
 \end{verbatim}
 
 \textbf{Answer:} whichever model is at the top of
@@ -1131,9 +1093,8 @@ likely.
 In many high-dimensional chemistry problems, \textbf{PLS} or
 \textbf{elastic net} tends to do very well.
 
-\hypertarget{f-would-i-recommend-replacing-the-experiment}{%
 \subsection{(f) Would I recommend replacing the
-experiment?}\label{f-would-i-recommend-replacing-the-experiment}}
+experiment?}\label{f-would-i-recommend-replacing-the-experiment}
 
 \textbf{Direct answer:} probably \textbf{not as a full replacement}
 unless the test-set performance is extremely strong and the prediction
@@ -1148,12 +1109,10 @@ So my recommendation would be: - use the model to \textbf{prioritize}
 compounds, - send the most promising molecules to the assay, - keep
 collecting new assay data and periodically retrain the model.
 
-\hypertarget{chemical-manufacturing-process}{%
 \section{6.3 Chemical manufacturing
-process}\label{chemical-manufacturing-process}}
+process}\label{chemical-manufacturing-process}
 
-\hypertarget{problem-statement-2}{%
-\subsection{Problem statement}\label{problem-statement-2}}
+\subsection{Problem statement}\label{problem-statement-2}
 
 This exercise studies 57 predictors (12 biological/raw-material
 variables and 45 process variables) for 176 manufacturing runs, with
@@ -1162,8 +1121,7 @@ prediction but also which variables are actionable for improving yield.
 The exercise text makes that distinction explicit.
 fileciteturn2file14L1-L20
 
-\hypertarget{a-load-the-data-2}{%
-\subsection{(a) Load the data}\label{a-load-the-data-2}}
+\subsection{(a) Load the data}\label{a-load-the-data-2}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1241,8 +1199,7 @@ The exercise text makes that distinction explicit.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{b-impute-missing-values}{%
-\subsection{(b) Impute missing values}\label{b-impute-missing-values}}
+\subsection{(b) Impute missing values}\label{b-impute-missing-values}
 
 The problem explicitly tells us that a small percentage of predictor
 cells are missing. The simplest reasonable Chapter 6-compatible workflow
@@ -1340,9 +1297,8 @@ small, I prefer \textbf{kNN imputation}.
 \textbf{Answer:} missing values are filled using k-nearest-neighbor
 imputation.
 
-\hypertarget{c-split-preprocess-and-tune-a-model-from-chapter-6}{%
 \subsection{(c) Split, preprocess, and tune a model from Chapter
-6}\label{c-split-preprocess-and-tune-a-model-from-chapter-6}}
+6}\label{c-split-preprocess-and-tune-a-model-from-chapter-6}
 
 My model choice here is \textbf{elastic net} because: - there may be
 correlated process variables, - the sample size is not large, -
@@ -1464,9 +1420,8 @@ correlated process data.
 chosen elastic-net model, the optimal tuning parameters are the selected
 \texttt{lambda} and \texttt{fraction}.
 
-\hypertarget{d-predict-the-test-set-and-compare-with-resampling}{%
 \subsection{(d) Predict the test set and compare with
-resampling}\label{d-predict-the-test-set-and-compare-with-resampling}}
+resampling}\label{d-predict-the-test-set-and-compare-with-resampling}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1494,17 +1449,15 @@ resampling}\label{d-predict-the-test-set-and-compare-with-resampling}}
 RMSE: - if they are close, the model generalized well; - if the test
 RMSE is much worse, the model was probably overfit.
 
-\hypertarget{e-which-predictors-are-most-important-do-biological-or-process-variables-dominate}{%
 \subsection{(e) Which predictors are most important? Do biological or
 process variables
-dominate?}\label{e-which-predictors-are-most-important-do-biological-or-process-variables-dominate}}
+dominate?}\label{e-which-predictors-are-most-important-do-biological-or-process-variables-dominate}
 
 For PLS, variable importance can be estimated through VIP; for the
 elastic net, coefficient magnitude after standardization is an
 interpretable proxy.
 
-\hypertarget{pls-vip}{%
-\subsubsection{PLS VIP}\label{pls-vip}}
+\subsubsection{PLS VIP}\label{pls-vip}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1534,9 +1487,8 @@ interpretable proxy.
 ## 15 BiologicalMaterial01    1.32
 \end{verbatim}
 
-\hypertarget{elastic-net-standardized-coefficients}{%
 \subsubsection{Elastic-net standardized
-coefficients}\label{elastic-net-standardized-coefficients}}
+coefficients}\label{elastic-net-standardized-coefficients}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1644,9 +1596,8 @@ variables, the code below will tag them accordingly.
 variables dominates the importance list. From a business perspective,
 process variables are especially valuable because they are actionable.
 
-\hypertarget{f-explore-the-relationships-between-top-predictors-and-yield}{%
 \subsection{(f) Explore the relationships between top predictors and
-yield}\label{f-explore-the-relationships-between-top-predictors-and-yield}}
+yield}\label{f-explore-the-relationships-between-top-predictors-and-yield}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1708,12 +1659,10 @@ yield}\label{f-explore-the-relationships-between-top-predictors-and-yield}}
 So the practical value of the model is not only prediction; it is also
 prioritizing controllable levers for yield improvement.
 
-\hypertarget{final-answers-in-plain-english}{%
 \section{Final answers in plain
-English}\label{final-answers-in-plain-english}}
+English}\label{final-answers-in-plain-english}
 
-\hypertarget{tecator}{%
-\subsection{6.1 Tecator}\label{tecator}}
+\subsection{6.1 Tecator}\label{tecator}
 
 \begin{itemize}
 \tightlist
@@ -1728,8 +1677,7 @@ English}\label{final-answers-in-plain-english}}
   are tied, I would use PLS.
 \end{itemize}
 
-\hypertarget{permeability-1}{%
-\subsection{6.2 Permeability}\label{permeability-1}}
+\subsection{6.2 Permeability}\label{permeability-1}
 
 \begin{itemize}
 \tightlist
@@ -1745,8 +1693,7 @@ English}\label{final-answers-in-plain-english}}
   exceptionally small.
 \end{itemize}
 
-\hypertarget{chemical-manufacturing}{%
-\subsection{6.3 Chemical manufacturing}\label{chemical-manufacturing}}
+\subsection{6.3 Chemical manufacturing}\label{chemical-manufacturing}
 
 \begin{itemize}
 \tightlist
@@ -1763,8 +1710,7 @@ English}\label{final-answers-in-plain-english}}
   useful because those variables are controllable.
 \end{itemize}
 
-\hypertarget{session-info}{%
-\section{Session info}\label{session-info}}
+\section{Session info}\label{session-info}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1773,19 +1719,19 @@ English}\label{final-answers-in-plain-english}}
 \end{Shaded}
 
 \begin{verbatim}
-## R version 4.2.2 Patched (2022-11-10 r83330)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Debian GNU/Linux 12 (bookworm)
+## R version 4.5.2 (2025-10-31)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Sequoia 15.1
 ## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.11.0
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.11.0
+## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
 ## 
 ## locale:
-##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
-##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
-##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
-## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/Los_Angeles
+## tzcode source: internal
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
@@ -1795,34 +1741,35 @@ English}\label{final-answers-in-plain-english}}
 ##  [3] dplyr_1.2.0                     pROC_1.19.0.1                  
 ##  [5] pls_2.9-0                       elasticnet_1.3                 
 ##  [7] lars_1.3                        AppliedPredictiveModeling_1.1-7
-##  [9] caret_7.0-1                     lattice_0.20-45                
+##  [9] caret_7.0-1                     lattice_0.22-7                 
 ## [11] ggplot2_4.0.2                  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.1.1           rpart.plot_3.1.4     lubridate_1.9.5     
-##  [4] listenv_0.10.1       class_7.3-21         utf8_1.2.6          
-##  [7] digest_0.6.39        ipred_0.9-15         foreach_1.5.2       
-## [10] parallelly_1.46.1    R6_2.6.1             plyr_1.8.9          
-## [13] hardhat_1.4.2        stats4_4.2.2         ellipse_0.5.0       
-## [16] evaluate_1.0.5       pillar_1.11.1        rlang_1.1.7         
-## [19] data.table_1.18.2.1  rpart_4.1.19         Matrix_1.5-3        
-## [22] rmarkdown_2.31       labeling_0.4.3       splines_4.2.2       
-## [25] gower_1.0.2          stringr_1.6.0        S7_0.2.1            
-## [28] compiler_4.2.2       xfun_0.56            pkgconfig_2.0.3     
-## [31] mgcv_1.8-41          globals_0.19.1       htmltools_0.5.9     
-## [34] nnet_7.3-18          tidyselect_1.2.1     tibble_3.3.1        
-## [37] prodlim_2026.03.11   RANN_2.6.2           CORElearn_1.57.3.1  
-## [40] codetools_0.2-19     future_1.70.0        withr_3.0.2         
-## [43] MASS_7.3-58.2        recipes_1.3.1        ModelMetrics_1.2.2.2
-## [46] grid_4.2.2           nlme_3.1-162         gtable_0.3.6        
-## [49] lifecycle_1.0.5      magrittr_2.0.4       scales_1.4.0        
-## [52] future.apply_1.20.2  cli_3.6.5            stringi_1.8.7       
-## [55] farver_2.1.2         reshape2_1.4.5       timeDate_4052.112   
-## [58] generics_0.1.4       vctrs_0.7.1          lava_1.8.2          
-## [61] RColorBrewer_1.1-3   iterators_1.0.14     tools_4.2.2         
-## [64] glue_1.8.0           purrr_1.2.1          plotrix_3.8-14      
-## [67] parallel_4.2.2       fastmap_1.2.0        survival_3.5-3      
-## [70] yaml_2.3.12          timechange_0.4.0     cluster_2.1.4
+##  [1] ellipse_0.5.0        gtable_0.3.6         xfun_0.56           
+##  [4] recipes_1.3.1        vctrs_0.7.1          tools_4.5.2         
+##  [7] generics_0.1.4       stats4_4.5.2         parallel_4.5.2      
+## [10] tibble_3.3.1         cluster_2.1.8.2      pkgconfig_2.0.3     
+## [13] ModelMetrics_1.2.2.2 Matrix_1.7-4         data.table_1.18.2.1 
+## [16] RColorBrewer_1.1-3   S7_0.2.1             lifecycle_1.0.5     
+## [19] compiler_4.5.2       farver_2.1.2         stringr_1.6.0       
+## [22] codetools_0.2-20     htmltools_0.5.9      class_7.3-23        
+## [25] yaml_2.3.12          prodlim_2025.04.28   pillar_1.11.1       
+## [28] MASS_7.3-65          gower_1.0.2          CORElearn_1.57.3.1  
+## [31] iterators_1.0.14     rpart_4.1.24         foreach_1.5.2       
+## [34] nlme_3.1-168         parallelly_1.46.1    lava_1.8.2          
+## [37] tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
+## [40] future_1.69.0        reshape2_1.4.5       purrr_1.2.1         
+## [43] listenv_0.10.0       labeling_0.4.3       splines_4.5.2       
+## [46] fastmap_1.2.0        grid_4.5.2           cli_3.6.5           
+## [49] magrittr_2.0.4       utf8_1.2.6           survival_3.8-6      
+## [52] future.apply_1.20.1  withr_3.0.2          scales_1.4.0        
+## [55] plotrix_3.8-14       lubridate_1.9.5      timechange_0.4.0    
+## [58] rmarkdown_2.30       globals_0.19.0       otel_0.2.0          
+## [61] rpart.plot_3.1.4     nnet_7.3-20          timeDate_4052.112   
+## [64] RANN_2.6.2           evaluate_1.0.5       hardhat_1.4.2       
+## [67] mgcv_1.9-4           rlang_1.1.7          Rcpp_1.1.1          
+## [70] glue_1.8.0           ipred_0.9-15         R6_2.6.1            
+## [73] plyr_1.8.9
 \end{verbatim}
 
 \end{document}
