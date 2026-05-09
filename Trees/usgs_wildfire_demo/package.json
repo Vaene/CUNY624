@@ -1,0 +1,26 @@
+{
+  "name": "usgs-wildfire-demo",
+  "private": true,
+  "scripts": {
+    "sync": "bash scripts/sync-public.sh",
+    "sync:watch": "node scripts/sync-watch.mjs",
+    "dev:watch": "node scripts/dev-watch.mjs",
+    "predev": "npm run sync",
+    "dev": "next dev",
+    "prebuild": "npm run sync",
+    "build": "next build",
+    "start": "next start",
+    "deploy:s3": "bash scripts/deploy-s3.sh"
+  },
+  "dependencies": {
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.8.0"
+  }
+}
