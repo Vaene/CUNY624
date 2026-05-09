@@ -3,6 +3,11 @@
 .RData
 .Ruserdata
 .DS_Store
+**/.Rproj.user/
+**/.next/
+**/.nest/
+**/node_modules/
+**/artifacts/
 Trees/usgs_wildfire_demo/artifacts/Trees.zip
 Trees/usgs_wildfire_demo/data/*.zip
 Trees/usgs_wildfire_demo/data/extracted/
