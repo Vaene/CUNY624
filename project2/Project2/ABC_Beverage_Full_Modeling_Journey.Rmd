@@ -1,0 +1,338 @@
+---
+title: "ABC Beverage - Full Data & Modeling Journey"
+author: "Randy Howk"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 4,
+  dpi = 144,
+  fig.align = "center"
+)
+
+
+library(tidyverse)
+library(caret)
+library(glmnet)
+library(randomForest)
+library(gbm)
+library(janitor)
+library(corrplot)
+
+theme_set(
+  theme_classic(base_size = 11) +
+    theme(
+      panel.grid = element_blank(),
+      legend.position = "top",
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      axis.title.y = element_text(margin = margin(r = 6)),
+      axis.title.x = element_text(margin = margin(t = 6)),
+      axis.text = element_blank(),
+      axis.line = element_blank(),
+      axis.ticks = element_blank(),
+      strip.background = element_blank(),
+      strip.text = element_text(face = "plain")
+    )
+)
+
+update_geom_defaults("line", list(linewidth = 0.45))
+update_geom_defaults("point", list(size = 1.2))
+
+```
+
+# 1. Introduction
+
+This report documents the complete analytical journey undertaken to understand, prepare, and model the factors influencing beverage pH. The objective was not only to build an accurate predictive model, but to justify each decision made along the way using both domain knowledge and data-driven evidence.
+
+# 2. Data Preparation Journey
+
+## 2.1 Problem Framing
+
+We began by asking:
+
+- What physically drives pH in the manufacturing process?
+- Which variables are redundant or noisy?
+- What data issues (missing values, outliers) might distort modeling?
+
+Based on process understanding, pH is driven by CO₂ dissolution, influenced by:
+- Carb Volume
+- Pressure
+- Temperature
+- Flow rate
+- Filling conditions
+
+---
+
+## 2.2 Handling Missing Values
+
+### Options Considered:
+- Drop all rows with missing values
+- Impute missing values
+
+### Findings:
+Dropping rows significantly reduced dataset size.
+
+### Final Decision:
+- Drop rows missing pH
+- Impute predictors using median
+
+### Justification:
+Preserves dataset size while avoiding bias from extreme values.
+
+```{r}
+data <- read.csv("StudentData.xlsx") %>% clean_names()
+data <- data %>% drop_na(ph)
+
+preproc <- preProcess(data, method = "medianImpute")
+data <- predict(preproc, data)
+```
+
+---
+
+## 2.3 Outlier Treatment
+
+### Options Considered:
+- Keep all data
+- Remove extreme values
+
+### Findings:
+Extreme values distorted model behavior.
+
+### Final Decision:
+Remove values beyond ±3 standard deviations.
+
+### Justification:
+Likely sensor errors or rare anomalies.
+
+```{r}
+numeric_vars <- data %>% select(where(is.numeric))
+z_scores <- scale(numeric_vars)
+data <- data[apply(abs(z_scores) < 3, 1, all), ]
+```
+
+---
+
+## 2.4 Multicollinearity
+
+### Options Considered:
+- Keep all variables
+- Remove highly correlated ones
+
+### Findings:
+Strong correlations among pressure, CO₂, and control variables.
+
+### Final Decision:
+Remove variables with correlation > 0.85.
+
+### Justification:
+Improves model stability and interpretability.
+
+```{r}
+cor_matrix <- cor(data %>% select(where(is.numeric)))
+corrplot(cor_matrix, method="color")
+
+high_corr <- findCorrelation(cor_matrix, cutoff = 0.85)
+data <- data[, -high_corr]
+```
+
+---
+
+## 2.5 Train/Test Split
+
+```{r}
+set.seed(123)
+trainIndex <- createDataPartition(data$ph, p = 0.8, list = FALSE)
+train <- data[trainIndex, ]
+test  <- data[-trainIndex, ]
+```
+
+---
+
+# 3. Modeling Journey
+
+## Strategy
+
+We progressed from:
+1. Simple linear models
+2. Regularized models
+3. Nonlinear models
+
+---
+
+## 3.1 Linear Regression
+
+### Purpose:
+Baseline and interpretability
+
+```{r}
+lm_model <- lm(ph ~ ., data=train)
+lm_pred <- predict(lm_model, test)
+```
+
+### Outcome:
+- Captured direction of relationships
+- Poor predictive accuracy
+
+---
+
+## 3.2 Ridge Regression
+
+### Purpose:
+Handle multicollinearity
+
+```{r}
+x_train <- model.matrix(ph ~ ., train)[,-1]
+y_train <- train$ph
+x_test  <- model.matrix(ph ~ ., test)[,-1]
+
+ridge <- cv.glmnet(x_train, y_train, alpha=0)
+ridge_pred <- predict(ridge, s="lambda.min", newx=x_test)
+```
+
+### Outcome:
+- Stable coefficients
+- No feature reduction
+- Minimal performance improvement
+
+---
+
+## 3.3 LASSO Regression
+
+### Purpose:
+Feature selection
+
+```{r}
+lasso <- cv.glmnet(x_train, y_train, alpha=1)
+lasso_pred <- predict(lasso, s="lambda.min", newx=x_test)
+```
+
+### Outcome:
+- Reduced variables to key drivers
+- Still limited by linear assumptions
+
+---
+
+## Turning Point
+
+We recognized:
+pH behavior is governed by nonlinear chemistry → linear models insufficient.
+
+---
+
+## 3.4 Random Forest
+
+### Purpose:
+Capture nonlinear interactions
+
+```{r}
+rf_model <- randomForest(ph ~ ., data=train, ntree=500)
+rf_pred <- predict(rf_model, test)
+```
+
+### Outcome:
+- Significant performance improvement
+- Captured interactions
+
+---
+
+## 3.5 Gradient Boosting
+
+### Purpose:
+Optimize predictive performance
+
+```{r}
+gbm_model <- gbm(
+  ph ~ ., data=train,
+  distribution="gaussian",
+  n.trees=500,
+  interaction.depth=4,
+  shrinkage=0.05,
+  verbose=FALSE
+)
+
+gbm_pred <- predict(gbm_model, test, n.trees=500)
+```
+
+### Outcome:
+- Best accuracy
+- Captures complex nonlinear patterns
+
+---
+
+# 4. Model Comparison
+
+```{r}
+results <- tibble(
+  Model = c("Linear","Ridge","LASSO","Random Forest","Boosting"),
+  RMSE = c(
+    RMSE(lm_pred, test$ph),
+    RMSE(ridge_pred, test$ph),
+    RMSE(lasso_pred, test$ph),
+    RMSE(rf_pred, test$ph),
+    RMSE(gbm_pred, test$ph)
+  )
+)
+
+results %>% arrange(RMSE)
+```
+
+---
+
+# 5. Final Model Selection
+
+Gradient Boosting selected due to:
+- Lowest RMSE
+- Captures nonlinear process dynamics
+- Strong generalization
+
+---
+
+# 6. Export Predictions
+
+```{r}
+predictions <- data.frame(
+  Actual = test$ph,
+  Predicted = gbm_pred
+)
+
+write.csv(predictions, "ph_predictions.csv", row.names=FALSE)
+```

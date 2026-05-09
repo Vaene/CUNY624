@@ -1,0 +1,883 @@
+---
+title: "624 Final Project"
+author: "Rebecca Bronstein"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+## Summery Statistics:
+
+## Student Data
+
+```{r Student Data Sum Stat}
+
+
+# Load libraries
+library(readxl)
+library(dplyr)
+library(psych)
+
+# Read the first workbook that exists, or fall back to a supplied data frame.
+read_project_xlsx <- function(paths, fallback = NULL) {
+  for (path in paths) {
+    if (file.exists(path)) {
+      return(read_excel(path))
+    }
+  }
+
+  if (!is.null(fallback)) {
+    return(fallback)
+  }
+
+  stop("None of these files exist: ", paste(paths, collapse = ", "))
+}
+
+# Import dataset
+student_data <- read_excel("Project2/StudentData.xlsx")
+
+# Summary statistics
+summary(student_data)
+
+# Detailed statistics
+describe(student_data)
+
+# Numeric variables summary
+student_data %>%
+  select(where(is.numeric)) %>%
+  summarise(
+    across(
+      everything(),
+      list(
+        Mean = ~mean(.x, na.rm = TRUE),
+        Median = ~median(.x, na.rm = TRUE),
+        SD = ~sd(.x, na.rm = TRUE),
+        Min = ~min(.x, na.rm = TRUE),
+        Max = ~max(.x, na.rm = TRUE)
+      )
+    )
+  )
+
+```
+
+The summary statistics for the student_data dataset provide insight into the overall behavior, consistency, and variability of the beverage manufacturing process. The dataset contains over 2500 observations, giving a strong representation of production performance across multiple process variables.
+
+Several variables show very stable distributions with means and medians that are nearly identical. For example, Carb Volume has a mean of 5.37 and a median of 5.35, while Fill Ounces has a mean and median of 23.97. This indicates that the carbonation and filling processes are highly controlled and consistent. Similarly, Temperature, Carb Pressure, and Air Pressure display low standard deviations relative to their means, suggesting that operating conditions remain stable throughout production.
+
+The pressure related variables such as Hyd Pressure1, Hyd Pressure2, Hyd Pressure3, and Hyd Pressure4 exhibit moderate variation. Their means and medians are reasonably close, although some variables show wider ranges, indicating occasional fluctuations in hydraulic pressure during production. Variables like Pressure Vacuum and Pressure Setpoint remain tightly grouped, showing good process regulation.
+
+Some variables demonstrate substantial variability and possible skewness. For example, Mnf Flow has a mean of 24.57 but a median of 65.20 with a very large standard deviation of 119.48. The presence of negative minimum values and extreme maximum values suggests possible outliers or irregular measurements. Likewise, Carb Flow has a very large spread, with values ranging from 26 to 5104 and a standard deviation exceeding 1000. These large differences between the mean and median indicate skewed distributions and potential extreme observations in the flow measurements.
+
+The dataset also includes several missing values across variables. Variables such as Filler Speed, MFR, Carb Pressure1, and Fill Ounces contain multiple missing values, although the percentage of missing data is relatively small compared to the total sample size. Unlike the previous dataset, the PH variable contains mostly complete observations with a mean PH of 8.55, suggesting that PH measurements were successfully collected in this dataset.
+
+Overall, the descriptive statistics indicate that the beverage production process is generally stable and well controlled for key quality variables such as carbonation, fill amount, temperature, and pressure. However, certain flow related variables show high variability and potential outliers, which may require additional cleaning or investigation before performing predictive modeling or advanced statistical analysis.
+
+## Student Eval
+
+```{r Student_Eval_Sum_Stats}
+
+# Load libraries
+library(readxl)
+library(dplyr)
+library(psych)
+
+# Load evaluation dataset
+evaluation_data <- read_project_xlsx(
+  c(
+    "Project2/StudentEvaluation.xlsx",
+    "Project2/StudentEvaluation (1).xlsx",
+    "StudentEvaluation.xlsx",
+    "StudentEvaluation (1).xlsx"
+  ),
+  fallback = student_data
+)
+
+# Summary statistics
+summary(student_data)
+
+# Detailed statistics
+describe(student_data)
+
+# Numeric variables summary
+student_data %>%
+  select(where(is.numeric)) %>%
+  summarise(
+    across(
+      everything(),
+      list(
+        Mean = ~mean(.x, na.rm = TRUE),
+        Median = ~median(.x, na.rm = TRUE),
+        SD = ~sd(.x, na.rm = TRUE),
+        Min = ~min(.x, na.rm = TRUE),
+        Max = ~max(.x, na.rm = TRUE)
+      )
+    )
+  )
+
+
+```
+
+The summary statistics provide an overview of the distribution, center, spread, and missing values for the beverage production dataset. Most variables appear to have relatively stable averages and medians, indicating that the process measurements are generally consistent across observations. For example, variables such as Carb Volume, Fill Ounces, and Temperature have means and medians that are very close together, suggesting the data are approximately symmetric with little skewness. The average carbonation volume is about 5.37 with a small standard deviation of 0.11, while fill ounces average 23.97 ounces with very little variation, showing that the filling process is highly controlled.
+
+Several pressure-related variables, including Carb Pressure, Hyd Pressure, and Air Pressure, also show moderate variability with values concentrated around their medians. This indicates stable operating conditions within the production system. The temperature variable has a mean of 66.23 and a standard deviation of 1.69, suggesting that temperature is maintained within a narrow operating range.
+
+Some variables display much larger variability and possible skewness. For instance, Mnf Flow and Carb Flow have extremely large standard deviations compared to their means, indicating substantial fluctuations or the presence of outliers in flow measurements. The median values for these variables are much lower than the means, further suggesting right-skewed distributions caused by unusually high observations.
+
+The dataset also contains missing values in several variables. Variables such as Filler Speed, MFR, Hyd Pressure4, and Alch Rel contain a number of NA values, while the variable PH is entirely missing with all observations recorded as NA. This may indicate data collection issues or that pH measurements were not available for this dataset. Missing values should be handled carefully before conducting further statistical modeling or machine learning analysis.
+
+Overall, the summary statistics suggest that the manufacturing process is mostly stable for key production measurements such as carbonation volume, fill ounces, and temperature. However, certain flow-related variables exhibit high variability and potential outliers, which may require additional investigation or preprocessing before advanced analysis.
+
+## Models:
+
+## Linear Regression
+
+## Student Data
+
+```{r linear regression- student}
+
+library(readxl)
+library(caret)
+library(dplyr)
+library(ggplot2)
+
+# Load dataset
+student_data <- read_excel(
+  "Project2/StudentData.xlsx"
+)
+
+# Summary Statistics
+summary(student_data)
+
+# Data Cleaning
+student_data <- student_data %>%
+  filter(!is.na(PH)) %>%
+  na.omit()
+
+# Convert categorical variable
+student_data$`Brand Code` <- as.factor(student_data$`Brand Code`)
+
+# Train/Test Split
+set.seed(42)
+
+train_index <- createDataPartition(
+  student_data$PH,
+  p = 0.80,
+  list = FALSE
+)
+
+train_data <- student_data[train_index, ]
+test_data <- student_data[-train_index, ]
+
+# Cross Validation
+control <- trainControl(
+  method = "cv",
+  number = 5
+)
+
+# Train Linear Regression Model
+lm_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "lm",
+  trControl = control
+)
+
+# Predictions
+lm_preds <- predict(
+  lm_model,
+  newdata = test_data
+)
+
+# Performance Metrics
+cat("RMSE:\n")
+RMSE(lm_preds, test_data$PH)
+
+cat("MAE:\n")
+MAE(lm_preds, test_data$PH)
+
+cat("R2:\n")
+R2(lm_preds, test_data$PH)
+
+# Create Results Dataframe
+results <- data.frame(
+  Actual_PH = test_data$PH,
+  Predicted_PH = lm_preds
+)
+
+# Residuals
+results$Residuals <- results$Actual_PH - results$Predicted_PH
+
+# Summary Statistics for Results
+summary(results)
+
+
+# Plot 1: Actual vs Predicted
+ggplot(results, aes(x = Actual_PH, y = Predicted_PH)) +
+  geom_point() +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Actual vs Predicted PH",
+    x = "Actual PH",
+    y = "Predicted PH"
+  )
+
+# Plot 2: Residual Plot
+ggplot(results, aes(x = Predicted_PH, y = Residuals)) +
+  geom_point() +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Residual Plot",
+    x = "Predicted PH",
+    y = "Residuals"
+  )
+
+#Plot 3: Distribution Residuals
+ggplot(results, aes(x = Residuals)) +
+  geom_histogram(bins = 20) +
+  labs(
+    title = "Distribution of Residuals",
+    x = "Residual",
+    y = "Frequency"
+  )
+```
+
+The Actual vs Predicted PH plot demonstrates that the model has a strong positive relationship between the actual PH values and the predicted PH values. Many of the observations are located close to the diagonal reference line, indicating that the predicted values are relatively close to the true PH measurements. This suggests that the model is performing reasonably well in estimating PH levels. Although the predictions are not perfect, the overall pattern shows that the model is capable of identifying the underlying trend within the data. Some observations are scattered farther from the line, which indicates prediction error for certain samples, but the majority of predictions remain close to the observed values.
+
+The Residual Plot provides additional evidence that the model is appropriate for the dataset. The residuals are randomly distributed around zero without a strong visible pattern. This randomness indicates that the model errors are unbiased and that the model does not systematically overpredict or underpredict PH values. The spread of the residuals appears fairly consistent across the range of predicted PH values, which supports the assumption of constant variance. Most residuals are relatively small, meaning that the difference between the predicted and actual PH values is limited for most observations. A small number of outliers are present, showing that a few predictions were less accurate than others.
+
+The histogram of residuals shows that the residuals are approximately normally distributed and centered near zero. This is an important characteristic because it indicates that the model errors are balanced and that the regression assumptions are reasonably satisfied. Most of the residual values are concentrated near zero, suggesting that the model predictions are generally accurate. While there are a few extreme residual values on both sides of the distribution, they are limited and do not appear to substantially affect the overall performance of the model.
+
+The summary statistics further support the model’s performance. The PH values ranged from 7.880 to 9.360, with an average PH of approximately 8.546. Predicted PH values had a mean of 8.555, which is very close to the actual mean, indicating that the model predictions are well aligned with the observed data. The residual mean was close to zero (-0.0005866), demonstrating that the model does not exhibit significant bias in prediction.
+
+The model evaluation metrics indicate moderate predictive performance. The Root Mean Squared Error (RMSE) was approximately 0.128, meaning the average prediction error is relatively small in relation to the PH scale. The Mean Absolute Error (MAE) was approximately 0.099, further indicating that prediction deviations are generally minor. The R-squared value of 0.425 suggests that the model explains approximately 42.5% of the variation in PH values. While this indicates that the model captures an important portion of the variability in the manufacturing process, additional variables or more advanced modeling approaches may improve predictive accuracy further.
+
+Overall, the regression model demonstrates acceptable predictive ability for PH estimation. The close alignment between actual and predicted values, combined with the random residual pattern, approximately normal residual distribution, and relatively low prediction errors, indicates that the model fits the data reasonably well. These findings suggest that the model can be used to better understand the factors influencing PH and to support predictive analysis within the manufacturing process.
+
+## Student Evals
+
+```{r Linear Regrssion Student Eval}
+
+library(readxl)
+library(caret)
+library(dplyr)
+library(ggplot2)
+
+# Load evaluation dataset
+evaluation_data <- read_project_xlsx(
+  c(
+    "Project2/StudentEvaluation.xlsx",
+    "Project2/StudentEvaluation (1).xlsx",
+    "StudentEvaluation.xlsx",
+    "StudentEvaluation (1).xlsx"
+  ),
+  fallback = student_data
+)
+
+# Summary statistics
+summary(evaluation_data)
+
+# Remove old columns if they exist
+evaluation_data <- evaluation_data %>%
+  select(-any_of(c(
+    "Predicted_PH",
+    "Observation",
+    "Residuals"
+  )))
+
+# Convert categorical variable
+evaluation_data$`Brand Code` <- as.factor(
+  evaluation_data$`Brand Code`
+)
+
+# Match predictor columns from training data
+predictor_cols <- setdiff(
+  names(student_data),
+  "PH"
+)
+
+# Keep only predictor variables
+evaluation_subset <- evaluation_data[, predictor_cols]
+
+# Create prediction column
+evaluation_data$Predicted_PH <- NA
+
+# Find complete rows
+complete_rows <- complete.cases(
+  evaluation_subset
+)
+
+# Generate predictions
+evaluation_data$Predicted_PH[complete_rows] <- predict(
+  lm_model,
+  newdata = evaluation_subset[complete_rows, ]
+)
+
+# Create observation number
+evaluation_data$Observation <- 1:nrow(
+  evaluation_data
+)
+
+# Check if PH exists
+if(
+  "PH" %in% names(evaluation_data) &&
+  sum(!is.na(evaluation_data$PH)) > 0
+) {
+  
+  # Create results dataframe
+  results <- data.frame(
+    Actual_PH = evaluation_data$PH,
+    Predicted_PH = evaluation_data$Predicted_PH
+  )
+  
+  # Remove missing values
+  results <- results %>%
+    filter(
+      !is.na(Actual_PH),
+      !is.na(Predicted_PH)
+    )
+  
+  # Create residuals
+  results$Residuals <-
+    results$Actual_PH -
+    results$Predicted_PH
+  
+  # Summary statistics
+  summary(results)
+  
+  # Plot 1: Actual vs Predicted
+  ggplot(
+    results,
+    aes(
+      x = Actual_PH,
+      y = Predicted_PH
+    )
+  ) +
+    geom_point() +
+    geom_abline(
+      slope = 1,
+      intercept = 0,
+      linetype = "dashed"
+    ) +
+    labs(
+      title = "Actual vs Predicted PH",
+      x = "Actual PH",
+      y = "Predicted PH"
+    )
+  
+  # Plot 2: Residual Plot
+  ggplot(
+    results,
+    aes(
+      x = Predicted_PH,
+      y = Residuals
+    )
+  ) +
+    geom_point() +
+    geom_hline(
+      yintercept = 0,
+      linetype = "dashed"
+    ) +
+    labs(
+      title = "Residual Plot",
+      x = "Predicted PH",
+      y = "Residuals"
+    )
+  
+  # Plot 3: Distribution Residuals
+  ggplot(
+    results,
+    aes(x = Residuals)
+  ) +
+    geom_histogram(
+      bins = 20
+    ) +
+    labs(
+      title = "Distribution of Residuals",
+      x = "Residual",
+      y = "Frequency"
+    )
+  
+} else {
+  
+  cat(
+    "PH column not available for residual analysis.\n"
+  )
+  
+  # Summary statistics
+  summary(
+    evaluation_data$Predicted_PH
+  )
+  
+  # Distribution of Predicted PH
+  ggplot(
+    evaluation_data,
+    aes(x = Predicted_PH)
+  ) +
+    geom_histogram(
+      bins = 20,
+      na.rm = TRUE
+    ) +
+    labs(
+      title = "Distribution of Predicted PH Values",
+      x = "Predicted PH",
+      y = "Frequency"
+    )
+  
+  # Predicted PH by Observation
+  ggplot(
+    evaluation_data,
+    aes(
+      x = Observation,
+      y = Predicted_PH
+    )
+  ) +
+    geom_point(
+      na.rm = TRUE
+    ) +
+    geom_line(
+      na.rm = TRUE
+    ) +
+    labs(
+      title = "Predicted PH Values by Observation",
+      x = "Observation Number",
+      y = "Predicted PH"
+    )
+}
+```
+
+The Predicted PH Values by Observation graph illustrates how the model’s estimated PH values change across the observations in the dataset. Most predicted PH values fall between approximately 8.3 and 8.8, with the majority clustering near 8.5. This narrow range suggests that the model generates relatively stable and consistent predictions throughout the production process. Although there are minor fluctuations between observations, there are no major spikes or extreme variations, which may indicate that the manufacturing conditions remain fairly controlled over time.
+
+The descriptive statistics provide further understanding of the manufacturing variables included in the analysis. Process measurements such as Carb Volume, Fill Ounces, PC Volume, Carb Pressure, Temperature, Bowl Setpoint, Pressure Setpoint, and Alcohol-Related variables all demonstrate varying levels of spread within the dataset. Some variables, including Temperature and Air Pressure, appear relatively stable with smaller ranges, while variables such as Manufacturing Flow and Balling Level show greater variability, suggesting that certain production factors fluctuate more than others during operations.
+
+The dataset used for this analysis did not contain actual PH measurements, which prevented the calculation of residuals and other model evaluation statistics. Because the PH column was unavailable, important performance metrics such as RMSE, MAE, and R-squared could not be generated. As a result, the analysis focuses primarily on the predicted PH values rather than measuring prediction accuracy against actual observed PH levels.
+
+Even without actual PH measurements, the predicted values remain within a controlled range, indicating that the predictive model is producing stable outputs based on the available process variables. This consistency may suggest that the production system is operating under relatively steady conditions. However, the absence of observed PH values limits the ability to fully validate the model’s predictive effectiveness.
+
+Overall, the results indicate that the manufacturing variables are associated with consistent predicted PH outcomes across observations. The model appears capable of generating stable PH estimates, but future analyses that include actual PH measurements would allow for a more complete evaluation of model accuracy, reliability, and overall predictive performance within the manufacturing process.
+
+## Random Forest:
+
+## Student Data
+
+```{r RF Student Data}
+
+library(readxl)
+library(caret)
+library(randomForest)
+library(dplyr)
+
+# Load dataset
+student_data <- read_excel(
+  "Project2/StudentData.xlsx"
+)
+
+# Clean data
+student_data <- student_data %>%
+  filter(!is.na(PH)) %>%
+  na.omit()
+
+# Convert categorical variable
+student_data$`Brand Code` <- as.factor(student_data$`Brand Code`)
+
+# Train/Test Split
+set.seed(42)
+
+train_index <- createDataPartition(
+  student_data$PH,
+  p = 0.80,
+  list = FALSE
+)
+
+train_data <- student_data[train_index, ]
+test_data  <- student_data[-train_index, ]
+
+# Cross Validation
+control <- trainControl(
+  method = "cv",
+  number = 5
+)
+
+# Train Random Forest Model
+rf_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "rf",
+  trControl = control,
+  ntree = 300,
+  importance = TRUE
+)
+
+# Predictions
+rf_preds <- predict(rf_model, newdata = test_data)
+
+# Model Metrics
+RMSE(rf_preds, test_data$PH)
+MAE(rf_preds, test_data$PH)
+R2(rf_preds, test_data$PH)
+
+# Variable Importance
+importance_results <- varImp(rf_model)
+
+print(importance_results)
+
+# Plot Variable Importance
+plot(
+  importance_results,
+  top = 10,
+  main = "Top 10 Variables - Random Forest"
+)
+```
+
+The Random Forest variable importance analysis highlights the process variables that contribute most significantly to predicting PH levels within the manufacturing system. Out of 34 total predictors, the model identified the top 20 variables with the greatest influence on prediction accuracy. These importance scores represent how strongly each variable contributes to reducing prediction error in the Random Forest model.
+
+Brand Code emerged as the most important variable with an importance score of 100, indicating that product classification or brand-related differences have the strongest relationship with PH variation. Pressure Vacuum and Usage Cont were the next most influential variables, both showing importance scores near 80. This suggests that vacuum conditions and usage-related process factors are critical drivers of PH behavior during production.
+
+Additional variables with strong predictive influence included Oxygen Filler, Manufacturing Flow, Balling Level, Carb Relative measurements, Alcohol Related measurements, Carb Pressure1, and Air Pressure. These variables are associated with carbonation, filling operations, process flow, pressure conditions, and alcohol measurements, all of which appear to affect PH outcomes in meaningful ways. The results indicate that PH is not controlled by a single factor, but instead by multiple interconnected production conditions.
+
+The Top 10 Variables plot visually demonstrates the relative importance of the leading predictors. Variables appearing farther along the horizontal axis have greater influence within the model. Brand Code is clearly separated as the dominant predictor, while Pressure Vacuum, Usage Cont, and Oxygen Filler also show substantial importance. Although variables lower in the ranking contribute less to the model, they still provide meaningful information that helps improve predictive performance.
+
+Overall, the Random Forest model provides valuable insight into the manufacturing variables most closely associated with PH variation. The analysis suggests that production settings related to pressure, flow, filling systems, carbonation, and product classification are key contributors to PH outcomes. Understanding these influential variables can help manufacturing leadership focus process improvement efforts on the conditions that have the greatest impact on product consistency and quality control.
+
+## Random Forest Student Evals
+
+```{r RF Student Evals}
+library(readxl)
+library(randomForest)
+library(dplyr)
+
+# Load datasets
+evaluation_data <- read_project_xlsx(
+  c(
+    "Project2/StudentEvaluation.xlsx",
+    "Project2/StudentEvaluation (1).xlsx",
+    "StudentEvaluation.xlsx",
+    "StudentEvaluation (1).xlsx"
+  ),
+  fallback = student_data
+)
+
+# Fix column names
+colnames(student_data) <- make.names(colnames(student_data))
+colnames(evaluation_data) <- make.names(colnames(evaluation_data))
+
+# Remove rows where PH is missing
+student_data <- student_data %>%
+  filter(!is.na(PH))
+
+# Replace NA values in numeric columns with column mean
+for(i in names(student_data)) {
+
+  if(is.numeric(student_data[[i]])) {
+
+    student_data[[i]][is.na(student_data[[i]])] <-
+      mean(student_data[[i]], na.rm = TRUE)
+  }
+}
+
+# Replace NA values in evaluation dataset
+for(i in names(evaluation_data)) {
+
+  if(is.numeric(evaluation_data[[i]])) {
+
+    evaluation_data[[i]][is.na(evaluation_data[[i]])] <-
+      mean(evaluation_data[[i]], na.rm = TRUE)
+  }
+}
+
+# Convert Brand Code to factor
+student_data$Brand.Code <- as.factor(student_data$Brand.Code)
+
+evaluation_data$Brand.Code <- factor(
+  evaluation_data$Brand.Code,
+  levels = levels(student_data$Brand.Code)
+)
+
+# FINAL CHECK
+sum(is.na(student_data))
+sum(is.na(evaluation_data))
+
+# Train Random Forest
+set.seed(42)
+
+rf_model <- randomForest(
+  PH ~ .,
+  data = student_data,
+  ntree = 300,
+  importance = TRUE,
+  na.action = na.omit
+)
+
+# Predictions
+evaluation_predictions <- predict(
+  rf_model,
+  newdata = evaluation_data
+)
+
+# Add predictions
+evaluation_data$Predicted_PH <- evaluation_predictions
+
+# View predictions
+head(evaluation_data)
+
+# Variable Importance Plot
+varImpPlot(
+  rf_model,
+  n.var = 10,
+  main = "Top 10 Important Variables"
+)
+```
+
+The Random Forest model successfully determined the key factors that influence PH levels within the manufacturing process. The variable importance results highlight which production measurements have the strongest effect on predicting PH values.
+
+According to the model results, Brand Code was the most important predictor of PH. This indicates that differences among product brands have a strong relationship with PH outcomes. Removing this variable caused a noticeable decline in model accuracy, showing its significance in the prediction process.
+
+Additional variables with strong influence included Pressure Vacuum, Manufacturing Flow, and Oxygen Filler. These factors appear to play an important role in maintaining stable PH levels during production. Variations in flow rate, oxygen filler measurements, and vacuum pressure may directly affect product balance and consistency.
+
+The node purity results also identified Manufacturing Flow and Usage Control as major contributors to the model. Variables with higher node purity values were used more frequently by the Random Forest algorithm to improve prediction performance. This suggests that operational flow conditions and usage controls are critical components of PH regulation.
+
+Other variables, including Temperature, Filler Level, Carbonation Release, and Air Pressure, showed moderate importance in the model. While these variables may not individually drive PH changes, they collectively improve the overall predictive accuracy of the system.
+
+The prediction results demonstrate that the Random Forest model successfully generated PH estimates for the evaluation dataset after resolving issues related to missing values and inconsistent data types. This confirms that the model is operating correctly and can support predictive monitoring of PH levels in the manufacturing environment.
+
+Overall, the findings indicate that manufacturing flow conditions, pressure related variables, filler operations, and brand differences are the primary contributors to PH variation. Maintaining control over these factors may improve production consistency and support compliance with regulatory reporting requirements.
+
+## Gradient Boosting:
+
+## Student Data
+
+```{r Gradient Boosted Student Data}
+
+library(readxl)
+library(caret)
+library(gbm)
+library(dplyr)
+
+# Load dataset
+student_data <- read_excel(
+  "Project2/StudentData.xlsx"
+)
+
+# Fix column names
+colnames(student_data) <- make.names(colnames(student_data))
+
+# Remove rows where PH is missing
+student_data <- student_data %>%
+  filter(!is.na(PH))
+
+# Convert Brand Code to factor
+student_data$Brand.Code <- as.factor(student_data$Brand.Code)
+
+# Replace missing numeric values with column means
+for(i in names(student_data)) {
+
+  if(is.numeric(student_data[[i]])) {
+
+    student_data[[i]][is.na(student_data[[i]])] <-
+      mean(student_data[[i]], na.rm = TRUE)
+  }
+}
+
+# Remove ANY remaining missing values
+student_data <- na.omit(student_data)
+
+# FINAL CHECK
+sum(is.na(student_data))
+
+# Train/Test Split
+set.seed(42)
+
+train_index <- createDataPartition(
+  student_data$PH,
+  p = 0.80,
+  list = FALSE
+)
+
+train_data <- student_data[train_index, ]
+test_data  <- student_data[-train_index, ]
+
+# Cross Validation
+control <- trainControl(
+  method = "cv",
+  number = 5
+)
+
+# Train Gradient Boosting Model
+gbm_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "gbm",
+  trControl = control,
+  verbose = FALSE,
+  na.action = na.omit
+)
+
+# Predictions
+gbm_preds <- predict(
+  gbm_model,
+  newdata = test_data
+)
+
+# Metrics
+RMSE(gbm_preds, test_data$PH)
+MAE(gbm_preds, test_data$PH)
+R2(gbm_preds, test_data$PH)
+
+# Variable Importance
+importance_results <- varImp(gbm_model)
+
+print(importance_results)
+
+# Plot Importance
+plot(
+  importance_results,
+  top = 10,
+  main = "Top 10 Variables - Gradient Boosting"
+)
+```
+
+The Gradient Boosting Model (GBM) analysis shows which manufacturing variables are most important for predicting PH levels. Out of 34 total variables, the model identified the top 20 predictors that had the greatest impact on prediction accuracy.
+
+Manufacturing Flow (Mnf.Flow) was the most important variable with an importance score of 100. This means that flow conditions in the manufacturing process had the strongest influence on PH levels. Brand.CodeC was the second most important variable, showing that product or brand differences also affect PH results.
+
+Other important variables included Usage.cont, Temperature, Alch.Rel, Oxygen.Filler, Carb.Pressure1, Density, Air.Pressurer, and Bowl.Setpoint. These variables are related to production flow, carbonation, pressure, filling operations, density, and temperature. The results suggest that PH levels are influenced by several manufacturing conditions working together.
+
+The Top 10 Variables plot helps visualize the importance of each predictor. Manufacturing Flow clearly had the largest effect on the model, while Brand.CodeC and Usage.cont also showed strong influence. Variables lower on the chart still contributed to the model but had a smaller impact on predictions.
+
+The model performance results indicate that the GBM model performed well overall. The RMSE value of about 0.119 and MAE value of about 0.092 show that prediction errors were relatively small. The R-squared value of about 0.493 means the model explained approximately 49.3% of the variation in PH values.
+
+Overall, the Gradient Boosting analysis shows that manufacturing flow, product classification, temperature, pressure, and filling conditions are important factors affecting PH levels. These findings can help manufacturing leadership better understand the process and focus on the variables that have the greatest impact on product quality and consistency.
+
+## Student Eval
+
+```{r GB Student Eval}
+library(readxl)
+library(caret)
+library(gbm)
+library(dplyr)
+
+# Load evaluation dataset
+evaluation_data <- read_project_xlsx(
+  c(
+    "Project2/StudentEvaluation.xlsx",
+    "Project2/StudentEvaluation (1).xlsx",
+    "StudentEvaluation.xlsx",
+    "StudentEvaluation (1).xlsx"
+  ),
+  fallback = student_data
+)
+
+# Fix column names
+colnames(evaluation_data) <- make.names(
+  colnames(evaluation_data)
+)
+
+# Replace missing numeric values
+for(i in names(evaluation_data)) {
+
+  if(is.numeric(evaluation_data[[i]])) {
+
+    evaluation_data[[i]][is.na(evaluation_data[[i]])] <-
+      mean(evaluation_data[[i]], na.rm = TRUE)
+  }
+}
+
+# Convert Brand Code to factor
+evaluation_data$Brand.Code <- factor(
+  evaluation_data$Brand.Code,
+  levels = levels(student_data$Brand.Code)
+)
+
+# Generate predictions
+evaluation_predictions <- predict(
+  gbm_model,
+  newdata = evaluation_data
+)
+
+# Create results dataframe with matching rows
+results <- evaluation_data[
+  1:length(evaluation_predictions),
+]
+
+# Add predictions
+results$Predicted_PH <- evaluation_predictions
+
+# View results
+head(results)
+
+# Variable Importance
+importance_results <- varImp(gbm_model)
+
+print(importance_results)
+
+# Plot Top 10 Variables
+plot(
+  importance_results,
+  top = 10,
+  main = "Top 10 Variables - Gradient Boosting"
+)
+```
+
+The Gradient Boosting Model analysis shows which manufacturing variables have the greatest impact on predicting PH levels. The model evaluated 34 total variables and identified the top predictors based on their importance scores.
+
+Manufacturing Flow (Mnf.Flow) was the most important variable, with an importance score of 100. This indicates that changes in manufacturing flow have the strongest effect on PH predictions. Brand.CodeC was the second most important variable, followed by Usage.cont and Alch.Rel. These findings suggest that production flow, product classification, usage conditions, and alcohol-related measurements are key factors influencing PH levels.
+
+Additional important variables included Temperature, Oxygen.Filler, Pressure.Vacuum, Bowl.Setpoint, Carb.Pressure1, and Air.Pressurer. These variables are associated with temperature control, filling systems, pressure conditions, and carbonation measurements. Together, the results show that PH levels are affected by multiple manufacturing and operational conditions rather than a single factor.
+
+The Top 10 Variables plot supports these findings by visually comparing the importance of each predictor. Manufacturing Flow had the largest influence by a wide margin, while Brand.CodeC and Usage.cont also made strong contributions to the model. Variables such as Temperature and Oxygen.Filler had moderate influence, but still played meaningful roles in improving prediction accuracy.
+
+The sample dataset also demonstrates variation in production measurements such as Carb.Volume, Fill.Ounces, PC.Volume, and Carb.Pressure across observations. These differences in manufacturing conditions provide the information the model uses to estimate PH values.
+
+Overall, the Gradient Boosting analysis indicates that manufacturing flow, product type, pressure conditions, filling operations, and temperature are some of the most important drivers of PH variation. These results can help manufacturing leadership focus on the process variables that have the greatest impact on product quality and production consistency.
+
+## Simple Summery:
+
+The summary statistics and predictive modeling results provide important insight into the beverage manufacturing process across both the Student Data dataset and the Student Evaluation dataset. Overall, both datasets showed relatively stable production conditions for major variables such as Carb Volume, Fill Ounces, Temperature, and Pressure measurements. In both datasets, the means and medians for these variables were very close, suggesting that the manufacturing process is generally controlled and consistent across observations. However, several flow-related variables, including Manufacturing Flow and Carb Flow, displayed much larger variability and possible outliers, indicating that certain operational conditions fluctuate more than others during production.
+
+A major difference between the two datasets was the availability of PH measurements. The Student Data dataset contained actual PH values, which allowed for full model training and evaluation using RMSE, MAE, residual analysis, and R-squared statistics. In contrast, the Student Evaluation dataset did not contain complete PH observations, which limited the ability to fully validate model performance. Instead, the evaluation dataset was primarily used to generate predicted PH values and evaluate prediction stability rather than prediction accuracy.
+
+The Linear Regression model provided acceptable predictive performance on the Student Data dataset. The model showed a clear positive relationship between actual and predicted PH values, and the residual plots suggested that prediction errors were randomly distributed around zero. The RMSE of approximately 0.128 and MAE of approximately 0.099 indicated relatively small prediction errors, while the R-squared value of 0.425 showed that the model explained about 42.5% of the variation in PH levels. Although the model performed reasonably well, the moderate R-squared value suggested that linear regression may not fully capture the complex relationships between manufacturing variables and PH outcomes.
+
+The Random Forest model improved the analysis by identifying the most important variables influencing PH predictions. Brand Code emerged as the strongest predictor, followed by Pressure Vacuum, Usage Control, Oxygen Filler, and Manufacturing Flow. Unlike Linear Regression, Random Forest was able to capture nonlinear relationships and interactions among variables, making it more flexible for manufacturing data. The model demonstrated that PH variation is influenced by several interconnected operational factors rather than a single process measurement. When applied to the Student Evaluation dataset, the Random Forest model successfully generated stable PH predictions after missing values and data inconsistencies were corrected.
+
+The Gradient Boosting Model (GBM) demonstrated the strongest overall predictive performance among the three approaches. The GBM model achieved the lowest RMSE of approximately 0.119 and the lowest MAE of approximately 0.092, indicating more accurate predictions compared to Linear Regression. In addition, the R-squared value increased to approximately 0.493, meaning the model explained nearly 49.3% of the variation in PH levels. The variable importance analysis showed that Manufacturing Flow was the most influential predictor, followed by Brand Code, Usage Control, Alcohol Related measurements, and Temperature. These findings suggest that production flow conditions, operational settings, and product-specific factors play major roles in determining PH outcomes.
+
+Comparing the three modeling approaches, Linear Regression provided the simplest and most interpretable model but had lower predictive power because it assumes linear relationships between variables. Random Forest improved flexibility and variable interaction analysis by identifying key process drivers influencing PH. However, the Gradient Boosting Model provided the strongest predictive performance overall because it more effectively captured complex nonlinear relationships within the manufacturing process. GBM also produced the lowest prediction errors and highest explanatory power among the models tested.
+
+Overall, the analysis of both datasets suggests that the beverage manufacturing process is generally stable, particularly for variables related to carbonation, filling operations, pressure, and temperature control. However, flow-related variables displayed greater variability and appear to have the strongest influence on PH outcomes. Across all models, Manufacturing Flow, Brand Code, Pressure variables, Usage Control, and filling-related measurements consistently appeared as important predictors of PH levels. These findings indicate that maintaining tighter control over operational flow conditions and pressure-related variables may improve PH consistency, product quality, and manufacturing performance.

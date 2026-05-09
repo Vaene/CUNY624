@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-05-09" />
+
+<title>ABC Beverage - Full Data &amp; Modeling Journey</title>
+
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="ABC_Beverage_Full_Data_Modeling_Journey_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/navigation-1.1/tabsets.js"></script>
+<link href="ABC_Beverage_Full_Data_Modeling_Journey_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="ABC_Beverage_Full_Data_Modeling_Journey_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">ABC Beverage - Full Data &amp; Modeling
+Journey</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">2026-05-09</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span
+class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#data-cleaning-journey"
+id="toc-data-cleaning-journey"><span class="toc-section-number">2</span>
+Data Cleaning Journey</a>
+<ul>
+<li><a href="#load-and-inspect-the-data"
+id="toc-load-and-inspect-the-data"><span
+class="toc-section-number">2.1</span> Load and inspect the data</a></li>
+<li><a href="#missingness-and-near-zero-variance"
+id="toc-missingness-and-near-zero-variance"><span
+class="toc-section-number">2.2</span> Missingness and near-zero
+variance</a></li>
+<li><a href="#why-imputation-won" id="toc-why-imputation-won"><span
+class="toc-section-number">2.3</span> Why imputation won</a></li>
+<li><a href="#final-cleaning-pipeline"
+id="toc-final-cleaning-pipeline"><span
+class="toc-section-number">2.4</span> Final cleaning pipeline</a></li>
+</ul></li>
+<li><a href="#modeling-journey" id="toc-modeling-journey"><span
+class="toc-section-number">3</span> Modeling Journey</a>
+<ul>
+<li><a href="#split-the-cleaned-data"
+id="toc-split-the-cleaned-data"><span
+class="toc-section-number">3.1</span> Split the cleaned data</a></li>
+<li><a href="#baseline-linear-regression"
+id="toc-baseline-linear-regression"><span
+class="toc-section-number">3.2</span> Baseline linear
+regression</a></li>
+<li><a href="#ridge-regression" id="toc-ridge-regression"><span
+class="toc-section-number">3.3</span> Ridge regression</a></li>
+<li><a href="#lasso-regression" id="toc-lasso-regression"><span
+class="toc-section-number">3.4</span> Lasso regression</a></li>
+<li><a href="#partial-least-squares"
+id="toc-partial-least-squares"><span
+class="toc-section-number">3.5</span> Partial least squares</a></li>
+<li><a href="#random-forest" id="toc-random-forest"><span
+class="toc-section-number">3.6</span> Random forest</a></li>
+<li><a href="#gradient-boosting" id="toc-gradient-boosting"><span
+class="toc-section-number">3.7</span> Gradient boosting</a></li>
+<li><a href="#compare-the-models" id="toc-compare-the-models"><span
+class="toc-section-number">3.8</span> Compare the models</a></li>
+<li><a href="#optional-scoring-set" id="toc-optional-scoring-set"><span
+class="toc-section-number">3.9</span> Optional scoring set</a></li>
+</ul></li>
+</ul>
+</div>
+
+<pre class="r"><code>read_project_xlsx &lt;- function(paths, fallback = NULL) {
+  for (path in paths) {
+    if (file.exists(path)) {
+      return(read_excel(path))
+    }
+  }
+
+  if (!is.null(fallback)) {
+    return(fallback)
+  }
+
+  stop(&quot;None of these files exist: &quot;, paste(paths, collapse = &quot;, &quot;))
+}
+
+mode_value &lt;- function(x) {
+  x &lt;- x[!is.na(x)]
+  if (!length(x)) return(NA)
+  ux &lt;- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+nrmse_calc &lt;- function(actual, pred) {
+  actual &lt;- as.numeric(actual)
+  pred &lt;- as.numeric(pred)
+  rng &lt;- diff(range(actual, na.rm = TRUE))
+  if (is.na(rng) || rng == 0) return(NA_real_)
+  sqrt(mean((actual - pred)^2, na.rm = TRUE)) / rng
+}
+
+metric_row &lt;- function(model, obs, pred) {
+  tibble(
+    model = model,
+    rmse = caret::RMSE(pred, obs),
+    mae = caret::MAE(pred, obs),
+    r2 = caret::R2(pred, obs)
+  )
+}
+
+top_abs_coef &lt;- function(coef_obj, n = 10) {
+  coef_df &lt;- as.matrix(coef_obj)
+  tibble(
+    term = rownames(coef_df),
+    estimate = as.numeric(coef_df[, 1])
+  ) |&gt;
+    filter(term != &quot;(Intercept)&quot;) |&gt;
+    mutate(abs_estimate = abs(estimate)) |&gt;
+    arrange(desc(abs_estimate)) |&gt;
+    slice_head(n = n) |&gt;
+    select(term, estimate)
+}
+
+plot_obs_pred &lt;- function(df, title) {
+  ggplot(df, aes(x = observed, y = predicted)) +
+    geom_point(alpha = 0.5) +
+    geom_abline(
+      slope = 1,
+      intercept = 0,
+      linetype = 2,
+      linewidth = 0.35,
+      color = &quot;gray45&quot;
+    ) +
+    labs(title = title, x = &quot;Observed&quot;, y = &quot;Predicted&quot;)
+}</code></pre>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>This report combines the strongest parts of both earlier drafts into
+one full modeling journey for the ABC beverage process data. The
+cleaning section emphasizes why imputation was preferred over simple
+exclusion, while the modeling section starts with a baseline linear
+model and moves through ridge, lasso, PLS, random forest, and gradient
+boosting. All plots use a low-ink style so the data carry the visual
+weight.</p>
+</div>
+<div id="data-cleaning-journey" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Data Cleaning
+Journey</h1>
+<div id="load-and-inspect-the-data" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Load and inspect the
+data</h2>
+<pre class="r"><code>student_raw &lt;- read_project_xlsx(
+  c(&quot;Project2/StudentData.xlsx&quot;, &quot;StudentData.xlsx&quot;)
+)
+student_data &lt;- student_raw |&gt; rename_with(make.names)
+
+eval_paths &lt;- c(
+  &quot;Project2/StudentEvaluation.xlsx&quot;,
+  &quot;Project2/StudentEvaluation (1).xlsx&quot;,
+  &quot;StudentEvaluation.xlsx&quot;,
+  &quot;StudentEvaluation (1).xlsx&quot;
+)
+
+evaluation_raw &lt;- read_project_xlsx(eval_paths, fallback = student_raw)
+evaluation_data &lt;- evaluation_raw |&gt; rename_with(make.names)
+
+data_overview &lt;- tibble(
+  rows = nrow(student_data),
+  cols = ncol(student_data),
+  complete_rows = sum(complete.cases(student_data)),
+  complete_share = round(100 * complete_rows / rows, 1)
+)
+
+data_overview |&gt; kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">rows</th>
+<th align="right">cols</th>
+<th align="right">complete_rows</th>
+<th align="right">complete_share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2571</td>
+<td align="right">33</td>
+<td align="right">2038</td>
+<td align="right">79.3</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>str(student_data)</code></pre>
+<pre><code>## tibble [2,571 x 33] (S3: tbl_df/tbl/data.frame)
+##  $ Brand.Code       : chr [1:2571] &quot;B&quot; &quot;A&quot; &quot;B&quot; &quot;A&quot; ...
+##  $ Carb.Volume      : num [1:2571] 5.34 5.43 5.29 5.44 5.49 ...
+##  $ Fill.Ounces      : num [1:2571] 24 24 24.1 24 24.3 ...
+##  $ PC.Volume        : num [1:2571] 0.263 0.239 0.263 0.293 0.111 ...
+##  $ Carb.Pressure    : num [1:2571] 68.2 68.4 70.8 63 67.2 66.6 64.2 67.6 64.2 72 ...
+##  $ Carb.Temp        : num [1:2571] 141 140 145 133 137 ...
+##  $ PSC              : num [1:2571] 0.104 0.124 0.09 NA 0.026 0.09 0.128 0.154 0.132 0.014 ...
+##  $ PSC.Fill         : num [1:2571] 0.26 0.22 0.34 0.42 0.16 ...
+##  $ PSC.CO2          : num [1:2571] 0.04 0.04 0.16 0.04 0.12 ...
+##  $ Mnf.Flow         : num [1:2571] -100 -100 -100 -100 -100 -100 -100 -100 -100 -100 ...
+##  $ Carb.Pressure1   : num [1:2571] 119 122 120 115 118 ...
+##  $ Fill.Pressure    : num [1:2571] 46 46 46 46.4 45.8 45.6 51.8 46.8 46 45.2 ...
+##  $ Hyd.Pressure1    : num [1:2571] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ Hyd.Pressure2    : num [1:2571] NA NA NA 0 0 0 0 0 0 0 ...
+##  $ Hyd.Pressure3    : num [1:2571] NA NA NA 0 0 0 0 0 0 0 ...
+##  $ Hyd.Pressure4    : num [1:2571] 118 106 82 92 92 116 124 132 90 108 ...
+##  $ Filler.Level     : num [1:2571] 121 119 120 118 119 ...
+##  $ Filler.Speed     : num [1:2571] 4002 3986 4020 4012 4010 ...
+##  $ Temperature      : num [1:2571] 66 67.6 67 65.6 65.6 66.2 65.8 65.2 65.4 66.6 ...
+##  $ Usage.cont       : num [1:2571] 16.2 19.9 17.8 17.4 17.7 ...
+##  $ Carb.Flow        : num [1:2571] 2932 3144 2914 3062 3054 ...
+##  $ Density          : num [1:2571] 0.88 0.92 1.58 1.54 1.54 1.52 0.84 0.84 0.9 0.9 ...
+##  $ MFR              : num [1:2571] 725 727 735 731 723 ...
+##  $ Balling          : num [1:2571] 1.4 1.5 3.14 3.04 3.04 ...
+##  $ Pressure.Vacuum  : num [1:2571] -4 -4 -3.8 -4.4 -4.4 -4.4 -4.4 -4.4 -4.4 -4.4 ...
+##  $ PH               : num [1:2571] 8.36 8.26 8.94 8.24 8.26 8.32 8.4 8.38 8.38 8.5 ...
+##  $ Oxygen.Filler    : num [1:2571] 0.022 0.026 0.024 0.03 0.03 0.024 0.066 0.046 0.064 0.022 ...
+##  $ Bowl.Setpoint    : num [1:2571] 120 120 120 120 120 120 120 120 120 120 ...
+##  $ Pressure.Setpoint: num [1:2571] 46.4 46.8 46.6 46 46 46 46 46 46 46 ...
+##  $ Air.Pressurer    : num [1:2571] 143 143 142 146 146 ...
+##  $ Alch.Rel         : num [1:2571] 6.58 6.56 7.66 7.14 7.14 7.16 6.54 6.52 6.52 6.54 ...
+##  $ Carb.Rel         : num [1:2571] 5.32 5.3 5.84 5.42 5.44 5.44 5.38 5.34 5.34 5.34 ...
+##  $ Balling.Lvl      : num [1:2571] 1.48 1.56 3.28 3.04 3.04 3.02 1.44 1.44 1.44 1.38 ...</code></pre>
+<p>The raw data contain 2571 rows and 33 columns. No separate evaluation
+workbook was found in the project folder, so the code falls back to the
+main dataset when it needs a scoring example.</p>
+</div>
+<div id="missingness-and-near-zero-variance" class="section level2"
+number="2.2">
+<h2><span class="header-section-number">2.2</span> Missingness and
+near-zero variance</h2>
+<pre class="r"><code>missing_counts &lt;- student_data |&gt;
+  summarise(across(everything(), ~ sum(is.na(.)))) |&gt;
+  pivot_longer(everything(), names_to = &quot;variable&quot;, values_to = &quot;n_missing&quot;) |&gt;
+  arrange(desc(n_missing))
+
+nzv_vars &lt;- tibble(variable = names(student_data)[nearZeroVar(student_data)])
+if (nrow(nzv_vars) == 0) nzv_vars &lt;- tibble(variable = &quot;None&quot;)
+
+missing_counts |&gt; head(12) |&gt; kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="right">n_missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">MFR</td>
+<td align="right">212</td>
+</tr>
+<tr class="even">
+<td align="left">Brand.Code</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">Filler.Speed</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">PC.Volume</td>
+<td align="right">39</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC.CO2</td>
+<td align="right">39</td>
+</tr>
+<tr class="even">
+<td align="left">Fill.Ounces</td>
+<td align="right">38</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC</td>
+<td align="right">33</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Pressure1</td>
+<td align="right">32</td>
+</tr>
+<tr class="odd">
+<td align="left">Hyd.Pressure4</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Pressure</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">Carb.Temp</td>
+<td align="right">26</td>
+</tr>
+<tr class="even">
+<td align="left">PSC.Fill</td>
+<td align="right">23</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>nzv_vars |&gt; kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Hyd.Pressure1</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(student_data, aes(x = &quot;&quot;, y = PH)) +
+  geom_boxplot(width = 0.35, fill = &quot;grey92&quot;, color = &quot;grey25&quot;, outlier.size = 0.8) +
+  labs(
+    title = &quot;Response distribution before cleaning&quot;,
+    x = NULL,
+    y = &quot;PH&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/response-boxplot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>The missingness table shows why a full complete-case drop would be
+too aggressive. 2038 rows are complete, which means 533 rows would be
+lost if we excluded every observation with any missing value. That is a
+lot of signal to throw away in a process dataset that is already fairly
+expensive to collect.</p>
+</div>
+<div id="why-imputation-won" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Why imputation
+won</h2>
+<pre class="r"><code>complete_data &lt;- student_data |&gt; filter(if_all(everything(), ~ !is.na(.)))
+
+imputation_benchmark &lt;- function(df, iter = 5) {
+  numeric_idx &lt;- 2:ncol(df)
+  nrmse_values &lt;- matrix(NA_real_, nrow = iter, ncol = 6)
+  brand_values &lt;- matrix(NA_real_, nrow = iter, ncol = 3)
+  colnames(nrmse_values) &lt;- c(&quot;mean&quot;, &quot;median&quot;, &quot;mode&quot;, &quot;knn&quot;, &quot;mice&quot;, &quot;forest&quot;)
+  colnames(brand_values) &lt;- c(&quot;mode&quot;, &quot;mice&quot;, &quot;forest&quot;)
+
+  for (i in seq_len(iter)) {
+    missing_data &lt;- df |&gt;
+      mutate(across(everything(), function(x) {
+        idx &lt;- sample(seq_along(x), size = floor(0.05 * length(x)))
+        x[idx] &lt;- NA
+        x
+      }))
+
+    missing_rows &lt;- lapply(missing_data, function(x) which(is.na(x)))
+
+    mean_impute &lt;- missing_data |&gt;
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    median_impute &lt;- missing_data |&gt;
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), median(., na.rm = TRUE), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    mode_impute &lt;- missing_data |&gt;
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), as.numeric(mode_value(.)), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    knn_impute &lt;- bind_cols(
+      Brand.Code = missing_data$Brand.Code,
+      as.data.frame(impute.knn(as.matrix(missing_data |&gt; select(-Brand.Code)))$data)
+    )
+
+    mice_impute &lt;- complete(
+      mice(missing_data |&gt; mutate(Brand.Code = as.factor(Brand.Code)), printFlag = FALSE),
+      1
+    )
+
+    forest_impute &lt;- missForest(
+      as.data.frame(missing_data |&gt; mutate(Brand.Code = as.factor(Brand.Code)))
+    )$ximp
+
+    for (j in numeric_idx) {
+      actual_values &lt;- df[[j]][missing_rows[[j]]]
+      nrmse_values[i, &quot;mean&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;mean&quot;]), nrmse_calc(actual_values, mean_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;mean&quot;])
+      nrmse_values[i, &quot;median&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;median&quot;]), nrmse_calc(actual_values, median_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;median&quot;])
+      nrmse_values[i, &quot;mode&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;mode&quot;]), nrmse_calc(actual_values, mode_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;mode&quot;])
+      nrmse_values[i, &quot;knn&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;knn&quot;]), nrmse_calc(actual_values, knn_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;knn&quot;])
+      nrmse_values[i, &quot;mice&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;mice&quot;]), nrmse_calc(actual_values, mice_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;mice&quot;])
+      nrmse_values[i, &quot;forest&quot;] &lt;- ifelse(is.na(nrmse_values[i, &quot;forest&quot;]), nrmse_calc(actual_values, forest_impute[[j]][missing_rows[[j]]]), nrmse_values[i, &quot;forest&quot;])
+    }
+
+    actual_brand &lt;- as.character(df[[1]][missing_rows[[1]]])
+    brand_values[i, &quot;mode&quot;] &lt;- mean(actual_brand == as.character(mode_impute[[1]][missing_rows[[1]]]))
+    brand_values[i, &quot;mice&quot;] &lt;- mean(actual_brand == as.character(mice_impute[[1]][missing_rows[[1]]]))
+    brand_values[i, &quot;forest&quot;] &lt;- mean(actual_brand == as.character(forest_impute[[1]][missing_rows[[1]]]))
+  }
+
+  nrmse_tbl &lt;- tibble(
+    method = colnames(nrmse_values),
+    nrmse = colMeans(nrmse_values, na.rm = TRUE)
+  ) |&gt; arrange(nrmse)
+
+  brand_tbl &lt;- tibble(
+    method = colnames(brand_values),
+    accuracy = colMeans(brand_values, na.rm = TRUE)
+  ) |&gt; arrange(desc(accuracy))
+
+  list(nrmse = nrmse_tbl, brand = brand_tbl)
+}
+
+imputation_results &lt;- imputation_benchmark(complete_data, iter = 5)</code></pre>
+<pre><code>## Cluster size 2038 broken into 1913 125 
+## Cluster size 1913 broken into 538 1375 
+## Done cluster 538 
+## Done cluster 1375 
+## Done cluster 1913 
+## Done cluster 125 
+## Cluster size 2038 broken into 584 1454 
+## Done cluster 584 
+## Done cluster 1454 
+## Cluster size 2038 broken into 582 1456 
+## Done cluster 582 
+## Done cluster 1456 
+## Cluster size 2038 broken into 1910 128 
+## Cluster size 1910 broken into 528 1382 
+## Done cluster 528 
+## Done cluster 1382 
+## Done cluster 1910 
+## Done cluster 128 
+## Cluster size 2038 broken into 1910 128 
+## Cluster size 1910 broken into 528 1382 
+## Done cluster 528 
+## Done cluster 1382 
+## Done cluster 1910 
+## Done cluster 128</code></pre>
+<pre class="r"><code>imputation_results$nrmse |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">method</th>
+<th align="right">nrmse</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mice</td>
+<td align="right">0.0871</td>
+</tr>
+<tr class="even">
+<td align="left">forest</td>
+<td align="right">0.0967</td>
+</tr>
+<tr class="odd">
+<td align="left">knn</td>
+<td align="right">0.1817</td>
+</tr>
+<tr class="even">
+<td align="left">mean</td>
+<td align="right">0.2258</td>
+</tr>
+<tr class="odd">
+<td align="left">median</td>
+<td align="right">0.2316</td>
+</tr>
+<tr class="even">
+<td align="left">mode</td>
+<td align="right">0.2684</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>imputation_results$brand |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">method</th>
+<th align="right">accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">forest</td>
+<td align="right">0.9723</td>
+</tr>
+<tr class="even">
+<td align="left">mice</td>
+<td align="right">0.8752</td>
+</tr>
+<tr class="odd">
+<td align="left">mode</td>
+<td align="right">NaN</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(imputation_results$nrmse, aes(x = reorder(method, nrmse), y = nrmse)) +
+  geom_col(aes(fill = nrmse), color = NA, width = 0.65) +
+  scale_fill_gradient(low = &quot;darkgreen&quot;, high = &quot;darkred&quot;) +
+  coord_flip() +
+  labs(
+    title = &quot;Imputation comparison by NRMSE&quot;,
+    x = NULL,
+    y = &quot;Average NRMSE&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/imputation-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>The benchmark shows the same pattern the first report highlighted:
+forest-based imputation is the strongest overall choice, with KNN and
+MICE close behind in some runs but not as consistently accurate.</p>
+</div>
+<div id="final-cleaning-pipeline" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Final cleaning
+pipeline</h2>
+<pre class="r"><code>clean_data &lt;- missForest(
+  as.data.frame(student_data |&gt; mutate(Brand.Code = as.factor(Brand.Code)))
+)$ximp |&gt;
+  as_tibble()
+
+numeric_corr &lt;- clean_data |&gt;
+  select(where(is.numeric)) |&gt;
+  cor(use = &quot;pairwise.complete.obs&quot;)
+
+high_corr &lt;- findCorrelation(numeric_corr, cutoff = 0.80, names = TRUE)
+if (length(high_corr) == 0) high_corr &lt;- character(0)
+
+model_data &lt;- clean_data
+if (length(high_corr) &gt; 0) {
+  model_data &lt;- model_data |&gt; select(-all_of(high_corr))
+}
+
+clean_check &lt;- model_data |&gt;
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+tibble(removed_predictors = if (length(high_corr) == 0) &quot;None&quot; else high_corr) |&gt; kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">removed_predictors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Hyd.Pressure3</td>
+</tr>
+<tr class="even">
+<td align="left">Balling</td>
+</tr>
+<tr class="odd">
+<td align="left">Density</td>
+</tr>
+<tr class="even">
+<td align="left">Balling.Lvl</td>
+</tr>
+<tr class="odd">
+<td align="left">Alch.Rel</td>
+</tr>
+<tr class="even">
+<td align="left">Filler.Level</td>
+</tr>
+<tr class="odd">
+<td align="left">Filler.Speed</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Temp</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>clean_check |&gt; kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="3%" />
+<col width="4%" />
+<col width="4%" />
+<col width="3%" />
+<col width="4%" />
+<col width="1%" />
+<col width="3%" />
+<col width="2%" />
+<col width="3%" />
+<col width="5%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="3%" />
+<col width="3%" />
+<col width="1%" />
+<col width="5%" />
+<col width="1%" />
+<col width="4%" />
+<col width="4%" />
+<col width="6%" />
+<col width="4%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">Brand.Code</th>
+<th align="right">Carb.Volume</th>
+<th align="right">Fill.Ounces</th>
+<th align="right">PC.Volume</th>
+<th align="right">Carb.Pressure</th>
+<th align="right">PSC</th>
+<th align="right">PSC.Fill</th>
+<th align="right">PSC.CO2</th>
+<th align="right">Mnf.Flow</th>
+<th align="right">Carb.Pressure1</th>
+<th align="right">Fill.Pressure</th>
+<th align="right">Hyd.Pressure1</th>
+<th align="right">Hyd.Pressure2</th>
+<th align="right">Hyd.Pressure4</th>
+<th align="right">Temperature</th>
+<th align="right">Usage.cont</th>
+<th align="right">Carb.Flow</th>
+<th align="right">MFR</th>
+<th align="right">Pressure.Vacuum</th>
+<th align="right">PH</th>
+<th align="right">Oxygen.Filler</th>
+<th align="right">Bowl.Setpoint</th>
+<th align="right">Pressure.Setpoint</th>
+<th align="right">Air.Pressurer</th>
+<th align="right">Carb.Rel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(model_data, aes(x = &quot;&quot;, y = PH)) +
+  geom_boxplot(width = 0.35, fill = &quot;grey90&quot;, color = &quot;grey25&quot;, outlier.size = 0.7) +
+  labs(
+    title = &quot;Response distribution after cleaning&quot;,
+    x = NULL,
+    y = &quot;PH&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/cleaned-boxplot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>The cleaned data keep the full set of observations after imputation
+and remove only the strongest redundant predictors. That gives the
+modeling section a stable starting point without the heavy information
+loss that complete-case deletion would cause.</p>
+</div>
+</div>
+<div id="modeling-journey" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Modeling Journey</h1>
+<div id="split-the-cleaned-data" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Split the cleaned
+data</h2>
+<pre class="r"><code>set.seed(2026)
+idx &lt;- createDataPartition(model_data$PH, p = 0.80, list = FALSE)
+
+train_data &lt;- model_data[idx, ]
+test_data &lt;- model_data[-idx, ]
+
+x_all &lt;- model.matrix(PH ~ ., data = model_data)[, -1]
+x_train &lt;- x_all[idx, ]
+x_test &lt;- x_all[-idx, ]
+y_train &lt;- train_data$PH
+y_test &lt;- test_data$PH
+
+ctrl &lt;- trainControl(method = &quot;cv&quot;, number = 5)</code></pre>
+</div>
+<div id="baseline-linear-regression" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Baseline linear
+regression</h2>
+<pre class="r"><code>lm_model &lt;- lm(PH ~ ., data = train_data)
+lm_pred &lt;- predict(lm_model, newdata = test_data)
+lm_metrics &lt;- metric_row(&quot;Linear regression&quot;, y_test, lm_pred)
+lm_adj_r2 &lt;- summary(lm_model)$adj.r.squared
+
+lm_coef_tbl &lt;- as.data.frame(coef(summary(lm_model)))
+lm_coef_tbl$term &lt;- rownames(lm_coef_tbl)
+lm_coef_tbl &lt;- lm_coef_tbl[, c(ncol(lm_coef_tbl), 1:(ncol(lm_coef_tbl) - 1))]
+lm_coef_tbl &lt;- lm_coef_tbl[order(lm_coef_tbl$`Pr(&gt;|t|)`), ]</code></pre>
+<pre class="r"><code>lm_coef_tbl |&gt; head(12) |&gt; kable(digits = 4)</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="21%" />
+<col width="21%" />
+<col width="10%" />
+<col width="13%" />
+<col width="10%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">term</th>
+<th align="right">Estimate</th>
+<th align="right">Std. Error</th>
+<th align="right">t value</th>
+<th align="right">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mnf.Flow</td>
+<td align="left">Mnf.Flow</td>
+<td align="right">-0.0006</td>
+<td align="right">0.0000</td>
+<td align="right">-11.8971</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">(Intercept)</td>
+<td align="left">(Intercept)</td>
+<td align="right">10.6150</td>
+<td align="right">1.0026</td>
+<td align="right">10.5878</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Carb.Pressure1</td>
+<td align="left">Carb.Pressure1</td>
+<td align="right">0.0067</td>
+<td align="right">0.0008</td>
+<td align="right">8.2513</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Bowl.Setpoint</td>
+<td align="left">Bowl.Setpoint</td>
+<td align="right">0.0023</td>
+<td align="right">0.0003</td>
+<td align="right">7.4357</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeD</td>
+<td align="left">Brand.CodeD</td>
+<td align="right">0.0912</td>
+<td align="right">0.0140</td>
+<td align="right">6.4939</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Usage.cont</td>
+<td align="left">Usage.cont</td>
+<td align="right">-0.0078</td>
+<td align="right">0.0013</td>
+<td align="right">-6.0313</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeC</td>
+<td align="left">Brand.CodeC</td>
+<td align="right">-0.0795</td>
+<td align="right">0.0150</td>
+<td align="right">-5.3160</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Temperature</td>
+<td align="left">Temperature</td>
+<td align="right">-0.0120</td>
+<td align="right">0.0025</td>
+<td align="right">-4.8563</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeB</td>
+<td align="left">Brand.CodeB</td>
+<td align="right">0.0575</td>
+<td align="right">0.0127</td>
+<td align="right">4.5445</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Pressure.Setpoint</td>
+<td align="left">Pressure.Setpoint</td>
+<td align="right">-0.0078</td>
+<td align="right">0.0022</td>
+<td align="right">-3.4721</td>
+<td align="right">0.0005</td>
+</tr>
+<tr class="odd">
+<td align="left">Oxygen.Filler</td>
+<td align="left">Oxygen.Filler</td>
+<td align="right">-0.2558</td>
+<td align="right">0.0787</td>
+<td align="right">-3.2526</td>
+<td align="right">0.0012</td>
+</tr>
+<tr class="even">
+<td align="left">Fill.Pressure</td>
+<td align="left">Fill.Pressure</td>
+<td align="right">0.0041</td>
+<td align="right">0.0014</td>
+<td align="right">3.0093</td>
+<td align="right">0.0027</td>
+</tr>
+</tbody>
+</table>
+<p>The linear model is the right first step because it is interpretable
+and gives p-values. Its weaknesses are also visible quickly: correlated
+predictors and small coefficient changes can make the fit unstable,
+which is exactly why regularization comes next.</p>
+<pre class="r"><code>pred_lm &lt;- tibble(
+  model = &quot;Linear regression&quot;,
+  observed = y_test,
+  predicted = lm_pred,
+  residual = y_test - lm_pred
+)
+
+plot_obs_pred(pred_lm, &quot;Linear regression: observed vs predicted&quot;)</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/linear-model-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ridge-regression" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Ridge regression</h2>
+<pre class="r"><code>ridge_path &lt;- glmnet(x_train, y_train, alpha = 0)
+ridge_cv &lt;- cv.glmnet(x_train, y_train, alpha = 0, nfolds = 5)
+ridge_pred &lt;- as.numeric(predict(ridge_cv, newx = x_test, s = &quot;lambda.min&quot;))
+ridge_metrics &lt;- metric_row(&quot;Ridge&quot;, y_test, ridge_pred)
+ridge_coef_tbl &lt;- top_abs_coef(coef(ridge_cv, s = &quot;lambda.min&quot;), n = 12)</code></pre>
+<pre class="r"><code>op &lt;- par(mar = c(5, 4, 6, 2) + 0.1)
+plot(ridge_path, xvar = &quot;lambda&quot;, label = FALSE, main = &quot;&quot;, xlab = &quot;log(lambda)&quot;)
+title(main = &quot;Ridge coefficient path&quot;, line = 3)</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/ridge-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(ridge_cv, main = &quot;&quot;, xlab = &quot;log(lambda)&quot;, ylab = &quot;Cross-validation error&quot;)
+title(main = &quot;Ridge cross-validation curve&quot;, line = 3)</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/ridge-plots-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(op)</code></pre>
+<p>Ridge keeps all predictors but shrinks them toward zero, which is
+useful when correlated predictors are present. If linear regression is
+noisy because of collinearity, ridge usually behaves more steadily even
+when the raw <code>R^2</code> only improves a little.</p>
+<pre class="r"><code>ridge_coef_tbl |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Oxygen.Filler</td>
+<td align="right">-0.1922</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Volume</td>
+<td align="right">-0.1257</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC</td>
+<td align="right">-0.1134</td>
+</tr>
+<tr class="even">
+<td align="left">PC.Volume</td>
+<td align="right">-0.1000</td>
+</tr>
+<tr class="odd">
+<td align="left">Fill.Ounces</td>
+<td align="right">-0.0880</td>
+</tr>
+<tr class="even">
+<td align="left">Brand.CodeC</td>
+<td align="right">-0.0800</td>
+</tr>
+<tr class="odd">
+<td align="left">Carb.Rel</td>
+<td align="right">0.0770</td>
+</tr>
+<tr class="even">
+<td align="left">Brand.CodeD</td>
+<td align="right">0.0756</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC.CO2</td>
+<td align="right">-0.0564</td>
+</tr>
+<tr class="even">
+<td align="left">Brand.CodeB</td>
+<td align="right">0.0527</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC.Fill</td>
+<td align="right">-0.0441</td>
+</tr>
+<tr class="even">
+<td align="left">Temperature</td>
+<td align="right">-0.0122</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lasso-regression" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Lasso regression</h2>
+<pre class="r"><code>lasso_path &lt;- glmnet(x_train, y_train, alpha = 1)
+lasso_cv &lt;- cv.glmnet(x_train, y_train, alpha = 1, nfolds = 5)
+lasso_pred &lt;- as.numeric(predict(lasso_cv, newx = x_test, s = &quot;lambda.min&quot;))
+lasso_metrics &lt;- metric_row(&quot;Lasso&quot;, y_test, lasso_pred)
+lasso_coef_tbl &lt;- top_abs_coef(coef(lasso_cv, s = &quot;lambda.min&quot;), n = 12)
+lasso_nonzero &lt;- sum(as.matrix(coef(lasso_cv, s = &quot;lambda.min&quot;))[, 1] != 0) - 1</code></pre>
+<pre class="r"><code>op &lt;- par(mar = c(5, 4, 6, 2) + 0.1)
+plot(lasso_path, xvar = &quot;lambda&quot;, label = FALSE, main = &quot;&quot;, xlab = &quot;log(lambda)&quot;)
+title(main = &quot;Lasso coefficient path&quot;, line = 3)</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/lasso-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(lasso_cv, main = &quot;&quot;, xlab = &quot;log(lambda)&quot;, ylab = &quot;Cross-validation error&quot;)
+title(main = &quot;Lasso cross-validation curve&quot;, line = 3)</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/lasso-plots-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(op)</code></pre>
+<p>Lasso is the sparse version of the story: it can shrink some
+coefficients all the way to zero, which makes the model easier to
+interpret than ridge when only a smaller subset of predictors truly
+matters.</p>
+<pre class="r"><code>lasso_coef_tbl |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Oxygen.Filler</td>
+<td align="right">-0.2286</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Volume</td>
+<td align="right">-0.1291</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC</td>
+<td align="right">-0.1048</td>
+</tr>
+<tr class="even">
+<td align="left">PC.Volume</td>
+<td align="right">-0.0905</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeD</td>
+<td align="right">0.0841</td>
+</tr>
+<tr class="even">
+<td align="left">Fill.Ounces</td>
+<td align="right">-0.0818</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeC</td>
+<td align="right">-0.0814</td>
+</tr>
+<tr class="even">
+<td align="left">Carb.Rel</td>
+<td align="right">0.0638</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeB</td>
+<td align="right">0.0538</td>
+</tr>
+<tr class="even">
+<td align="left">PSC.CO2</td>
+<td align="right">-0.0471</td>
+</tr>
+<tr class="odd">
+<td align="left">PSC.Fill</td>
+<td align="right">-0.0421</td>
+</tr>
+<tr class="even">
+<td align="left">Temperature</td>
+<td align="right">-0.0118</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="partial-least-squares" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Partial least
+squares</h2>
+<pre class="r"><code>pls_grid &lt;- data.frame(ncomp = 1:min(10, ncol(train_data) - 1))
+pls_model &lt;- train(
+  PH ~ .,
+  data = train_data,
+  method = &quot;pls&quot;,
+  trControl = ctrl,
+  preProcess = c(&quot;center&quot;, &quot;scale&quot;),
+  tuneGrid = pls_grid
+)
+pls_pred &lt;- predict(pls_model, newdata = test_data)
+pls_metrics &lt;- metric_row(&quot;PLS&quot;, y_test, pls_pred)
+pls_importance &lt;- varImp(pls_model)$importance |&gt;
+  tibble::rownames_to_column(&quot;term&quot;) |&gt;
+  as_tibble() |&gt;
+  arrange(desc(Overall))</code></pre>
+<pre class="r"><code>ggplot(as_tibble(pls_model$results), aes(ncomp, RMSE)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = &quot;PLS tuning curve&quot;,
+    x = &quot;Number of components&quot;,
+    y = &quot;RMSE&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/pls-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>PLS is helpful when the predictors are strongly correlated because it
+compresses them into a smaller number of response-aware components. It
+often beats ordinary regression, but it still may not match a strong
+nonlinear model if the process relationships are more complex.</p>
+<pre class="r"><code>pls_importance |&gt; head(12) |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">Overall</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mnf.Flow</td>
+<td align="right">100.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Brand.CodeC</td>
+<td align="right">84.8040</td>
+</tr>
+<tr class="odd">
+<td align="left">Bowl.Setpoint</td>
+<td align="right">73.6183</td>
+</tr>
+<tr class="even">
+<td align="left">Usage.cont</td>
+<td align="right">70.1929</td>
+</tr>
+<tr class="odd">
+<td align="left">Pressure.Setpoint</td>
+<td align="right">57.1783</td>
+</tr>
+<tr class="even">
+<td align="left">Fill.Pressure</td>
+<td align="right">50.6897</td>
+</tr>
+<tr class="odd">
+<td align="left">Pressure.Vacuum</td>
+<td align="right">47.8456</td>
+</tr>
+<tr class="even">
+<td align="left">Hyd.Pressure2</td>
+<td align="right">45.6225</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeB</td>
+<td align="right">42.2667</td>
+</tr>
+<tr class="even">
+<td align="left">Temperature</td>
+<td align="right">40.7807</td>
+</tr>
+<tr class="odd">
+<td align="left">Brand.CodeD</td>
+<td align="right">40.0690</td>
+</tr>
+<tr class="even">
+<td align="left">Oxygen.Filler</td>
+<td align="right">36.3761</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="random-forest" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Random forest</h2>
+<pre class="r"><code>rf_model &lt;- train(
+  PH ~ .,
+  data = train_data,
+  method = &quot;rf&quot;,
+  trControl = ctrl,
+  ntree = 300,
+  tuneLength = 3,
+  importance = TRUE
+)
+rf_pred &lt;- predict(rf_model, newdata = test_data)
+rf_metrics &lt;- metric_row(&quot;Random forest&quot;, y_test, rf_pred)</code></pre>
+<pre class="r"><code>rf_importance_tbl &lt;- varImp(rf_model)$importance |&gt;
+  tibble::rownames_to_column(&quot;term&quot;) |&gt;
+  as_tibble() |&gt;
+  arrange(desc(Overall)) |&gt;
+  slice_head(n = 10)
+
+ggplot(rf_importance_tbl, aes(x = reorder(term, Overall), y = Overall)) +
+  geom_col(aes(fill = Overall), color = NA, width = 0.65) +
+  scale_fill_gradient(low = &quot;darkred&quot;, high = &quot;darkgreen&quot;) +
+  coord_flip() +
+  labs(
+    title = &quot;Random forest variable importance&quot;,
+    x = NULL,
+    y = &quot;Overall importance&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/rf-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>Random forest is where the journey starts to leave pure linear
+structure behind. If the observed vs predicted plot tightens and the
+residual spread narrows, that is evidence that the process has nonlinear
+interactions that the linear models could not fully capture.</p>
+</div>
+<div id="gradient-boosting" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Gradient
+boosting</h2>
+<pre class="r"><code>gbm_model &lt;- train(
+  PH ~ .,
+  data = train_data,
+  method = &quot;gbm&quot;,
+  trControl = ctrl,
+  verbose = FALSE,
+  tuneLength = 3
+)
+gbm_pred &lt;- predict(gbm_model, newdata = test_data)
+gbm_metrics &lt;- metric_row(&quot;Gradient boosting&quot;, y_test, gbm_pred)</code></pre>
+<pre class="r"><code>gbm_importance_tbl &lt;- varImp(gbm_model)$importance |&gt;
+  tibble::rownames_to_column(&quot;term&quot;) |&gt;
+  as_tibble() |&gt;
+  arrange(desc(Overall)) |&gt;
+  slice_head(n = 10)
+
+ggplot(gbm_importance_tbl, aes(x = reorder(term, Overall), y = Overall)) +
+  geom_col(aes(fill = Overall), color = NA, width = 0.65) +
+  scale_fill_gradient(low = &quot;darkred&quot;, high = &quot;darkgreen&quot;) +
+  coord_flip() +
+  labs(
+    title = &quot;Gradient boosting variable importance&quot;,
+    x = NULL,
+    y = &quot;Overall importance&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/gbm-plots-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>Boosting is the most flexible model in this sequence, so it is the
+one most likely to win on test error if the process has several weak
+nonlinear effects that add up. The downside is that it gives up the
+transparency of the linear models.</p>
+<p>In this run, gradient boosting improved on the linear baselines, but
+it did not beat random forest. That matters because GBM is not
+automatically better just because it is more complex. It depends heavily
+on tuning choices such as the number of trees, interaction depth, and
+learning rate. Here the model was only tuned lightly, so it may not have
+reached its best bias-variance tradeoff. Random forest, by contrast, is
+often more forgiving on moderately noisy process data because many trees
+are averaged together, which can reduce variance without requiring as
+much careful tuning.</p>
+</div>
+<div id="compare-the-models" class="section level2" number="3.8">
+<h2><span class="header-section-number">3.8</span> Compare the
+models</h2>
+<pre class="r"><code>model_metrics &lt;- bind_rows(
+  lm_metrics,
+  ridge_metrics,
+  lasso_metrics,
+  pls_metrics,
+  rf_metrics,
+  gbm_metrics
+) |&gt;
+  mutate(
+    adjusted_r2 = c(lm_adj_r2, rep(NA_real_, 5))
+  ) |&gt;
+  select(model, rmse, mae, r2, adjusted_r2)
+
+best_model &lt;- model_metrics |&gt; arrange(rmse) |&gt; slice(1)
+best_model_name &lt;- best_model$model[[1]]</code></pre>
+<pre class="r"><code>model_metrics |&gt; kable(digits = 4)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">rmse</th>
+<th align="right">mae</th>
+<th align="right">r2</th>
+<th align="right">adjusted_r2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Linear regression</td>
+<td align="right">0.1301</td>
+<td align="right">0.1031</td>
+<td align="right">0.3918</td>
+<td align="right">0.3822</td>
+</tr>
+<tr class="even">
+<td align="left">Ridge</td>
+<td align="right">0.1302</td>
+<td align="right">0.1034</td>
+<td align="right">0.3911</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Lasso</td>
+<td align="right">0.1300</td>
+<td align="right">0.1030</td>
+<td align="right">0.3928</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">PLS</td>
+<td align="right">0.1301</td>
+<td align="right">0.1031</td>
+<td align="right">0.3925</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Random forest</td>
+<td align="right">0.0969</td>
+<td align="right">0.0709</td>
+<td align="right">0.6657</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Gradient boosting</td>
+<td align="right">0.1171</td>
+<td align="right">0.0923</td>
+<td align="right">0.5095</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(model_metrics, aes(x = reorder(model, rmse), y = rmse, fill = rmse)) +
+  geom_col(color = NA, width = 0.65) +
+  scale_fill_gradient(low = &quot;darkgreen&quot;, high = &quot;darkred&quot;) +
+  coord_flip() +
+  labs(
+    title = &quot;Test-set RMSE by model&quot;,
+    x = NULL,
+    y = &quot;RMSE&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/model-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>prediction_comparison &lt;- bind_rows(
+  tibble(model = &quot;Linear regression&quot;, observed = y_test, predicted = lm_pred),
+  tibble(model = &quot;Ridge&quot;, observed = y_test, predicted = ridge_pred),
+  tibble(model = &quot;Lasso&quot;, observed = y_test, predicted = lasso_pred),
+  tibble(model = &quot;PLS&quot;, observed = y_test, predicted = pls_pred),
+  tibble(model = &quot;Random forest&quot;, observed = y_test, predicted = rf_pred),
+  tibble(model = &quot;Gradient boosting&quot;, observed = y_test, predicted = gbm_pred)
+) |&gt;
+  mutate(residual = observed - predicted)
+
+ggplot(prediction_comparison, aes(x = model, y = residual)) +
+  geom_boxplot(width = 0.55, fill = &quot;grey92&quot;, color = &quot;grey25&quot;, outlier.size = 0.7) +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = 2, color = &quot;gray45&quot;, linewidth = 0.35) +
+  labs(
+    title = &quot;Residual spread by model&quot;,
+    x = NULL,
+    y = &quot;Observed - predicted&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/residual-boxplot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(prediction_comparison, aes(x = observed, y = predicted)) +
+  geom_point(alpha = 0.45, size = 0.9) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = 2,
+    color = &quot;gray45&quot;,
+    linewidth = 0.35
+  ) +
+  facet_wrap(~ model, ncol = 2, scales = &quot;free&quot;) +
+  labs(
+    title = &quot;Observed vs predicted across candidate models&quot;,
+    x = &quot;Observed PH&quot;,
+    y = &quot;Predicted PH&quot;
+  )</code></pre>
+<p><img src="ABC_Beverage_Full_Data_Modeling_Journey_files/figure-html/observed-predicted-facets-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>The winner is Random forest, because it gives the lowest test RMSE in
+this run while still being backed up by a strong residual pattern and a
+more competitive <code>R^2</code> than the simpler linear baselines.
+Ridge and lasso are still valuable because they show how shrinkage
+improves stability, but the tree-based model selected here handles the
+process nonlinearity more effectively.</p>
+<p>Gradient boosting is still an important checkpoint in the journey
+even though it does not win here. It gives a clear step up from ordinary
+regression, ridge, lasso, and PLS, which tells us the data do contain
+nonlinear structure. The fact that it still trails random forest
+suggests either that the boosting hyperparameters need more work or that
+the random forest averaging strategy fits this data better under the
+current cleaning pipeline. In other words, boosting was competitive, but
+not yet competitive enough to justify replacing the forest model.</p>
+</div>
+<div id="optional-scoring-set" class="section level2" number="3.9">
+<h2><span class="header-section-number">3.9</span> Optional scoring
+set</h2>
+<pre class="r"><code>if (any(file.exists(eval_paths))) {
+  scoring_data &lt;- evaluation_data |&gt; select(any_of(names(model_data)))
+  scoring_data &lt;- scoring_data |&gt; mutate(Brand.Code = factor(Brand.Code, levels = levels(model_data$Brand.Code)))
+  head(scoring_data)
+} else {
+  head(model_data)
+}</code></pre>
+<pre><code>## # A tibble: 6 x 25
+##   Brand.Code Carb.Volume Fill.Ounces PC.Volume Carb.Pressure   PSC PSC.Fill
+##   &lt;fct&gt;            &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+## 1 B                 5.34        24.0     0.263          68.2 0.104    0.260
+## 2 A                 5.43        24.0     0.239          68.4 0.124    0.220
+## 3 B                 5.29        24.1     0.263          70.8 0.09     0.34 
+## 4 A                 5.44        24.0     0.293          63   0.120    0.420
+## 5 A                 5.49        24.3     0.111          67.2 0.026    0.16 
+## 6 A                 5.38        23.9     0.269          66.6 0.09     0.240
+## # i 18 more variables: PSC.CO2 &lt;dbl&gt;, Mnf.Flow &lt;dbl&gt;, Carb.Pressure1 &lt;dbl&gt;,
+## #   Fill.Pressure &lt;dbl&gt;, Hyd.Pressure1 &lt;dbl&gt;, Hyd.Pressure2 &lt;dbl&gt;,
+## #   Hyd.Pressure4 &lt;dbl&gt;, Temperature &lt;dbl&gt;, Usage.cont &lt;dbl&gt;, Carb.Flow &lt;dbl&gt;,
+## #   MFR &lt;dbl&gt;, Pressure.Vacuum &lt;dbl&gt;, PH &lt;dbl&gt;, Oxygen.Filler &lt;dbl&gt;,
+## #   Bowl.Setpoint &lt;dbl&gt;, Pressure.Setpoint &lt;dbl&gt;, Air.Pressurer &lt;dbl&gt;,
+## #   Carb.Rel &lt;dbl&gt;</code></pre>
+<p>This optional chunk keeps the report portable. If a separate
+evaluation workbook is available later, the same modeling workflow can
+score it directly without changing the rest of the document.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

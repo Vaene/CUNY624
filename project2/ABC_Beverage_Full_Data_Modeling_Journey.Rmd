@@ -1,0 +1,670 @@
+---
+title: "ABC Beverage - Full Data & Modeling Journey"
+author: "Randy Howk"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 4.5,
+  dpi = 144,
+  fig.align = "center"
+)
+
+suppressPackageStartupMessages({
+  library(caret)
+  library(pls)
+  library(glmnet)
+  library(randomForest)
+  library(gbm)
+  library(impute)
+  library(mice)
+  library(missForest)
+  library(ggplot2)
+  library(dplyr)
+  library(tidyr)
+  library(readxl)
+  library(psych)
+  library(knitr)
+})
+
+set.seed(2026)
+
+theme_set(
+  theme_classic(base_size = 11) +
+    theme(
+      legend.position = "top",
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      axis.ticks = element_blank()
+    )
+)
+
+update_geom_defaults("line", list(linewidth = 0.45))
+update_geom_defaults("point", list(size = 1.2))
+```
+
+```{r helpers}
+read_project_xlsx <- function(paths, fallback = NULL) {
+  for (path in paths) {
+    if (file.exists(path)) {
+      return(read_excel(path))
+    }
+  }
+
+  if (!is.null(fallback)) {
+    return(fallback)
+  }
+
+  stop("None of these files exist: ", paste(paths, collapse = ", "))
+}
+
+mode_value <- function(x) {
+  x <- x[!is.na(x)]
+  if (!length(x)) return(NA)
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+nrmse_calc <- function(actual, pred) {
+  actual <- as.numeric(actual)
+  pred <- as.numeric(pred)
+  rng <- diff(range(actual, na.rm = TRUE))
+  if (is.na(rng) || rng == 0) return(NA_real_)
+  sqrt(mean((actual - pred)^2, na.rm = TRUE)) / rng
+}
+
+metric_row <- function(model, obs, pred) {
+  tibble(
+    model = model,
+    rmse = caret::RMSE(pred, obs),
+    mae = caret::MAE(pred, obs),
+    r2 = caret::R2(pred, obs)
+  )
+}
+
+top_abs_coef <- function(coef_obj, n = 10) {
+  coef_df <- as.matrix(coef_obj)
+  tibble(
+    term = rownames(coef_df),
+    estimate = as.numeric(coef_df[, 1])
+  ) |>
+    filter(term != "(Intercept)") |>
+    mutate(abs_estimate = abs(estimate)) |>
+    arrange(desc(abs_estimate)) |>
+    slice_head(n = n) |>
+    select(term, estimate)
+}
+
+plot_obs_pred <- function(df, title) {
+  ggplot(df, aes(x = observed, y = predicted)) +
+    geom_point(alpha = 0.5) +
+    geom_abline(
+      slope = 1,
+      intercept = 0,
+      linetype = 2,
+      linewidth = 0.35,
+      color = "gray45"
+    ) +
+    labs(title = title, x = "Observed", y = "Predicted")
+}
+```
+
+# Introduction
+
+This report combines the strongest parts of both earlier drafts into one full modeling journey for the ABC beverage process data. The cleaning section emphasizes why imputation was preferred over simple exclusion, while the modeling section starts with a baseline linear model and moves through ridge, lasso, PLS, random forest, and gradient boosting. All plots use a low-ink style so the data carry the visual weight.
+
+# Data Cleaning Journey
+
+## Load and inspect the data
+
+```{r load-data}
+student_raw <- read_project_xlsx(
+  c("Project2/StudentData.xlsx", "StudentData.xlsx")
+)
+student_data <- student_raw |> rename_with(make.names)
+
+eval_paths <- c(
+  "Project2/StudentEvaluation.xlsx",
+  "Project2/StudentEvaluation (1).xlsx",
+  "StudentEvaluation.xlsx",
+  "StudentEvaluation (1).xlsx"
+)
+
+evaluation_raw <- read_project_xlsx(eval_paths, fallback = student_raw)
+evaluation_data <- evaluation_raw |> rename_with(make.names)
+
+data_overview <- tibble(
+  rows = nrow(student_data),
+  cols = ncol(student_data),
+  complete_rows = sum(complete.cases(student_data)),
+  complete_share = round(100 * complete_rows / rows, 1)
+)
+
+data_overview |> kable()
+str(student_data)
+```
+
+The raw data contain `r nrow(student_data)` rows and `r ncol(student_data)` columns. `r if (any(file.exists(eval_paths))) "A separate evaluation workbook was also found, so the report can score new data directly." else "No separate evaluation workbook was found in the project folder, so the code falls back to the main dataset when it needs a scoring example."`
+
+## Missingness and near-zero variance
+
+```{r missingness}
+missing_counts <- student_data |>
+  summarise(across(everything(), ~ sum(is.na(.)))) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "n_missing") |>
+  arrange(desc(n_missing))
+
+nzv_vars <- tibble(variable = names(student_data)[nearZeroVar(student_data)])
+if (nrow(nzv_vars) == 0) nzv_vars <- tibble(variable = "None")
+
+missing_counts |> head(12) |> kable()
+nzv_vars |> kable()
+```
+
+```{r response-boxplot}
+ggplot(student_data, aes(x = "", y = PH)) +
+  geom_boxplot(width = 0.35, fill = "grey92", color = "grey25", outlier.size = 0.8) +
+  labs(
+    title = "Response distribution before cleaning",
+    x = NULL,
+    y = "PH"
+  )
+```
+
+The missingness table shows why a full complete-case drop would be too aggressive. `r sum(complete.cases(student_data))` rows are complete, which means `r nrow(student_data) - sum(complete.cases(student_data))` rows would be lost if we excluded every observation with any missing value. That is a lot of signal to throw away in a process dataset that is already fairly expensive to collect.
+
+## Why imputation won
+
+```{r imputation-benchmark}
+complete_data <- student_data |> filter(if_all(everything(), ~ !is.na(.)))
+
+imputation_benchmark <- function(df, iter = 5) {
+  numeric_idx <- 2:ncol(df)
+  nrmse_values <- matrix(NA_real_, nrow = iter, ncol = 6)
+  brand_values <- matrix(NA_real_, nrow = iter, ncol = 3)
+  colnames(nrmse_values) <- c("mean", "median", "mode", "knn", "mice", "forest")
+  colnames(brand_values) <- c("mode", "mice", "forest")
+
+  for (i in seq_len(iter)) {
+    missing_data <- df |>
+      mutate(across(everything(), function(x) {
+        idx <- sample(seq_along(x), size = floor(0.05 * length(x)))
+        x[idx] <- NA
+        x
+      }))
+
+    missing_rows <- lapply(missing_data, function(x) which(is.na(x)))
+
+    mean_impute <- missing_data |>
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    median_impute <- missing_data |>
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), median(., na.rm = TRUE), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    mode_impute <- missing_data |>
+      mutate(
+        across(where(is.numeric), ~ ifelse(is.na(.), as.numeric(mode_value(.)), .)),
+        Brand.Code = factor(
+          ifelse(is.na(Brand.Code), mode_value(Brand.Code), as.character(Brand.Code)),
+          levels = levels(df$Brand.Code)
+        )
+      )
+
+    knn_impute <- bind_cols(
+      Brand.Code = missing_data$Brand.Code,
+      as.data.frame(impute.knn(as.matrix(missing_data |> select(-Brand.Code)))$data)
+    )
+
+    mice_impute <- complete(
+      mice(missing_data |> mutate(Brand.Code = as.factor(Brand.Code)), printFlag = FALSE),
+      1
+    )
+
+    forest_impute <- missForest(
+      as.data.frame(missing_data |> mutate(Brand.Code = as.factor(Brand.Code)))
+    )$ximp
+
+    for (j in numeric_idx) {
+      actual_values <- df[[j]][missing_rows[[j]]]
+      nrmse_values[i, "mean"] <- ifelse(is.na(nrmse_values[i, "mean"]), nrmse_calc(actual_values, mean_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "mean"])
+      nrmse_values[i, "median"] <- ifelse(is.na(nrmse_values[i, "median"]), nrmse_calc(actual_values, median_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "median"])
+      nrmse_values[i, "mode"] <- ifelse(is.na(nrmse_values[i, "mode"]), nrmse_calc(actual_values, mode_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "mode"])
+      nrmse_values[i, "knn"] <- ifelse(is.na(nrmse_values[i, "knn"]), nrmse_calc(actual_values, knn_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "knn"])
+      nrmse_values[i, "mice"] <- ifelse(is.na(nrmse_values[i, "mice"]), nrmse_calc(actual_values, mice_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "mice"])
+      nrmse_values[i, "forest"] <- ifelse(is.na(nrmse_values[i, "forest"]), nrmse_calc(actual_values, forest_impute[[j]][missing_rows[[j]]]), nrmse_values[i, "forest"])
+    }
+
+    actual_brand <- as.character(df[[1]][missing_rows[[1]]])
+    brand_values[i, "mode"] <- mean(actual_brand == as.character(mode_impute[[1]][missing_rows[[1]]]))
+    brand_values[i, "mice"] <- mean(actual_brand == as.character(mice_impute[[1]][missing_rows[[1]]]))
+    brand_values[i, "forest"] <- mean(actual_brand == as.character(forest_impute[[1]][missing_rows[[1]]]))
+  }
+
+  nrmse_tbl <- tibble(
+    method = colnames(nrmse_values),
+    nrmse = colMeans(nrmse_values, na.rm = TRUE)
+  ) |> arrange(nrmse)
+
+  brand_tbl <- tibble(
+    method = colnames(brand_values),
+    accuracy = colMeans(brand_values, na.rm = TRUE)
+  ) |> arrange(desc(accuracy))
+
+  list(nrmse = nrmse_tbl, brand = brand_tbl)
+}
+
+imputation_results <- imputation_benchmark(complete_data, iter = 5)
+```
+
+```{r imputation-tables}
+imputation_results$nrmse |> kable(digits = 4)
+imputation_results$brand |> kable(digits = 4)
+```
+
+```{r imputation-plot}
+ggplot(imputation_results$nrmse, aes(x = reorder(method, nrmse), y = nrmse)) +
+  geom_col(aes(fill = nrmse), color = NA, width = 0.65) +
+  scale_fill_gradient(low = "darkgreen", high = "darkred") +
+  coord_flip() +
+  labs(
+    title = "Imputation comparison by NRMSE",
+    x = NULL,
+    y = "Average NRMSE"
+  )
+```
+
+The benchmark shows the same pattern the first report highlighted: forest-based imputation is the strongest overall choice, with KNN and MICE close behind in some runs but not as consistently accurate.
+
+## Final cleaning pipeline
+
+```{r final-cleaning}
+clean_data <- missForest(
+  as.data.frame(student_data |> mutate(Brand.Code = as.factor(Brand.Code)))
+)$ximp |>
+  as_tibble()
+
+numeric_corr <- clean_data |>
+  select(where(is.numeric)) |>
+  cor(use = "pairwise.complete.obs")
+
+high_corr <- findCorrelation(numeric_corr, cutoff = 0.80, names = TRUE)
+if (length(high_corr) == 0) high_corr <- character(0)
+
+model_data <- clean_data
+if (length(high_corr) > 0) {
+  model_data <- model_data |> select(-all_of(high_corr))
+}
+
+clean_check <- model_data |>
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+tibble(removed_predictors = if (length(high_corr) == 0) "None" else high_corr) |> kable()
+clean_check |> kable()
+```
+
+```{r cleaned-boxplot}
+ggplot(model_data, aes(x = "", y = PH)) +
+  geom_boxplot(width = 0.35, fill = "grey90", color = "grey25", outlier.size = 0.7) +
+  labs(
+    title = "Response distribution after cleaning",
+    x = NULL,
+    y = "PH"
+  )
+```
+
+The cleaned data keep the full set of observations after imputation and remove only the strongest redundant predictors. That gives the modeling section a stable starting point without the heavy information loss that complete-case deletion would cause.
+
+# Modeling Journey
+
+## Split the cleaned data
+
+```{r split-data}
+set.seed(2026)
+idx <- createDataPartition(model_data$PH, p = 0.80, list = FALSE)
+
+train_data <- model_data[idx, ]
+test_data <- model_data[-idx, ]
+
+x_all <- model.matrix(PH ~ ., data = model_data)[, -1]
+x_train <- x_all[idx, ]
+x_test <- x_all[-idx, ]
+y_train <- train_data$PH
+y_test <- test_data$PH
+
+ctrl <- trainControl(method = "cv", number = 5)
+```
+
+## Baseline linear regression
+
+```{r linear-model}
+lm_model <- lm(PH ~ ., data = train_data)
+lm_pred <- predict(lm_model, newdata = test_data)
+lm_metrics <- metric_row("Linear regression", y_test, lm_pred)
+lm_adj_r2 <- summary(lm_model)$adj.r.squared
+
+lm_coef_tbl <- as.data.frame(coef(summary(lm_model)))
+lm_coef_tbl$term <- rownames(lm_coef_tbl)
+lm_coef_tbl <- lm_coef_tbl[, c(ncol(lm_coef_tbl), 1:(ncol(lm_coef_tbl) - 1))]
+lm_coef_tbl <- lm_coef_tbl[order(lm_coef_tbl$`Pr(>|t|)`), ]
+```
+
+```{r linear-model-table}
+lm_coef_tbl |> head(12) |> kable(digits = 4)
+```
+
+The linear model is the right first step because it is interpretable and gives p-values. Its weaknesses are also visible quickly: correlated predictors and small coefficient changes can make the fit unstable, which is exactly why regularization comes next.
+
+```{r linear-model-plots}
+pred_lm <- tibble(
+  model = "Linear regression",
+  observed = y_test,
+  predicted = lm_pred,
+  residual = y_test - lm_pred
+)
+
+plot_obs_pred(pred_lm, "Linear regression: observed vs predicted")
+```
+
+## Ridge regression
+
+```{r ridge-model}
+ridge_path <- glmnet(x_train, y_train, alpha = 0)
+ridge_cv <- cv.glmnet(x_train, y_train, alpha = 0, nfolds = 5)
+ridge_pred <- as.numeric(predict(ridge_cv, newx = x_test, s = "lambda.min"))
+ridge_metrics <- metric_row("Ridge", y_test, ridge_pred)
+ridge_coef_tbl <- top_abs_coef(coef(ridge_cv, s = "lambda.min"), n = 12)
+```
+
+```{r ridge-plots}
+op <- par(mar = c(5, 4, 6, 2) + 0.1)
+plot(ridge_path, xvar = "lambda", label = FALSE, main = "", xlab = "log(lambda)")
+title(main = "Ridge coefficient path", line = 3)
+plot(ridge_cv, main = "", xlab = "log(lambda)", ylab = "Cross-validation error")
+title(main = "Ridge cross-validation curve", line = 3)
+par(op)
+```
+
+Ridge keeps all predictors but shrinks them toward zero, which is useful when correlated predictors are present. If linear regression is noisy because of collinearity, ridge usually behaves more steadily even when the raw `R^2` only improves a little.
+
+```{r ridge-table}
+ridge_coef_tbl |> kable(digits = 4)
+```
+
+## Lasso regression
+
+```{r lasso-model}
+lasso_path <- glmnet(x_train, y_train, alpha = 1)
+lasso_cv <- cv.glmnet(x_train, y_train, alpha = 1, nfolds = 5)
+lasso_pred <- as.numeric(predict(lasso_cv, newx = x_test, s = "lambda.min"))
+lasso_metrics <- metric_row("Lasso", y_test, lasso_pred)
+lasso_coef_tbl <- top_abs_coef(coef(lasso_cv, s = "lambda.min"), n = 12)
+lasso_nonzero <- sum(as.matrix(coef(lasso_cv, s = "lambda.min"))[, 1] != 0) - 1
+```
+
+```{r lasso-plots}
+op <- par(mar = c(5, 4, 6, 2) + 0.1)
+plot(lasso_path, xvar = "lambda", label = FALSE, main = "", xlab = "log(lambda)")
+title(main = "Lasso coefficient path", line = 3)
+plot(lasso_cv, main = "", xlab = "log(lambda)", ylab = "Cross-validation error")
+title(main = "Lasso cross-validation curve", line = 3)
+par(op)
+```
+
+Lasso is the sparse version of the story: it can shrink some coefficients all the way to zero, which makes the model easier to interpret than ridge when only a smaller subset of predictors truly matters.
+
+```{r lasso-table}
+lasso_coef_tbl |> kable(digits = 4)
+```
+
+## Partial least squares
+
+```{r pls-model}
+pls_grid <- data.frame(ncomp = 1:min(10, ncol(train_data) - 1))
+pls_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "pls",
+  trControl = ctrl,
+  preProcess = c("center", "scale"),
+  tuneGrid = pls_grid
+)
+pls_pred <- predict(pls_model, newdata = test_data)
+pls_metrics <- metric_row("PLS", y_test, pls_pred)
+pls_importance <- varImp(pls_model)$importance |>
+  tibble::rownames_to_column("term") |>
+  as_tibble() |>
+  arrange(desc(Overall))
+```
+
+```{r pls-plots}
+ggplot(as_tibble(pls_model$results), aes(ncomp, RMSE)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "PLS tuning curve",
+    x = "Number of components",
+    y = "RMSE"
+  )
+```
+
+PLS is helpful when the predictors are strongly correlated because it compresses them into a smaller number of response-aware components. It often beats ordinary regression, but it still may not match a strong nonlinear model if the process relationships are more complex.
+
+```{r pls-table}
+pls_importance |> head(12) |> kable(digits = 4)
+```
+
+## Random forest
+
+```{r rf-model}
+rf_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "rf",
+  trControl = ctrl,
+  ntree = 300,
+  tuneLength = 3,
+  importance = TRUE
+)
+rf_pred <- predict(rf_model, newdata = test_data)
+rf_metrics <- metric_row("Random forest", y_test, rf_pred)
+```
+
+```{r rf-plots}
+rf_importance_tbl <- varImp(rf_model)$importance |>
+  tibble::rownames_to_column("term") |>
+  as_tibble() |>
+  arrange(desc(Overall)) |>
+  slice_head(n = 10)
+
+ggplot(rf_importance_tbl, aes(x = reorder(term, Overall), y = Overall)) +
+  geom_col(aes(fill = Overall), color = NA, width = 0.65) +
+  scale_fill_gradient(low = "darkred", high = "darkgreen") +
+  coord_flip() +
+  labs(
+    title = "Random forest variable importance",
+    x = NULL,
+    y = "Overall importance"
+  )
+```
+
+Random forest is where the journey starts to leave pure linear structure behind. If the observed vs predicted plot tightens and the residual spread narrows, that is evidence that the process has nonlinear interactions that the linear models could not fully capture.
+
+## Gradient boosting
+
+```{r gbm-model}
+gbm_model <- train(
+  PH ~ .,
+  data = train_data,
+  method = "gbm",
+  trControl = ctrl,
+  verbose = FALSE,
+  tuneLength = 3
+)
+gbm_pred <- predict(gbm_model, newdata = test_data)
+gbm_metrics <- metric_row("Gradient boosting", y_test, gbm_pred)
+```
+
+```{r gbm-plots}
+gbm_importance_tbl <- varImp(gbm_model)$importance |>
+  tibble::rownames_to_column("term") |>
+  as_tibble() |>
+  arrange(desc(Overall)) |>
+  slice_head(n = 10)
+
+ggplot(gbm_importance_tbl, aes(x = reorder(term, Overall), y = Overall)) +
+  geom_col(aes(fill = Overall), color = NA, width = 0.65) +
+  scale_fill_gradient(low = "darkred", high = "darkgreen") +
+  coord_flip() +
+  labs(
+    title = "Gradient boosting variable importance",
+    x = NULL,
+    y = "Overall importance"
+  )
+```
+
+Boosting is the most flexible model in this sequence, so it is the one most likely to win on test error if the process has several weak nonlinear effects that add up. The downside is that it gives up the transparency of the linear models.
+
+In this run, gradient boosting improved on the linear baselines, but it did not beat random forest. That matters because GBM is not automatically better just because it is more complex. It depends heavily on tuning choices such as the number of trees, interaction depth, and learning rate. Here the model was only tuned lightly, so it may not have reached its best bias-variance tradeoff. Random forest, by contrast, is often more forgiving on moderately noisy process data because many trees are averaged together, which can reduce variance without requiring as much careful tuning.
+
+## Compare the models
+
+```{r compare-models}
+model_metrics <- bind_rows(
+  lm_metrics,
+  ridge_metrics,
+  lasso_metrics,
+  pls_metrics,
+  rf_metrics,
+  gbm_metrics
+) |>
+  mutate(
+    adjusted_r2 = c(lm_adj_r2, rep(NA_real_, 5))
+  ) |>
+  select(model, rmse, mae, r2, adjusted_r2)
+
+best_model <- model_metrics |> arrange(rmse) |> slice(1)
+best_model_name <- best_model$model[[1]]
+```
+
+```{r model-table}
+model_metrics |> kable(digits = 4)
+```
+
+```{r model-plot}
+ggplot(model_metrics, aes(x = reorder(model, rmse), y = rmse, fill = rmse)) +
+  geom_col(color = NA, width = 0.65) +
+  scale_fill_gradient(low = "darkgreen", high = "darkred") +
+  coord_flip() +
+  labs(
+    title = "Test-set RMSE by model",
+    x = NULL,
+    y = "RMSE"
+  )
+```
+
+```{r residual-boxplot}
+prediction_comparison <- bind_rows(
+  tibble(model = "Linear regression", observed = y_test, predicted = lm_pred),
+  tibble(model = "Ridge", observed = y_test, predicted = ridge_pred),
+  tibble(model = "Lasso", observed = y_test, predicted = lasso_pred),
+  tibble(model = "PLS", observed = y_test, predicted = pls_pred),
+  tibble(model = "Random forest", observed = y_test, predicted = rf_pred),
+  tibble(model = "Gradient boosting", observed = y_test, predicted = gbm_pred)
+) |>
+  mutate(residual = observed - predicted)
+
+ggplot(prediction_comparison, aes(x = model, y = residual)) +
+  geom_boxplot(width = 0.55, fill = "grey92", color = "grey25", outlier.size = 0.7) +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = 2, color = "gray45", linewidth = 0.35) +
+  labs(
+    title = "Residual spread by model",
+    x = NULL,
+    y = "Observed - predicted"
+  )
+```
+
+```{r observed-predicted-facets}
+ggplot(prediction_comparison, aes(x = observed, y = predicted)) +
+  geom_point(alpha = 0.45, size = 0.9) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = 2,
+    color = "gray45",
+    linewidth = 0.35
+  ) +
+  facet_wrap(~ model, ncol = 2, scales = "free") +
+  labs(
+    title = "Observed vs predicted across candidate models",
+    x = "Observed PH",
+    y = "Predicted PH"
+  )
+```
+
+The winner is `r best_model_name`, because it gives the lowest test RMSE in this run while still being backed up by a strong residual pattern and a more competitive `R^2` than the simpler linear baselines. Ridge and lasso are still valuable because they show how shrinkage improves stability, but the tree-based model selected here handles the process nonlinearity more effectively.
+
+Gradient boosting is still an important checkpoint in the journey even though it does not win here. It gives a clear step up from ordinary regression, ridge, lasso, and PLS, which tells us the data do contain nonlinear structure. The fact that it still trails random forest suggests either that the boosting hyperparameters need more work or that the random forest averaging strategy fits this data better under the current cleaning pipeline. In other words, boosting was competitive, but not yet competitive enough to justify replacing the forest model.
+
+## Optional scoring set
+
+```{r optional-scoring}
+if (any(file.exists(eval_paths))) {
+  scoring_data <- evaluation_data |> select(any_of(names(model_data)))
+  scoring_data <- scoring_data |> mutate(Brand.Code = factor(Brand.Code, levels = levels(model_data$Brand.Code)))
+  head(scoring_data)
+} else {
+  head(model_data)
+}
+```
+
+This optional chunk keeps the report portable. If a separate evaluation workbook is available later, the same modeling workflow can score it directly without changing the rest of the document.
