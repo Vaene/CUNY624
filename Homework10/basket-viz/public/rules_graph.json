@@ -1,0 +1,419 @@
+{
+  "graph": {
+    "title": "Association Rules Network",
+    "z_axis": "Association prominence",
+    "note": "Rule nodes use lift; item nodes use the average lift of connected rules."
+  },
+  "items": [
+    {
+      "item": "bottled beer",
+      "count": 792,
+      "support": 0.0805,
+      "connected_lift_mean": 28.6047,
+      "node_strength": 28.6047
+    },
+    {
+      "item": "red/blush wine",
+      "count": 189,
+      "support": 0.0192,
+      "connected_lift_mean": 28.6047,
+      "node_strength": 28.6047
+    },
+    {
+      "item": "liquor",
+      "count": 109,
+      "support": 0.0111,
+      "connected_lift_mean": 28.6047,
+      "node_strength": 28.6047
+    },
+    {
+      "item": "soda",
+      "count": 1715,
+      "support": 0.1744,
+      "connected_lift_mean": 19.2467,
+      "node_strength": 19.2467
+    },
+    {
+      "item": "hamburger meat",
+      "count": 327,
+      "support": 0.0332,
+      "connected_lift_mean": 18.3299,
+      "node_strength": 18.3299
+    },
+    {
+      "item": "Instant food products",
+      "count": 79,
+      "support": 0.008,
+      "connected_lift_mean": 18.3299,
+      "node_strength": 18.3299
+    },
+    {
+      "item": "white bread",
+      "count": 414,
+      "support": 0.0421,
+      "connected_lift_mean": 17.7154,
+      "node_strength": 17.7154
+    },
+    {
+      "item": "ham",
+      "count": 256,
+      "support": 0.026,
+      "connected_lift_mean": 17.5631,
+      "node_strength": 17.5631
+    },
+    {
+      "item": "flour",
+      "count": 171,
+      "support": 0.0174,
+      "connected_lift_mean": 17.3893,
+      "node_strength": 17.3893
+    },
+    {
+      "item": "processed cheese",
+      "count": 163,
+      "support": 0.0166,
+      "connected_lift_mean": 17.15,
+      "node_strength": 17.15
+    },
+    {
+      "item": "sugar",
+      "count": 333,
+      "support": 0.0339,
+      "connected_lift_mean": 17.0425,
+      "node_strength": 17.0425
+    },
+    {
+      "item": "margarine",
+      "count": 576,
+      "support": 0.0586,
+      "connected_lift_mean": 17.0414,
+      "node_strength": 17.0414
+    },
+    {
+      "item": "root vegetables",
+      "count": 1072,
+      "support": 0.109,
+      "connected_lift_mean": 16.9161,
+      "node_strength": 16.9161
+    },
+    {
+      "item": "curd",
+      "count": 524,
+      "support": 0.0533,
+      "connected_lift_mean": 16.7209,
+      "node_strength": 16.7209
+    },
+    {
+      "item": "salty snack",
+      "count": 372,
+      "support": 0.0378,
+      "connected_lift_mean": 16.6978,
+      "node_strength": 16.6978
+    },
+    {
+      "item": "popcorn",
+      "count": 71,
+      "support": 0.0072,
+      "connected_lift_mean": 16.6978,
+      "node_strength": 16.6978
+    },
+    {
+      "item": "baking powder",
+      "count": 174,
+      "support": 0.0177,
+      "connected_lift_mean": 16.5632,
+      "node_strength": 16.5632
+    },
+    {
+      "item": "fruit/vegetable juice",
+      "count": 711,
+      "support": 0.0723,
+      "connected_lift_mean": 16.0192,
+      "node_strength": 16.0192
+    },
+    {
+      "item": "whole milk",
+      "count": 2513,
+      "support": 0.2555,
+      "connected_lift_mean": 15.6795,
+      "node_strength": 15.6795
+    },
+    {
+      "item": "whipped/sour cream",
+      "count": 705,
+      "support": 0.0717,
+      "connected_lift_mean": 15.0712,
+      "node_strength": 15.0712
+    },
+    {
+      "item": "other vegetables",
+      "count": 1903,
+      "support": 0.1935,
+      "connected_lift_mean": 14.8341,
+      "node_strength": 14.8341
+    },
+    {
+      "item": "yogurt",
+      "count": 1372,
+      "support": 0.1395,
+      "connected_lift_mean": 14.8341,
+      "node_strength": 14.8341
+    },
+    {
+      "item": "cream cheese",
+      "count": 390,
+      "support": 0.0397,
+      "connected_lift_mean": 14.8341,
+      "node_strength": 14.8341
+    },
+    {
+      "item": "rolls/buns",
+      "count": 1809,
+      "support": 0.1839,
+      "connected_lift_mean": 13.0767,
+      "node_strength": 13.0767
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "rule_1",
+      "lhs": "{bottled beer,red/blush wine}",
+      "rhs": "{liquor}",
+      "lhs_items": ["bottled beer", "red/blush wine"],
+      "rhs_items": "liquor",
+      "support": 0.0019,
+      "confidence": 0.3958,
+      "lift": 35.7158,
+      "count": 19,
+      "node_strength": 35.7158
+    },
+    {
+      "rule_id": "rule_2",
+      "lhs": "{hamburger meat,soda}",
+      "rhs": "{Instant food products}",
+      "lhs_items": ["hamburger meat", "soda"],
+      "rhs_items": "Instant food products",
+      "support": 0.0012,
+      "confidence": 0.2105,
+      "lift": 26.2092,
+      "count": 12,
+      "node_strength": 26.2092
+    },
+    {
+      "rule_id": "rule_3",
+      "lhs": "{ham,white bread}",
+      "rhs": "{processed cheese}",
+      "lhs_items": ["ham", "white bread"],
+      "rhs_items": "processed cheese",
+      "support": 0.0019,
+      "confidence": 0.38,
+      "lift": 22.9282,
+      "count": 19,
+      "node_strength": 22.9282
+    },
+    {
+      "rule_id": "rule_4",
+      "lhs": "{bottled beer,liquor}",
+      "rhs": "{red/blush wine}",
+      "lhs_items": ["bottled beer", "liquor"],
+      "rhs_items": "red/blush wine",
+      "support": 0.0019,
+      "confidence": 0.413,
+      "lift": 21.4936,
+      "count": 19,
+      "node_strength": 21.4936
+    },
+    {
+      "rule_id": "rule_5",
+      "lhs": "{Instant food products,soda}",
+      "rhs": "{hamburger meat}",
+      "lhs_items": ["Instant food products", "soda"],
+      "rhs_items": "hamburger meat",
+      "support": 0.0012,
+      "confidence": 0.6316,
+      "lift": 18.9957,
+      "count": 12,
+      "node_strength": 18.9957
+    },
+    {
+      "rule_id": "rule_6",
+      "lhs": "{curd,sugar}",
+      "rhs": "{flour}",
+      "lhs_items": ["curd", "sugar"],
+      "rhs_items": "flour",
+      "support": 0.0011,
+      "confidence": 0.3235,
+      "lift": 18.6077,
+      "count": 11,
+      "node_strength": 18.6077
+    },
+    {
+      "rule_id": "rule_7",
+      "lhs": "{baking powder,sugar}",
+      "rhs": "{flour}",
+      "lhs_items": ["baking powder", "sugar"],
+      "rhs_items": "flour",
+      "support": 0.001,
+      "confidence": 0.3125,
+      "lift": 17.9733,
+      "count": 10,
+      "node_strength": 17.9733
+    },
+    {
+      "rule_id": "rule_8",
+      "lhs": "{processed cheese,white bread}",
+      "rhs": "{ham}",
+      "lhs_items": ["processed cheese", "white bread"],
+      "rhs_items": "ham",
+      "support": 0.0019,
+      "confidence": 0.4634,
+      "lift": 17.8034,
+      "count": 19,
+      "node_strength": 17.8034
+    },
+    {
+      "rule_id": "rule_9",
+      "lhs": "{fruit/vegetable juice,ham}",
+      "rhs": "{processed cheese}",
+      "lhs_items": ["fruit/vegetable juice", "ham"],
+      "rhs_items": "processed cheese",
+      "support": 0.0011,
+      "confidence": 0.2895,
+      "lift": 17.4661,
+      "count": 11,
+      "node_strength": 17.4661
+    },
+    {
+      "rule_id": "rule_10",
+      "lhs": "{margarine,sugar}",
+      "rhs": "{flour}",
+      "lhs_items": ["margarine", "sugar"],
+      "rhs_items": "flour",
+      "support": 0.0016,
+      "confidence": 0.2963,
+      "lift": 17.0414,
+      "count": 16,
+      "node_strength": 17.0414
+    },
+    {
+      "rule_id": "rule_11",
+      "lhs": "{root vegetables,sugar,whole milk}",
+      "rhs": "{flour}",
+      "lhs_items": ["root vegetables", "sugar", "whole milk"],
+      "rhs_items": "flour",
+      "support": 0.001,
+      "confidence": 0.2941,
+      "lift": 16.9161,
+      "count": 10,
+      "node_strength": 16.9161
+    },
+    {
+      "rule_id": "rule_12",
+      "lhs": "{popcorn,soda}",
+      "rhs": "{salty snack}",
+      "lhs_items": ["popcorn", "soda"],
+      "rhs_items": "salty snack",
+      "support": 0.0012,
+      "confidence": 0.6316,
+      "lift": 16.6978,
+      "count": 12,
+      "node_strength": 16.6978
+    },
+    {
+      "rule_id": "rule_13",
+      "lhs": "{baking powder,flour}",
+      "rhs": "{sugar}",
+      "lhs_items": ["baking powder", "flour"],
+      "rhs_items": "sugar",
+      "support": 0.001,
+      "confidence": 0.5556,
+      "lift": 16.4081,
+      "count": 10,
+      "node_strength": 16.4081
+    },
+    {
+      "rule_id": "rule_14",
+      "lhs": "{sugar,whipped/sour cream}",
+      "rhs": "{baking powder}",
+      "lhs_items": ["sugar", "whipped/sour cream"],
+      "rhs_items": "baking powder",
+      "support": 0.0013,
+      "confidence": 0.2708,
+      "lift": 15.3083,
+      "count": 13,
+      "node_strength": 15.3083
+    },
+    {
+      "rule_id": "rule_15",
+      "lhs": "{soda,white bread,whole milk}",
+      "rhs": "{processed cheese}",
+      "lhs_items": ["soda", "white bread", "whole milk"],
+      "rhs_items": "processed cheese",
+      "support": 0.001,
+      "confidence": 0.25,
+      "lift": 15.0844,
+      "count": 10,
+      "node_strength": 15.0844
+    },
+    {
+      "rule_id": "rule_16",
+      "lhs": "{ham,processed cheese}",
+      "rhs": "{white bread}",
+      "lhs_items": ["ham", "processed cheese"],
+      "rhs_items": "white bread",
+      "support": 0.0019,
+      "confidence": 0.6333,
+      "lift": 15.0455,
+      "count": 19,
+      "node_strength": 15.0455
+    },
+    {
+      "rule_id": "rule_17",
+      "lhs": "{Instant food products,whole milk}",
+      "rhs": "{hamburger meat}",
+      "lhs_items": ["Instant food products", "whole milk"],
+      "rhs_items": "hamburger meat",
+      "support": 0.0015,
+      "confidence": 0.5,
+      "lift": 15.0382,
+      "count": 15,
+      "node_strength": 15.0382
+    },
+    {
+      "rule_id": "rule_18",
+      "lhs": "{curd,other vegetables,whipped/sour cream,yogurt}",
+      "rhs": "{cream cheese}",
+      "lhs_items": ["curd", "other vegetables", "whipped/sour cream", "yogurt"],
+      "rhs_items": "cream cheese",
+      "support": 0.001,
+      "confidence": 0.5882,
+      "lift": 14.8341,
+      "count": 10,
+      "node_strength": 14.8341
+    },
+    {
+      "rule_id": "rule_19",
+      "lhs": "{fruit/vegetable juice,processed cheese}",
+      "rhs": "{ham}",
+      "lhs_items": ["fruit/vegetable juice", "processed cheese"],
+      "rhs_items": "ham",
+      "support": 0.0011,
+      "confidence": 0.3793,
+      "lift": 14.5723,
+      "count": 11,
+      "node_strength": 14.5723
+    },
+    {
+      "rule_id": "rule_20",
+      "lhs": "{Instant food products,rolls/buns}",
+      "rhs": "{hamburger meat}",
+      "lhs_items": ["Instant food products", "rolls/buns"],
+      "rhs_items": "hamburger meat",
+      "support": 0.001,
+      "confidence": 0.4348,
+      "lift": 13.0767,
+      "count": 10,
+      "node_strength": 13.0767
+    }
+  ]
+}

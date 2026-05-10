@@ -1,0 +1,586 @@
+{
+  "summary": {
+    "total_transactions": 9835,
+    "unique_items": 169,
+    "average_basket_size": 4.41,
+    "median_basket_size": 3,
+    "largest_basket": 32,
+    "total_rules": 18606,
+    "strongest_lift": 35.7158,
+    "cluster_count": 4
+  },
+  "item_frequency": {
+    "top_items": [
+      {
+        "item": "whole milk",
+        "count": 2513,
+        "support": 0.2555,
+        "support_pct": 25.5516
+      },
+      {
+        "item": "other vegetables",
+        "count": 1903,
+        "support": 0.1935,
+        "support_pct": 19.3493
+      },
+      {
+        "item": "rolls/buns",
+        "count": 1809,
+        "support": 0.1839,
+        "support_pct": 18.3935
+      },
+      {
+        "item": "soda",
+        "count": 1715,
+        "support": 0.1744,
+        "support_pct": 17.4377
+      },
+      {
+        "item": "yogurt",
+        "count": 1372,
+        "support": 0.1395,
+        "support_pct": 13.9502
+      },
+      {
+        "item": "bottled water",
+        "count": 1087,
+        "support": 0.1105,
+        "support_pct": 11.0524
+      },
+      {
+        "item": "root vegetables",
+        "count": 1072,
+        "support": 0.109,
+        "support_pct": 10.8998
+      },
+      {
+        "item": "tropical fruit",
+        "count": 1032,
+        "support": 0.1049,
+        "support_pct": 10.4931
+      },
+      {
+        "item": "shopping bags",
+        "count": 969,
+        "support": 0.0985,
+        "support_pct": 9.8526
+      },
+      {
+        "item": "sausage",
+        "count": 924,
+        "support": 0.094,
+        "support_pct": 9.395
+      },
+      {
+        "item": "pastry",
+        "count": 875,
+        "support": 0.089,
+        "support_pct": 8.8968
+      },
+      {
+        "item": "citrus fruit",
+        "count": 814,
+        "support": 0.0828,
+        "support_pct": 8.2766
+      },
+      {
+        "item": "bottled beer",
+        "count": 792,
+        "support": 0.0805,
+        "support_pct": 8.0529
+      },
+      {
+        "item": "newspapers",
+        "count": 785,
+        "support": 0.0798,
+        "support_pct": 7.9817
+      },
+      {
+        "item": "canned beer",
+        "count": 764,
+        "support": 0.0777,
+        "support_pct": 7.7682
+      },
+      {
+        "item": "pip fruit",
+        "count": 744,
+        "support": 0.0756,
+        "support_pct": 7.5648
+      },
+      {
+        "item": "fruit/vegetable juice",
+        "count": 711,
+        "support": 0.0723,
+        "support_pct": 7.2293
+      },
+      {
+        "item": "whipped/sour cream",
+        "count": 705,
+        "support": 0.0717,
+        "support_pct": 7.1683
+      },
+      {
+        "item": "brown bread",
+        "count": 638,
+        "support": 0.0649,
+        "support_pct": 6.487
+      },
+      {
+        "item": "domestic eggs",
+        "count": 624,
+        "support": 0.0634,
+        "support_pct": 6.3447
+      }
+    ]
+  },
+  "association_rules": {
+    "top_rules": [
+      {
+        "lhs": "{bottled beer,red/blush wine}",
+        "rhs": "{liquor}",
+        "support": 0.0019,
+        "confidence": 0.3958,
+        "coverage": 0.0049,
+        "lift": 35.7158,
+        "count": 19
+      },
+      {
+        "lhs": "{hamburger meat,soda}",
+        "rhs": "{Instant food products}",
+        "support": 0.0012,
+        "confidence": 0.2105,
+        "coverage": 0.0058,
+        "lift": 26.2092,
+        "count": 12
+      },
+      {
+        "lhs": "{ham,white bread}",
+        "rhs": "{processed cheese}",
+        "support": 0.0019,
+        "confidence": 0.38,
+        "coverage": 0.0051,
+        "lift": 22.9282,
+        "count": 19
+      },
+      {
+        "lhs": "{bottled beer,liquor}",
+        "rhs": "{red/blush wine}",
+        "support": 0.0019,
+        "confidence": 0.413,
+        "coverage": 0.0047,
+        "lift": 21.4936,
+        "count": 19
+      },
+      {
+        "lhs": "{Instant food products,soda}",
+        "rhs": "{hamburger meat}",
+        "support": 0.0012,
+        "confidence": 0.6316,
+        "coverage": 0.0019,
+        "lift": 18.9957,
+        "count": 12
+      },
+      {
+        "lhs": "{curd,sugar}",
+        "rhs": "{flour}",
+        "support": 0.0011,
+        "confidence": 0.3235,
+        "coverage": 0.0035,
+        "lift": 18.6077,
+        "count": 11
+      },
+      {
+        "lhs": "{baking powder,sugar}",
+        "rhs": "{flour}",
+        "support": 0.001,
+        "confidence": 0.3125,
+        "coverage": 0.0033,
+        "lift": 17.9733,
+        "count": 10
+      },
+      {
+        "lhs": "{processed cheese,white bread}",
+        "rhs": "{ham}",
+        "support": 0.0019,
+        "confidence": 0.4634,
+        "coverage": 0.0042,
+        "lift": 17.8034,
+        "count": 19
+      },
+      {
+        "lhs": "{fruit/vegetable juice,ham}",
+        "rhs": "{processed cheese}",
+        "support": 0.0011,
+        "confidence": 0.2895,
+        "coverage": 0.0039,
+        "lift": 17.4661,
+        "count": 11
+      },
+      {
+        "lhs": "{margarine,sugar}",
+        "rhs": "{flour}",
+        "support": 0.0016,
+        "confidence": 0.2963,
+        "coverage": 0.0055,
+        "lift": 17.0414,
+        "count": 16
+      }
+    ]
+  },
+  "clustering": {
+    "variance_explained": [
+      {
+        "component": "PC1",
+        "variance": 0.0582,
+        "variance_pct": 5.8203
+      },
+      {
+        "component": "PC2",
+        "variance": 0.0293,
+        "variance_pct": 2.9347
+      },
+      {
+        "component": "PC3",
+        "variance": 0.0248,
+        "variance_pct": 2.4797
+      },
+      {
+        "component": "PC4",
+        "variance": 0.0244,
+        "variance_pct": 2.4439
+      },
+      {
+        "component": "PC5",
+        "variance": 0.0241,
+        "variance_pct": 2.4098
+      },
+      {
+        "component": "PC6",
+        "variance": 0.0231,
+        "variance_pct": 2.3069
+      },
+      {
+        "component": "PC7",
+        "variance": 0.0227,
+        "variance_pct": 2.267
+      },
+      {
+        "component": "PC8",
+        "variance": 0.0225,
+        "variance_pct": 2.2528
+      },
+      {
+        "component": "PC9",
+        "variance": 0.0219,
+        "variance_pct": 2.1935
+      },
+      {
+        "component": "PC10",
+        "variance": 0.0216,
+        "variance_pct": 2.1598
+      }
+    ],
+    "elbow": [
+      {
+        "k": 1,
+        "within_cluster_sum_squares": 55241.4084
+      },
+      {
+        "k": 2,
+        "within_cluster_sum_squares": 36108.2975
+      },
+      {
+        "k": 3,
+        "within_cluster_sum_squares": 29745.4439
+      },
+      {
+        "k": 4,
+        "within_cluster_sum_squares": 24884.3423
+      },
+      {
+        "k": 5,
+        "within_cluster_sum_squares": 21028.1877
+      },
+      {
+        "k": 6,
+        "within_cluster_sum_squares": 18635.8111
+      },
+      {
+        "k": 7,
+        "within_cluster_sum_squares": 16950.0436
+      },
+      {
+        "k": 8,
+        "within_cluster_sum_squares": 15670.3197
+      },
+      {
+        "k": 9,
+        "within_cluster_sum_squares": 14655.0785
+      },
+      {
+        "k": 10,
+        "within_cluster_sum_squares": 13730.6099
+      }
+    ],
+    "cluster_counts": [
+      {
+        "cluster": "1",
+        "count": 1458
+      },
+      {
+        "cluster": "2",
+        "count": 1639
+      },
+      {
+        "cluster": "3",
+        "count": 5826
+      },
+      {
+        "cluster": "4",
+        "count": 912
+      }
+    ],
+    "cluster_profiles": [
+      {
+        "cluster": "1",
+        "item": "whole milk",
+        "within_cluster_support": 0.6132,
+        "within_cluster_support_pct": 61.3169
+      },
+      {
+        "cluster": "1",
+        "item": "other vegetables",
+        "within_cluster_support": 0.5782,
+        "within_cluster_support_pct": 57.8189
+      },
+      {
+        "cluster": "1",
+        "item": "root vegetables",
+        "within_cluster_support": 0.4458,
+        "within_cluster_support_pct": 44.5816
+      },
+      {
+        "cluster": "1",
+        "item": "yogurt",
+        "within_cluster_support": 0.3176,
+        "within_cluster_support_pct": 31.7558
+      },
+      {
+        "cluster": "1",
+        "item": "whipped/sour cream",
+        "within_cluster_support": 0.2874,
+        "within_cluster_support_pct": 28.738
+      },
+      {
+        "cluster": "1",
+        "item": "rolls/buns",
+        "within_cluster_support": 0.2414,
+        "within_cluster_support_pct": 24.1427
+      },
+      {
+        "cluster": "1",
+        "item": "tropical fruit",
+        "within_cluster_support": 0.2222,
+        "within_cluster_support_pct": 22.2222
+      },
+      {
+        "cluster": "1",
+        "item": "citrus fruit",
+        "within_cluster_support": 0.2181,
+        "within_cluster_support_pct": 21.8107
+      },
+      {
+        "cluster": "1",
+        "item": "beef",
+        "within_cluster_support": 0.2085,
+        "within_cluster_support_pct": 20.8505
+      },
+      {
+        "cluster": "1",
+        "item": "domestic eggs",
+        "within_cluster_support": 0.201,
+        "within_cluster_support_pct": 20.096
+      },
+      {
+        "cluster": "2",
+        "item": "bottled water",
+        "within_cluster_support": 0.3746,
+        "within_cluster_support_pct": 37.4619
+      },
+      {
+        "cluster": "2",
+        "item": "soda",
+        "within_cluster_support": 0.3215,
+        "within_cluster_support_pct": 32.1538
+      },
+      {
+        "cluster": "2",
+        "item": "rolls/buns",
+        "within_cluster_support": 0.3179,
+        "within_cluster_support_pct": 31.7877
+      },
+      {
+        "cluster": "2",
+        "item": "whole milk",
+        "within_cluster_support": 0.2868,
+        "within_cluster_support_pct": 28.676
+      },
+      {
+        "cluster": "2",
+        "item": "yogurt",
+        "within_cluster_support": 0.2617,
+        "within_cluster_support_pct": 26.1745
+      },
+      {
+        "cluster": "2",
+        "item": "tropical fruit",
+        "within_cluster_support": 0.2251,
+        "within_cluster_support_pct": 22.5137
+      },
+      {
+        "cluster": "2",
+        "item": "sausage",
+        "within_cluster_support": 0.2184,
+        "within_cluster_support_pct": 21.8426
+      },
+      {
+        "cluster": "2",
+        "item": "other vegetables",
+        "within_cluster_support": 0.1904,
+        "within_cluster_support_pct": 19.036
+      },
+      {
+        "cluster": "2",
+        "item": "brown bread",
+        "within_cluster_support": 0.1788,
+        "within_cluster_support_pct": 17.8768
+      },
+      {
+        "cluster": "2",
+        "item": "fruit/vegetable juice",
+        "within_cluster_support": 0.1739,
+        "within_cluster_support_pct": 17.3887
+      },
+      {
+        "cluster": "3",
+        "item": "whole milk",
+        "within_cluster_support": 0.148,
+        "within_cluster_support_pct": 14.7957
+      },
+      {
+        "cluster": "3",
+        "item": "rolls/buns",
+        "within_cluster_support": 0.1262,
+        "within_cluster_support_pct": 12.6159
+      },
+      {
+        "cluster": "3",
+        "item": "soda",
+        "within_cluster_support": 0.1212,
+        "within_cluster_support_pct": 12.1181
+      },
+      {
+        "cluster": "3",
+        "item": "canned beer",
+        "within_cluster_support": 0.0954,
+        "within_cluster_support_pct": 9.5434
+      },
+      {
+        "cluster": "3",
+        "item": "other vegetables",
+        "within_cluster_support": 0.0922,
+        "within_cluster_support_pct": 9.2173
+      },
+      {
+        "cluster": "3",
+        "item": "bottled beer",
+        "within_cluster_support": 0.068,
+        "within_cluster_support_pct": 6.7971
+      },
+      {
+        "cluster": "3",
+        "item": "shopping bags",
+        "within_cluster_support": 0.0554,
+        "within_cluster_support_pct": 5.5441
+      },
+      {
+        "cluster": "3",
+        "item": "yogurt",
+        "within_cluster_support": 0.0532,
+        "within_cluster_support_pct": 5.321
+      },
+      {
+        "cluster": "3",
+        "item": "pastry",
+        "within_cluster_support": 0.0529,
+        "within_cluster_support_pct": 5.2866
+      },
+      {
+        "cluster": "3",
+        "item": "newspapers",
+        "within_cluster_support": 0.0527,
+        "within_cluster_support_pct": 5.2695
+      },
+      {
+        "cluster": "4",
+        "item": "soda",
+        "within_cluster_support": 0.3476,
+        "within_cluster_support_pct": 34.7588
+      },
+      {
+        "cluster": "4",
+        "item": "whole milk",
+        "within_cluster_support": 0.3147,
+        "within_cluster_support_pct": 31.4693
+      },
+      {
+        "cluster": "4",
+        "item": "shopping bags",
+        "within_cluster_support": 0.2993,
+        "within_cluster_support_pct": 29.9342
+      },
+      {
+        "cluster": "4",
+        "item": "chocolate",
+        "within_cluster_support": 0.2982,
+        "within_cluster_support_pct": 29.8246
+      },
+      {
+        "cluster": "4",
+        "item": "pastry",
+        "within_cluster_support": 0.2533,
+        "within_cluster_support_pct": 25.3289
+      },
+      {
+        "cluster": "4",
+        "item": "waffles",
+        "within_cluster_support": 0.2533,
+        "within_cluster_support_pct": 25.3289
+      },
+      {
+        "cluster": "4",
+        "item": "long life bakery product",
+        "within_cluster_support": 0.2325,
+        "within_cluster_support_pct": 23.2456
+      },
+      {
+        "cluster": "4",
+        "item": "other vegetables",
+        "within_cluster_support": 0.2314,
+        "within_cluster_support_pct": 23.136
+      },
+      {
+        "cluster": "4",
+        "item": "rolls/buns",
+        "within_cluster_support": 0.2204,
+        "within_cluster_support_pct": 22.0395
+      },
+      {
+        "cluster": "4",
+        "item": "fruit/vegetable juice",
+        "within_cluster_support": 0.1952,
+        "within_cluster_support_pct": 19.5175
+      }
+    ]
+  }
+}

@@ -1,0 +1,688 @@
+---
+title: "Market Basket Analysis: Groceries Dataset"
+author: "Randy Howk"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+geometry: "margin=0.5in"
+fontsize: 11pt
+mainfont: "Helvetica"
+monofont: "Menlo"
+linkcolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage{setspace}
+  - \setstretch{1.05}
+  - \setlength{\emergencystretch}{1em}
+  - \makeatletter
+  - \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  - \def\maxheight{\ifdim\Gin@nat@height>0.85\textheight0.85\textheight\else\Gin@nat@height\fi}
+  - \makeatother
+  - \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+  - \floatplacement{figure}{H}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 4,
+  dpi = 144,
+  fig.align = "center"
+)
+
+library(ggplot2)
+
+# Tufte / minimal-ink plotting defaults.
+theme_set(
+  theme_minimal(base_size = 11) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      legend.position = "top",
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(margin = ggplot2::margin(r = 6))
+    )
+)
+
+update_geom_defaults("line", list(linewidth = 0.45))
+update_geom_defaults("point", list(size = 1.2))
+
+
+```
+
+# Executive Summary
+
+This project uses the **Groceries Dataset** to perform **Market Basket Analysis**. Each row in the dataset is a transaction, or receipt, and each non-empty column contains an item purchased in that transaction.
+
+The analysis focuses on association-rule mining using the `arules` package. The final report includes:
+
+- Transaction-level summary statistics
+- Item-frequency analysis
+- Association rules with **support**, **confidence**, and **lift**
+- The **top 10 rules by lift**
+- Extra credit: a simple cluster analysis of grocery baskets
+- Optional export data for a future 3D Three.js / Next.js visualization
+
+# Install and Load Packages
+
+```{r packages}
+required_packages <- c(
+  "arules",
+  "arulesViz",
+  "tidyverse",
+  "Matrix",
+  "cluster",
+  "factoextra",
+  "tidytext",
+  "jsonlite",
+  "scales"
+)
+
+new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
+if (length(new_packages) > 0) {
+  install.packages(new_packages, repos = "https://cloud.r-project.org")
+}
+
+library(arules)
+library(arulesViz)
+library(tidyverse)
+library(Matrix)
+library(cluster)
+library(factoextra)
+library(tidytext)
+library(jsonlite)
+library(scales)
+```
+
+# Load the Groceries Dataset
+
+The CSV file does not have column headers. Each line is one receipt, and the items in that row are the contents of the basket.
+
+```{r load-data}
+file_path <- "GroceryDataSet.csv"
+
+raw_groceries <- read.csv(
+  file_path,
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  na.strings = c("", "NA")
+)
+
+head(raw_groceries, 10)
+```
+
+# Convert Rows into Transactions
+
+The `arules` package expects transactions in a list format, where each list element is a basket.
+
+```{r create-transactions}
+grocery_list <- apply(raw_groceries, 1, function(row) {
+  items <- row[!is.na(row) & trimws(row) != ""]
+  items <- trimws(items)
+  unique(items)
+})
+
+transactions <- as(grocery_list, "transactions")
+transactions
+```
+
+# Dataset Overview
+
+```{r dataset-overview}
+summary(transactions)
+```
+
+```{r basket-size-summary}
+basket_sizes <- size(transactions)
+
+basket_summary <- tibble(
+  metric = c("Number of transactions", "Number of unique items", "Average basket size", "Median basket size", "Largest basket"),
+  value = c(
+    length(transactions),
+    length(itemLabels(transactions)),
+    round(mean(basket_sizes), 2),
+    median(basket_sizes),
+    max(basket_sizes)
+  )
+)
+
+basket_summary
+```
+
+# Item Frequency Analysis
+
+```{r item-frequency-table}
+item_frequency <- itemFrequency(transactions, type = "absolute")
+
+item_frequency_table <- tibble(
+  item = names(item_frequency),
+  count = as.integer(item_frequency),
+  support = itemFrequency(transactions, type = "relative")
+) %>%
+  arrange(desc(count))
+
+top_20_items <- item_frequency_table %>% slice_head(n = 20)
+top_20_items
+```
+
+```{r item-frequency-plot}
+top_20_items %>%
+  ggplot(aes(x = reorder(item, count), y = count)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Top 20 Most Frequently Purchased Items",
+    x = "Item",
+    y = "Transaction Count"
+  ) +
+  theme_minimal()
+```
+
+# Association Rule Mining
+
+Association rules are written in the form:
+
+\[
+A \Rightarrow B
+\]
+
+This means that when item or itemset **A** appears in a basket, item or itemset **B** is likely to appear as well.
+
+The three key metrics are:
+
+- **Support**: how often the rule appears in all transactions
+- **Confidence**: how often the right-hand side appears when the left-hand side appears
+- **Lift**: how much stronger the relationship is compared with random chance
+
+A lift value greater than 1 suggests a positive association.
+
+## Generate Rules
+
+The thresholds below are intentionally moderate so the analysis produces enough rules while avoiding extremely rare patterns.
+
+```{r generate-rules}
+rules <- apriori(
+  transactions,
+  parameter = list(
+    supp = 0.001,
+    conf = 0.20,
+    minlen = 2,
+    maxlen = 5,
+    target = "rules"
+  )
+)
+
+rules
+summary(rules)
+```
+
+## Remove Redundant Rules
+
+```{r remove-redundant-rules}
+rules_sorted <- sort(rules, by = "lift", decreasing = TRUE)
+redundant_rules <- is.redundant(rules_sorted)
+rules_pruned <- rules_sorted[!redundant_rules]
+
+rules_pruned
+summary(rules_pruned)
+```
+
+# Top 10 Association Rules by Lift
+
+```{r top-10-rules-by-lift}
+top_10_rules <- head(sort(rules_pruned, by = "lift", decreasing = TRUE), 10)
+
+top_10_rules_table <- as(top_10_rules, "data.frame") %>%
+  as_tibble() %>%
+  mutate(
+    support = round(support, 4),
+    confidence = round(confidence, 4),
+    lift = round(lift, 4),
+    count = as.integer(count)
+  )
+
+top_10_rules_table
+```
+
+```{r inspect-top-10-rules}
+inspect(top_10_rules)
+```
+
+# Visualizing Association Rules
+
+```{r rule-scatter-plot}
+plot(
+  rules_pruned,
+  method = "scatterplot",
+  measure = c("support", "confidence"),
+  shading = "lift",
+  main = "Association Rules: Support vs. Confidence, Shaded by Lift"
+)
+```
+
+```{r rule-graph-plot}
+plot(
+  head(rules_pruned, 20),
+  method = "graph",
+  engine = "htmlwidget"
+)
+```
+
+```{r export-rules-graph-json}
+graph_rules <- head(sort(rules_pruned, by = "lift", decreasing = TRUE), 20)
+graph_rules_df <- as(graph_rules, "data.frame") %>%
+  as_tibble() %>%
+  mutate(
+    rule_id = paste0("rule_", row_number()),
+    lhs = labels(lhs(graph_rules)),
+    rhs = labels(rhs(graph_rules))
+  )
+
+parse_itemset <- function(label) {
+  cleaned <- stringr::str_remove_all(label, "\\{|\\}")
+  if (nchar(cleaned) == 0) {
+    character(0)
+  } else {
+    stringr::str_split(cleaned, ",\\s*")[[1]]
+  }
+}
+
+graph_rules_df <- graph_rules_df %>%
+  mutate(
+    lhs_items = map(lhs, parse_itemset),
+    rhs_items = map(rhs, parse_itemset),
+    node_strength = lift
+  )
+
+graph_item_names <- sort(unique(c(unlist(graph_rules_df$lhs_items), unlist(graph_rules_df$rhs_items))))
+
+graph_item_stats <- item_frequency_table %>%
+  filter(item %in% graph_item_names) %>%
+  mutate(
+    connected_lift_mean = map_dbl(item, function(item_name) {
+      connected_rules <- map_lgl(seq_len(nrow(graph_rules_df)), function(i) {
+        item_name %in% graph_rules_df$lhs_items[[i]] ||
+          item_name %in% graph_rules_df$rhs_items[[i]]
+      })
+
+      if (any(connected_rules)) {
+        mean(graph_rules_df$lift[connected_rules])
+      } else {
+        support
+      }
+    }),
+    node_strength = connected_lift_mean
+  ) %>%
+  arrange(desc(node_strength), desc(support))
+
+rules_graph_data <- list(
+  graph = list(
+    title = "Association Rules Network",
+    z_axis = "Association prominence",
+    note = "Rule nodes use lift; item nodes use the average lift of connected rules."
+  ),
+  items = graph_item_stats %>%
+    select(item, count, support, connected_lift_mean, node_strength),
+  rules = graph_rules_df %>%
+    select(
+      rule_id,
+      lhs,
+      rhs,
+      lhs_items,
+      rhs_items,
+      support,
+      confidence,
+      lift,
+      count,
+      node_strength
+    )
+)
+
+export_paths <- c(
+  "rules_graph.json",
+  file.path("basket-viz", "public", "rules_graph.json")
+)
+
+walk(export_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    rules_graph_data,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+head(graph_rules_df, 10)
+```
+
+# Interpretation of the Top Rules
+
+The highest-lift rules identify item combinations that occur together much more often than expected by chance. These rules are especially useful for:
+
+- Product placement
+- Bundle recommendations
+- Coupon targeting
+- Cross-selling strategy
+- Understanding recurring shopping missions
+
+A high-lift rule does not automatically mean the items are frequently purchased overall. It means the items are unusually strongly associated relative to their individual purchase frequencies.
+
+# Extra Credit: Simple Cluster Analysis
+
+Association rules identify relationships between specific items. Cluster analysis answers a different question:
+
+> Which receipts look similar overall?
+
+For this section, each transaction is converted into a binary vector where:
+
+- `1` means the item appears in the basket
+- `0` means the item does not appear in the basket
+
+Because the full item matrix can be sparse and high-dimensional, this analysis focuses on the most frequently purchased items.
+
+## Build a Basket-Item Matrix
+
+```{r basket-item-matrix}
+transaction_matrix <- as(transactions, "ngCMatrix")
+transaction_matrix <- t(transaction_matrix)
+colnames(transaction_matrix) <- itemLabels(transactions)
+
+# Keep the top N items to make clustering more interpretable.
+top_n_items <- 50
+top_items <- item_frequency_table %>%
+  slice_head(n = top_n_items) %>%
+  pull(item)
+
+cluster_matrix <- as.matrix(transaction_matrix[, top_items])
+
+cluster_matrix[1:10, 1:10]
+```
+
+## Reduce Dimensions with PCA
+
+```{r pca-analysis}
+pca_result <- prcomp(cluster_matrix, center = TRUE, scale. = TRUE)
+
+pca_scores <- as_tibble(pca_result$x[, 1:3]) %>%
+  rename(PC1 = 1, PC2 = 2, PC3 = 3)
+
+variance_explained <- tibble(
+  component = paste0("PC", seq_along(pca_result$sdev)),
+  variance = pca_result$sdev^2 / sum(pca_result$sdev^2)
+)
+
+variance_explained %>%
+  slice_head(n = 10)
+```
+
+```{r pca-scree-plot}
+variance_explained %>%
+  slice_head(n = 10) %>%
+  ggplot(aes(x = component, y = variance)) +
+  geom_col() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Variance Explained by Principal Components",
+    x = "Principal Component",
+    y = "Variance Explained"
+  ) +
+  theme_minimal()
+```
+
+## Choose a Number of Clusters
+
+```{r elbow-method}
+set.seed(42)
+
+wss <- map_dbl(1:10, function(k) {
+  kmeans(pca_scores, centers = k, nstart = 25)$tot.withinss
+})
+
+elbow_table <- tibble(k = 1:10, within_cluster_sum_squares = wss)
+elbow_table
+```
+
+```{r elbow-plot}
+elbow_table %>%
+  ggplot(aes(x = k, y = within_cluster_sum_squares)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = 1:10) +
+  labs(
+    title = "Elbow Method for Choosing Number of Clusters",
+    x = "Number of Clusters",
+    y = "Total Within-Cluster Sum of Squares"
+  ) +
+  theme_minimal()
+```
+
+## Run K-Means Clustering
+
+This report uses `k = 4` as a simple, interpretable default. Adjust this value if the elbow plot suggests a better choice.
+
+```{r kmeans-clustering}
+set.seed(42)
+
+k_value <- 4
+kmeans_result <- kmeans(pca_scores, centers = k_value, nstart = 50)
+
+clustered_baskets <- pca_scores %>%
+  mutate(
+    transaction_id = row_number(),
+    cluster = factor(kmeans_result$cluster),
+    basket_size = basket_sizes
+  )
+
+clustered_baskets %>%
+  count(cluster, name = "number_of_transactions")
+```
+
+```{r cluster-plot-2d}
+clustered_baskets %>%
+  ggplot(aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  labs(
+    title = "Receipt Clusters Based on Grocery Basket Similarity",
+    subtitle = "Each point represents one transaction projected into PCA space",
+    x = "Principal Component 1",
+    y = "Principal Component 2",
+    color = "Cluster"
+  ) +
+  theme_minimal()
+```
+
+# Cluster Profiles
+
+The table below shows which items are most common within each cluster. This helps explain what each cluster represents.
+
+```{r cluster-profiles}
+cluster_profiles <- map_dfr(levels(clustered_baskets$cluster), function(cl) {
+  transaction_ids <- clustered_baskets %>%
+    filter(cluster == cl) %>%
+    pull(transaction_id)
+
+  item_rates <- colMeans(cluster_matrix[transaction_ids, , drop = FALSE])
+
+  tibble(
+    cluster = cl,
+    item = names(item_rates),
+    within_cluster_support = item_rates
+  ) %>%
+    arrange(desc(within_cluster_support)) %>%
+    slice_head(n = 10)
+})
+
+cluster_profiles
+```
+
+```{r cluster-profile-plot}
+cluster_profiles %>%
+  mutate(item = reorder_within(item, within_cluster_support, cluster)) %>%
+  ggplot(aes(x = item, y = within_cluster_support)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ cluster, scales = "free_y") +
+  scale_x_reordered() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Top Items by Cluster",
+    x = "Item",
+    y = "Within-Cluster Support"
+  ) +
+  theme_minimal()
+```
+
+# Optional Export for a Three.js / Next.js 3D Visualization
+
+This creates a JSON file where each receipt becomes one point in a 3D scene.
+
+Suggested visual design:
+
+- Each point is one receipt
+- X and Y are the first two PCA coordinates
+- Z is a basket rarity score derived from item support
+- Color represents cluster
+- Point size represents basket size
+- Hover text shows the items in the basket
+
+```{r export-threejs-json}
+items_by_transaction <- map_chr(grocery_list, ~ paste(.x, collapse = ", "))
+item_support_map <- setNames(item_frequency_table$support, item_frequency_table$item)
+
+basket_rarity_score <- map_dbl(grocery_list, function(items) {
+  support_values <- item_support_map[items]
+  mean(-log10(support_values), na.rm = TRUE)
+})
+
+basket_rarity_scaled <- rescale(basket_rarity_score, to = c(-2.75, 2.75))
+
+threejs_data <- clustered_baskets %>%
+  mutate(
+    x = PC1,
+    y = PC2,
+    z = basket_rarity_scaled,
+    rarity_score = basket_rarity_score,
+    rarity_score_scaled = basket_rarity_scaled,
+    items = items_by_transaction,
+    basket_size_scaled = rescale(basket_size, to = c(2, 10))
+  ) %>%
+  select(
+    transaction_id,
+    x,
+    y,
+    z,
+    cluster,
+    basket_size,
+    basket_size_scaled,
+    rarity_score,
+    rarity_score_scaled,
+    items
+  )
+
+export_paths <- c(
+  "basket_clusters.json",
+  file.path("basket-viz", "public", "basket_clusters.json")
+)
+
+walk(export_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    threejs_data,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+head(threejs_data, 10)
+```
+
+```{r export-presentation-json}
+presentation_report <- list(
+  summary = list(
+    total_transactions = length(transactions),
+    unique_items = length(itemLabels(transactions)),
+    average_basket_size = round(mean(basket_sizes), 2),
+    median_basket_size = as.integer(median(basket_sizes)),
+    largest_basket = as.integer(max(basket_sizes)),
+    total_rules = as.integer(length(rules_pruned)),
+    strongest_lift = round(top_10_rules_table$lift[1], 4),
+    cluster_count = k_value
+  ),
+  item_frequency = list(
+    top_items = top_20_items %>%
+      mutate(
+        support_pct = support * 100
+      ) %>%
+      select(item, count, support, support_pct)
+  ),
+  association_rules = list(
+    top_rules = top_10_rules_table %>%
+      mutate(
+        lhs = labels(lhs(top_10_rules)),
+        rhs = labels(rhs(top_10_rules))
+      ) %>%
+      select(lhs, rhs, support, confidence, coverage, lift, count)
+  ),
+  clustering = list(
+    variance_explained = variance_explained %>%
+      slice_head(n = 10) %>%
+      mutate(variance_pct = variance * 100),
+    elbow = elbow_table,
+    cluster_counts = clustered_baskets %>%
+      count(cluster, name = "count") %>%
+      arrange(cluster),
+    cluster_profiles = cluster_profiles %>%
+      mutate(
+        cluster = as.character(cluster),
+        within_cluster_support_pct = within_cluster_support * 100
+      ) %>%
+      select(cluster, item, within_cluster_support, within_cluster_support_pct)
+  )
+)
+
+presentation_paths <- c(
+  "presentation_report.json",
+  file.path("basket-viz", "public", "presentation_report.json")
+)
+
+walk(presentation_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    presentation_report,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+presentation_report
+```
+
+# Conclusion
+
+This analysis shows how association-rule mining can identify products that appear together more often than expected by chance. The top rules by lift reveal the strongest item relationships in the grocery transactions.
+
+The cluster analysis adds a second layer of insight by grouping entire baskets according to similarity. Instead of only asking “which items go together?”, clustering asks “which shopping trips look alike?” This is useful for understanding broad customer shopping patterns and for building a more visual story around the data.

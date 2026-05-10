@@ -1,0 +1,26 @@
+{
+  "name": "basket-clustering-viz",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-data.mjs",
+    "predev": "npm run sync",
+    "dev": "next dev",
+    "prebuild": "npm run sync",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build"
+  },
+  "dependencies": {
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.177.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.184.1",
+    "typescript": "^5.8.0"
+  }
+}
