@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Randy Howk" />
+
+<meta name="date" content="2026-05-10" />
+
+<title>Market Basket Analysis: Groceries Dataset</title>
+
+<script src="market_basket_analysis_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="market_basket_analysis_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="market_basket_analysis_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="market_basket_analysis_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="market_basket_analysis_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="market_basket_analysis_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="market_basket_analysis_files/navigation-1.1/tabsets.js"></script>
+<link href="market_basket_analysis_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="market_basket_analysis_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="market_basket_analysis_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="market_basket_analysis_files/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="market_basket_analysis_files/vis-9.1.0/vis-network.min.css" rel="stylesheet" />
+<script src="market_basket_analysis_files/vis-9.1.0/vis-network.min.js"></script>
+<script src="market_basket_analysis_files/visNetwork-binding-2.1.4/visNetwork.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Market Basket Analysis: Groceries
+Dataset</h1>
+<h4 class="author">Randy Howk</h4>
+<h4 class="date">May 10, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#executive-summary" id="toc-executive-summary"><span
+class="toc-section-number">1</span> Executive Summary</a></li>
+<li><a href="#install-and-load-packages"
+id="toc-install-and-load-packages"><span
+class="toc-section-number">2</span> Install and Load Packages</a></li>
+<li><a href="#load-the-groceries-dataset"
+id="toc-load-the-groceries-dataset"><span
+class="toc-section-number">3</span> Load the Groceries Dataset</a></li>
+<li><a href="#convert-rows-into-transactions"
+id="toc-convert-rows-into-transactions"><span
+class="toc-section-number">4</span> Convert Rows into
+Transactions</a></li>
+<li><a href="#dataset-overview" id="toc-dataset-overview"><span
+class="toc-section-number">5</span> Dataset Overview</a></li>
+<li><a href="#item-frequency-analysis"
+id="toc-item-frequency-analysis"><span
+class="toc-section-number">6</span> Item Frequency Analysis</a></li>
+<li><a href="#association-rule-mining"
+id="toc-association-rule-mining"><span
+class="toc-section-number">7</span> Association Rule Mining</a>
+<ul>
+<li><a href="#generate-rules" id="toc-generate-rules"><span
+class="toc-section-number">7.1</span> Generate Rules</a></li>
+<li><a href="#remove-redundant-rules"
+id="toc-remove-redundant-rules"><span
+class="toc-section-number">7.2</span> Remove Redundant Rules</a></li>
+</ul></li>
+<li><a href="#top-10-association-rules-by-lift"
+id="toc-top-10-association-rules-by-lift"><span
+class="toc-section-number">8</span> Top 10 Association Rules by
+Lift</a></li>
+<li><a href="#visualizing-association-rules"
+id="toc-visualizing-association-rules"><span
+class="toc-section-number">9</span> Visualizing Association
+Rules</a></li>
+<li><a href="#interpretation-of-the-top-rules"
+id="toc-interpretation-of-the-top-rules"><span
+class="toc-section-number">10</span> Interpretation of the Top
+Rules</a></li>
+<li><a href="#extra-credit-simple-cluster-analysis"
+id="toc-extra-credit-simple-cluster-analysis"><span
+class="toc-section-number">11</span> Extra Credit: Simple Cluster
+Analysis</a>
+<ul>
+<li><a href="#build-a-basket-item-matrix"
+id="toc-build-a-basket-item-matrix"><span
+class="toc-section-number">11.1</span> Build a Basket-Item
+Matrix</a></li>
+<li><a href="#reduce-dimensions-with-pca"
+id="toc-reduce-dimensions-with-pca"><span
+class="toc-section-number">11.2</span> Reduce Dimensions with
+PCA</a></li>
+<li><a href="#choose-a-number-of-clusters"
+id="toc-choose-a-number-of-clusters"><span
+class="toc-section-number">11.3</span> Choose a Number of
+Clusters</a></li>
+<li><a href="#run-k-means-clustering"
+id="toc-run-k-means-clustering"><span
+class="toc-section-number">11.4</span> Run K-Means Clustering</a></li>
+</ul></li>
+<li><a href="#cluster-profiles" id="toc-cluster-profiles"><span
+class="toc-section-number">12</span> Cluster Profiles</a></li>
+<li><a href="#optional-export-for-a-three.js-next.js-3d-visualization"
+id="toc-optional-export-for-a-three.js-next.js-3d-visualization"><span
+class="toc-section-number">13</span> Optional Export for a Three.js /
+Next.js 3D Visualization</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span
+class="toc-section-number">14</span> Conclusion</a></li>
+</ul>
+</div>
+
+<div id="executive-summary" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Executive Summary</h1>
+<p>This project uses the <strong>Groceries Dataset</strong> to perform
+<strong>Market Basket Analysis</strong>. Each row in the dataset is a
+transaction, or receipt, and each non-empty column contains an item
+purchased in that transaction.</p>
+<p>The analysis focuses on association-rule mining using the
+<code>arules</code> package. The final report includes:</p>
+<ul>
+<li>Transaction-level summary statistics</li>
+<li>Item-frequency analysis</li>
+<li>Association rules with <strong>support</strong>,
+<strong>confidence</strong>, and <strong>lift</strong></li>
+<li>The <strong>top 10 rules by lift</strong></li>
+<li>Extra credit: a simple cluster analysis of grocery baskets</li>
+<li>Optional export data for a future 3D Three.js / Next.js
+visualization</li>
+</ul>
+</div>
+<div id="install-and-load-packages" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Install and Load
+Packages</h1>
+<pre class="r"><code>required_packages &lt;- c(
+  &quot;arules&quot;,
+  &quot;arulesViz&quot;,
+  &quot;tidyverse&quot;,
+  &quot;Matrix&quot;,
+  &quot;cluster&quot;,
+  &quot;factoextra&quot;,
+  &quot;tidytext&quot;,
+  &quot;jsonlite&quot;,
+  &quot;scales&quot;
+)
+
+new_packages &lt;- required_packages[!(required_packages %in% installed.packages()[, &quot;Package&quot;])]
+if (length(new_packages) &gt; 0) {
+  install.packages(new_packages, repos = &quot;https://cloud.r-project.org&quot;)
+}
+
+library(arules)
+library(arulesViz)
+library(tidyverse)
+library(Matrix)
+library(cluster)
+library(factoextra)
+library(tidytext)
+library(jsonlite)
+library(scales)</code></pre>
+</div>
+<div id="load-the-groceries-dataset" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Load the Groceries
+Dataset</h1>
+<p>The CSV file does not have column headers. Each line is one receipt,
+and the items in that row are the contents of the basket.</p>
+<pre class="r"><code>file_path &lt;- &quot;GroceryDataSet.csv&quot;
+
+raw_groceries &lt;- read.csv(
+  file_path,
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  na.strings = c(&quot;&quot;, &quot;NA&quot;)
+)
+
+head(raw_groceries, 10)</code></pre>
+<pre><code>##                  V1                  V2             V3                       V4
+## 1      citrus fruit semi-finished bread      margarine              ready soups
+## 2    tropical fruit              yogurt         coffee                     &lt;NA&gt;
+## 3        whole milk                &lt;NA&gt;           &lt;NA&gt;                     &lt;NA&gt;
+## 4         pip fruit              yogurt  cream cheese              meat spreads
+## 5  other vegetables          whole milk condensed milk long life bakery product
+## 6        whole milk              butter         yogurt                     rice
+## 7        rolls/buns                &lt;NA&gt;           &lt;NA&gt;                     &lt;NA&gt;
+## 8  other vegetables            UHT-milk     rolls/buns             bottled beer
+## 9        pot plants                &lt;NA&gt;           &lt;NA&gt;                     &lt;NA&gt;
+## 10       whole milk             cereals           &lt;NA&gt;                     &lt;NA&gt;
+##                    V5   V6   V7   V8   V9  V10  V11  V12  V13  V14  V15  V16
+## 1                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 2                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 3                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 4                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 5                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 6    abrasive cleaner &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 7                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 8  liquor (appetizer) &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 9                &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 10               &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+##     V17  V18  V19  V20  V21  V22  V23  V24  V25  V26  V27  V28  V29  V30  V31
+## 1  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 2  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 3  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 4  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 5  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 6  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 7  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 8  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 9  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 10 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+##     V32
+## 1  &lt;NA&gt;
+## 2  &lt;NA&gt;
+## 3  &lt;NA&gt;
+## 4  &lt;NA&gt;
+## 5  &lt;NA&gt;
+## 6  &lt;NA&gt;
+## 7  &lt;NA&gt;
+## 8  &lt;NA&gt;
+## 9  &lt;NA&gt;
+## 10 &lt;NA&gt;</code></pre>
+</div>
+<div id="convert-rows-into-transactions" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Convert Rows into
+Transactions</h1>
+<p>The <code>arules</code> package expects transactions in a list
+format, where each list element is a basket.</p>
+<pre class="r"><code>grocery_list &lt;- apply(raw_groceries, 1, function(row) {
+  items &lt;- row[!is.na(row) &amp; trimws(row) != &quot;&quot;]
+  items &lt;- trimws(items)
+  unique(items)
+})
+
+transactions &lt;- as(grocery_list, &quot;transactions&quot;)
+transactions</code></pre>
+<pre><code>## transactions in sparse format with
+##  9835 transactions (rows) and
+##  169 items (columns)</code></pre>
+</div>
+<div id="dataset-overview" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Dataset Overview</h1>
+<pre class="r"><code>summary(transactions)</code></pre>
+<pre><code>## transactions as itemMatrix in sparse format with
+##  9835 rows (elements/itemsets/transactions) and
+##  169 columns (items) and a density of 0.02609146 
+## 
+## most frequent items:
+##       whole milk other vegetables       rolls/buns             soda 
+##             2513             1903             1809             1715 
+##           yogurt          (Other) 
+##             1372            34055 
+## 
+## element (itemset/transaction) length distribution:
+## sizes
+##    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
+## 2159 1643 1299 1005  855  645  545  438  350  246  182  117   78   77   55   46 
+##   17   18   19   20   21   22   23   24   26   27   28   29   32 
+##   29   14   14    9   11    4    6    1    1    1    1    3    1 
+## 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   3.000   4.409   6.000  32.000 
+## 
+## includes extended item information - examples:
+##             labels
+## 1 abrasive cleaner
+## 2 artif. sweetener
+## 3   baby cosmetics</code></pre>
+<pre class="r"><code>basket_sizes &lt;- size(transactions)
+
+basket_summary &lt;- tibble(
+  metric = c(&quot;Number of transactions&quot;, &quot;Number of unique items&quot;, &quot;Average basket size&quot;, &quot;Median basket size&quot;, &quot;Largest basket&quot;),
+  value = c(
+    length(transactions),
+    length(itemLabels(transactions)),
+    round(mean(basket_sizes), 2),
+    median(basket_sizes),
+    max(basket_sizes)
+  )
+)
+
+basket_summary</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   metric                   value
+##   &lt;chr&gt;                    &lt;dbl&gt;
+## 1 Number of transactions 9835   
+## 2 Number of unique items  169   
+## 3 Average basket size       4.41
+## 4 Median basket size        3   
+## 5 Largest basket           32</code></pre>
+</div>
+<div id="item-frequency-analysis" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Item Frequency
+Analysis</h1>
+<pre class="r"><code>item_frequency &lt;- itemFrequency(transactions, type = &quot;absolute&quot;)
+
+item_frequency_table &lt;- tibble(
+  item = names(item_frequency),
+  count = as.integer(item_frequency),
+  support = itemFrequency(transactions, type = &quot;relative&quot;)
+) %&gt;%
+  arrange(desc(count))
+
+top_20_items &lt;- item_frequency_table %&gt;% slice_head(n = 20)
+top_20_items</code></pre>
+<pre><code>## # A tibble: 20 x 3
+##    item                  count support
+##    &lt;chr&gt;                 &lt;int&gt;   &lt;dbl&gt;
+##  1 whole milk             2513  0.256 
+##  2 other vegetables       1903  0.193 
+##  3 rolls/buns             1809  0.184 
+##  4 soda                   1715  0.174 
+##  5 yogurt                 1372  0.140 
+##  6 bottled water          1087  0.111 
+##  7 root vegetables        1072  0.109 
+##  8 tropical fruit         1032  0.105 
+##  9 shopping bags           969  0.0985
+## 10 sausage                 924  0.0940
+## 11 pastry                  875  0.0890
+## 12 citrus fruit            814  0.0828
+## 13 bottled beer            792  0.0805
+## 14 newspapers              785  0.0798
+## 15 canned beer             764  0.0777
+## 16 pip fruit               744  0.0756
+## 17 fruit/vegetable juice   711  0.0723
+## 18 whipped/sour cream      705  0.0717
+## 19 brown bread             638  0.0649
+## 20 domestic eggs           624  0.0634</code></pre>
+<pre class="r"><code>top_20_items %&gt;%
+  ggplot(aes(x = reorder(item, count), y = count)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = &quot;Top 20 Most Frequently Purchased Items&quot;,
+    x = &quot;Item&quot;,
+    y = &quot;Transaction Count&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/item-frequency-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="association-rule-mining" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Association Rule
+Mining</h1>
+<p>Association rules are written in the form:</p>
+<p><span class="math display">\[
+A \Rightarrow B
+\]</span></p>
+<p>This means that when item or itemset <strong>A</strong> appears in a
+basket, item or itemset <strong>B</strong> is likely to appear as
+well.</p>
+<p>The three key metrics are:</p>
+<ul>
+<li><strong>Support</strong>: how often the rule appears in all
+transactions</li>
+<li><strong>Confidence</strong>: how often the right-hand side appears
+when the left-hand side appears</li>
+<li><strong>Lift</strong>: how much stronger the relationship is
+compared with random chance</li>
+</ul>
+<p>A lift value greater than 1 suggests a positive association.</p>
+<div id="generate-rules" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Generate Rules</h2>
+<p>The thresholds below are intentionally moderate so the analysis
+produces enough rules while avoiding extremely rare patterns.</p>
+<pre class="r"><code>rules &lt;- apriori(
+  transactions,
+  parameter = list(
+    supp = 0.001,
+    conf = 0.20,
+    minlen = 2,
+    maxlen = 5,
+    target = &quot;rules&quot;
+  )
+)</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##         0.2    0.1    1 none FALSE            TRUE       5   0.001      2
+##  maxlen target  ext
+##       5  rules TRUE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 9 
+## 
+## set item appearances ...[0 item(s)] done [0.00s].
+## set transactions ...[169 item(s), 9835 transaction(s)] done [0.00s].
+## sorting and recoding items ... [157 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 3 4 5</code></pre>
+<pre><code>##  done [0.00s].
+## writing ... [21573 rule(s)] done [0.00s].
+## creating S4 object  ... done [0.00s].</code></pre>
+<pre class="r"><code>rules</code></pre>
+<pre><code>## set of 21573 rules</code></pre>
+<pre class="r"><code>summary(rules)</code></pre>
+<pre><code>## set of 21573 rules
+## 
+## rule length distribution (lhs + rhs):sizes
+##    2    3    4    5 
+##  620 9337 9824 1792 
+## 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   2.000   3.000   4.000   3.593   4.000   5.000 
+## 
+## summary of quality measures:
+##     support           confidence        coverage             lift        
+##  Min.   :0.001017   Min.   :0.2000   Min.   :0.001017   Min.   : 0.8028  
+##  1st Qu.:0.001118   1st Qu.:0.2632   1st Qu.:0.002745   1st Qu.: 2.1155  
+##  Median :0.001322   Median :0.3548   Median :0.004169   Median : 2.7556  
+##  Mean   :0.001950   Mean   :0.3960   Mean   :0.005851   Mean   : 3.0160  
+##  3rd Qu.:0.001932   3rd Qu.:0.5000   3rd Qu.:0.006101   3rd Qu.: 3.6119  
+##  Max.   :0.074835   Max.   :1.0000   Max.   :0.255516   Max.   :35.7158  
+##      count       
+##  Min.   : 10.00  
+##  1st Qu.: 11.00  
+##  Median : 13.00  
+##  Mean   : 19.18  
+##  3rd Qu.: 19.00  
+##  Max.   :736.00  
+## 
+## mining info:
+##          data ntransactions support confidence
+##  transactions          9835   0.001        0.2
+##                                                                                                                call
+##  apriori(data = transactions, parameter = list(supp = 0.001, conf = 0.2, minlen = 2, maxlen = 5, target = &quot;rules&quot;))</code></pre>
+</div>
+<div id="remove-redundant-rules" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Remove Redundant
+Rules</h2>
+<pre class="r"><code>rules_sorted &lt;- sort(rules, by = &quot;lift&quot;, decreasing = TRUE)
+redundant_rules &lt;- is.redundant(rules_sorted)
+rules_pruned &lt;- rules_sorted[!redundant_rules]
+
+rules_pruned</code></pre>
+<pre><code>## set of 18606 rules</code></pre>
+<pre class="r"><code>summary(rules_pruned)</code></pre>
+<pre><code>## set of 18606 rules
+## 
+## rule length distribution (lhs + rhs):sizes
+##    2    3    4    5 
+##  620 8543 8098 1345 
+## 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   2.000   3.000   4.000   3.546   4.000   5.000 
+## 
+## summary of quality measures:
+##     support           confidence        coverage             lift        
+##  Min.   :0.001017   Min.   :0.2000   Min.   :0.001017   Min.   : 0.8028  
+##  1st Qu.:0.001118   1st Qu.:0.2642   1st Qu.:0.002745   1st Qu.: 2.2483  
+##  Median :0.001423   Median :0.3571   Median :0.004169   Median : 2.8717  
+##  Mean   :0.002010   Mean   :0.4013   Mean   :0.005988   Mean   : 3.1577  
+##  3rd Qu.:0.001932   3rd Qu.:0.5088   3rd Qu.:0.006202   3rd Qu.: 3.7532  
+##  Max.   :0.074835   Max.   :1.0000   Max.   :0.255516   Max.   :35.7158  
+##      count       
+##  Min.   : 10.00  
+##  1st Qu.: 11.00  
+##  Median : 14.00  
+##  Mean   : 19.77  
+##  3rd Qu.: 19.00  
+##  Max.   :736.00  
+## 
+## mining info:
+##          data ntransactions support confidence
+##  transactions          9835   0.001        0.2
+##                                                                                                                call
+##  apriori(data = transactions, parameter = list(supp = 0.001, conf = 0.2, minlen = 2, maxlen = 5, target = &quot;rules&quot;))</code></pre>
+</div>
+</div>
+<div id="top-10-association-rules-by-lift" class="section level1"
+number="8">
+<h1><span class="header-section-number">8</span> Top 10 Association
+Rules by Lift</h1>
+<pre class="r"><code>top_10_rules &lt;- head(sort(rules_pruned, by = &quot;lift&quot;, decreasing = TRUE), 10)
+
+top_10_rules_table &lt;- as(top_10_rules, &quot;data.frame&quot;) %&gt;%
+  as_tibble() %&gt;%
+  mutate(
+    support = round(support, 4),
+    confidence = round(confidence, 4),
+    lift = round(lift, 4),
+    count = as.integer(count)
+  )
+
+top_10_rules_table</code></pre>
+<pre><code>## # A tibble: 10 x 6
+##    rules                                 support confidence coverage  lift count
+##    &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 {bottled beer,red/blush wine} =&gt; {li~  0.0019      0.396  0.00488  35.7    19
+##  2 {hamburger meat,soda} =&gt; {Instant fo~  0.0012      0.210  0.00580  26.2    12
+##  3 {ham,white bread} =&gt; {processed chee~  0.0019      0.38   0.00508  22.9    19
+##  4 {bottled beer,liquor} =&gt; {red/blush ~  0.0019      0.413  0.00468  21.5    19
+##  5 {Instant food products,soda} =&gt; {ham~  0.0012      0.632  0.00193  19.0    12
+##  6 {curd,sugar} =&gt; {flour}                0.0011      0.324  0.00346  18.6    11
+##  7 {baking powder,sugar} =&gt; {flour}       0.001       0.312  0.00325  18.0    10
+##  8 {processed cheese,white bread} =&gt; {h~  0.0019      0.463  0.00417  17.8    19
+##  9 {fruit/vegetable juice,ham} =&gt; {proc~  0.0011      0.290  0.00386  17.5    11
+## 10 {margarine,sugar} =&gt; {flour}           0.0016      0.296  0.00549  17.0    16</code></pre>
+<pre class="r"><code>inspect(top_10_rules)</code></pre>
+<pre><code>##      lhs                                rhs                     support    
+## [1]  {bottled beer, red/blush wine}  =&gt; {liquor}                0.001931876
+## [2]  {hamburger meat, soda}          =&gt; {Instant food products} 0.001220132
+## [3]  {ham, white bread}              =&gt; {processed cheese}      0.001931876
+## [4]  {bottled beer, liquor}          =&gt; {red/blush wine}        0.001931876
+## [5]  {Instant food products, soda}   =&gt; {hamburger meat}        0.001220132
+## [6]  {curd, sugar}                   =&gt; {flour}                 0.001118454
+## [7]  {baking powder, sugar}          =&gt; {flour}                 0.001016777
+## [8]  {processed cheese, white bread} =&gt; {ham}                   0.001931876
+## [9]  {fruit/vegetable juice, ham}    =&gt; {processed cheese}      0.001118454
+## [10] {margarine, sugar}              =&gt; {flour}                 0.001626843
+##      confidence coverage    lift     count
+## [1]  0.3958333  0.004880529 35.71579 19   
+## [2]  0.2105263  0.005795628 26.20919 12   
+## [3]  0.3800000  0.005083884 22.92822 19   
+## [4]  0.4130435  0.004677173 21.49356 19   
+## [5]  0.6315789  0.001931876 18.99565 12   
+## [6]  0.3235294  0.003457041 18.60767 11   
+## [7]  0.3125000  0.003253686 17.97332 10   
+## [8]  0.4634146  0.004168785 17.80345 19   
+## [9]  0.2894737  0.003863752 17.46610 11   
+## [10] 0.2962963  0.005490595 17.04137 16</code></pre>
+</div>
+<div id="visualizing-association-rules" class="section level1"
+number="9">
+<h1><span class="header-section-number">9</span> Visualizing Association
+Rules</h1>
+<pre class="r"><code>plot(
+  rules_pruned,
+  method = &quot;scatterplot&quot;,
+  measure = c(&quot;support&quot;, &quot;confidence&quot;),
+  shading = &quot;lift&quot;,
+  main = &quot;Association Rules: Support vs. Confidence, Shaded by Lift&quot;
+)</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/rule-scatter-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(
+  head(rules_pruned, 20),
+  method = &quot;graph&quot;,
+  engine = &quot;htmlwidget&quot;
+)</code></pre>
+<div class="visNetwork html-widget html-fill-item" id="htmlwidget-60b151e4c9354c75bd16" style="width:1152px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-60b151e4c9354c75bd16">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"label":["baking powder","bottled beer","cream cheese","curd","flour","fruit/vegetable juice","ham","hamburger meat","Instant food products","liquor","margarine","other vegetables","popcorn","processed cheese","red/blush wine","rolls/buns","root vegetables","salty snack","soda","sugar","whipped/sour cream","white bread","whole milk","yogurt","rule 1","rule 2","rule 3","rule 4","rule 5","rule 6","rule 7","rule 8","rule 9","rule 10","rule 11","rule 12","rule 13","rule 14","rule 15","rule 16","rule 17","rule 18","rule 19","rule 20"],"group":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],"value":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,100,23,100,100,23,11.99999999999999,1,100,11.99999999999999,66.99999999999999,1,23,1,33.99999999999999,1,100,55.99999999999999,1,11.99999999999999,1],"color":["#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#EE1B1B","#EE8484","#EEA0A0","#EEA9A9","#EEB8B8","#EEBABA","#EEBDBD","#EEBFBF","#EEC1C1","#EEC4C4","#EEC4C4","#EEC6C6","#EEC8C8","#EECFCF","#EED0D0","#EED0D0","#EED0D0","#EED0D0","#EED2D2","#EEDCDC"],"title":["baking powder","bottled beer","cream cheese","curd","flour","fruit/vegetable juice","ham","hamburger meat","Instant food products","liquor","margarine","other vegetables","popcorn","processed cheese","red/blush wine","rolls/buns","root vegetables","salty snack","soda","sugar","whipped/sour cream","white bread","whole milk","yogurt","<B>[1]<\/B><BR><B>{bottled beer,<BR>&nbsp;&nbsp;red/blush wine}<\/B><BR>&nbsp;&nbsp; => <B>{liquor}<\/B><BR><BR>support = 0.00193<BR>confidence = 0.396<BR>coverage = 0.00488<BR>lift = 35.7<BR>count = 19<BR>order = 3<BR>id = 1","<B>[2]<\/B><BR><B>{hamburger meat,<BR>&nbsp;&nbsp;soda}<\/B><BR>&nbsp;&nbsp; => <B>{Instant food products}<\/B><BR><BR>support = 0.00122<BR>confidence = 0.211<BR>coverage = 0.0058<BR>lift = 26.2<BR>count = 12<BR>order = 3<BR>id = 2","<B>[3]<\/B><BR><B>{ham,<BR>&nbsp;&nbsp;white bread}<\/B><BR>&nbsp;&nbsp; => <B>{processed cheese}<\/B><BR><BR>support = 0.00193<BR>confidence = 0.38<BR>coverage = 0.00508<BR>lift = 22.9<BR>count = 19<BR>order = 3<BR>id = 3","<B>[4]<\/B><BR><B>{bottled beer,<BR>&nbsp;&nbsp;liquor}<\/B><BR>&nbsp;&nbsp; => <B>{red/blush wine}<\/B><BR><BR>support = 0.00193<BR>confidence = 0.413<BR>coverage = 0.00468<BR>lift = 21.5<BR>count = 19<BR>order = 3<BR>id = 4","<B>[5]<\/B><BR><B>{Instant food products,<BR>&nbsp;&nbsp;soda}<\/B><BR>&nbsp;&nbsp; => <B>{hamburger meat}<\/B><BR><BR>support = 0.00122<BR>confidence = 0.632<BR>coverage = 0.00193<BR>lift = 19<BR>count = 12<BR>order = 3<BR>id = 5","<B>[6]<\/B><BR><B>{curd,<BR>&nbsp;&nbsp;sugar}<\/B><BR>&nbsp;&nbsp; => <B>{flour}<\/B><BR><BR>support = 0.00112<BR>confidence = 0.324<BR>coverage = 0.00346<BR>lift = 18.6<BR>count = 11<BR>order = 3<BR>id = 6","<B>[7]<\/B><BR><B>{baking powder,<BR>&nbsp;&nbsp;sugar}<\/B><BR>&nbsp;&nbsp; => <B>{flour}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.312<BR>coverage = 0.00325<BR>lift = 18<BR>count = 10<BR>order = 3<BR>id = 7","<B>[8]<\/B><BR><B>{processed cheese,<BR>&nbsp;&nbsp;white bread}<\/B><BR>&nbsp;&nbsp; => <B>{ham}<\/B><BR><BR>support = 0.00193<BR>confidence = 0.463<BR>coverage = 0.00417<BR>lift = 17.8<BR>count = 19<BR>order = 3<BR>id = 8","<B>[9]<\/B><BR><B>{fruit/vegetable juice,<BR>&nbsp;&nbsp;ham}<\/B><BR>&nbsp;&nbsp; => <B>{processed cheese}<\/B><BR><BR>support = 0.00112<BR>confidence = 0.289<BR>coverage = 0.00386<BR>lift = 17.5<BR>count = 11<BR>order = 3<BR>id = 9","<B>[10]<\/B><BR><B>{margarine,<BR>&nbsp;&nbsp;sugar}<\/B><BR>&nbsp;&nbsp; => <B>{flour}<\/B><BR><BR>support = 0.00163<BR>confidence = 0.296<BR>coverage = 0.00549<BR>lift = 17<BR>count = 16<BR>order = 3<BR>id = 10","<B>[11]<\/B><BR><B>{root vegetables,<BR>&nbsp;&nbsp;sugar,<BR>&nbsp;&nbsp;whole milk}<\/B><BR>&nbsp;&nbsp; => <B>{flour}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.294<BR>coverage = 0.00346<BR>lift = 16.9<BR>count = 10<BR>order = 4<BR>id = 11","<B>[12]<\/B><BR><B>{popcorn,<BR>&nbsp;&nbsp;soda}<\/B><BR>&nbsp;&nbsp; => <B>{salty snack}<\/B><BR><BR>support = 0.00122<BR>confidence = 0.632<BR>coverage = 0.00193<BR>lift = 16.7<BR>count = 12<BR>order = 3<BR>id = 12","<B>[13]<\/B><BR><B>{baking powder,<BR>&nbsp;&nbsp;flour}<\/B><BR>&nbsp;&nbsp; => <B>{sugar}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.556<BR>coverage = 0.00183<BR>lift = 16.4<BR>count = 10<BR>order = 3<BR>id = 13","<B>[14]<\/B><BR><B>{sugar,<BR>&nbsp;&nbsp;whipped/sour cream}<\/B><BR>&nbsp;&nbsp; => <B>{baking powder}<\/B><BR><BR>support = 0.00132<BR>confidence = 0.271<BR>coverage = 0.00488<BR>lift = 15.3<BR>count = 13<BR>order = 3<BR>id = 14","<B>[15]<\/B><BR><B>{soda,<BR>&nbsp;&nbsp;white bread,<BR>&nbsp;&nbsp;whole milk}<\/B><BR>&nbsp;&nbsp; => <B>{processed cheese}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.25<BR>coverage = 0.00407<BR>lift = 15.1<BR>count = 10<BR>order = 4<BR>id = 15","<B>[16]<\/B><BR><B>{ham,<BR>&nbsp;&nbsp;processed cheese}<\/B><BR>&nbsp;&nbsp; => <B>{white bread}<\/B><BR><BR>support = 0.00193<BR>confidence = 0.633<BR>coverage = 0.00305<BR>lift = 15<BR>count = 19<BR>order = 3<BR>id = 16","<B>[17]<\/B><BR><B>{Instant food products,<BR>&nbsp;&nbsp;whole milk}<\/B><BR>&nbsp;&nbsp; => <B>{hamburger meat}<\/B><BR><BR>support = 0.00153<BR>confidence = 0.5<BR>coverage = 0.00305<BR>lift = 15<BR>count = 15<BR>order = 3<BR>id = 17","<B>[18]<\/B><BR><B>{curd,<BR>&nbsp;&nbsp;other vegetables,<BR>&nbsp;&nbsp;whipped/sour cream,<BR>&nbsp;&nbsp;yogurt}<\/B><BR>&nbsp;&nbsp; => <B>{cream cheese}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.588<BR>coverage = 0.00173<BR>lift = 14.8<BR>count = 10<BR>order = 5<BR>id = 18","<B>[19]<\/B><BR><B>{fruit/vegetable juice,<BR>&nbsp;&nbsp;processed cheese}<\/B><BR>&nbsp;&nbsp; => <B>{ham}<\/B><BR><BR>support = 0.00112<BR>confidence = 0.379<BR>coverage = 0.00295<BR>lift = 14.6<BR>count = 11<BR>order = 3<BR>id = 19","<B>[20]<\/B><BR><B>{Instant food products,<BR>&nbsp;&nbsp;rolls/buns}<\/B><BR>&nbsp;&nbsp; => <B>{hamburger meat}<\/B><BR><BR>support = 0.00102<BR>confidence = 0.435<BR>coverage = 0.00234<BR>lift = 13.1<BR>count = 10<BR>order = 3<BR>id = 20"],"shape":["box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","box","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle"],"x":[0.2195409032563238,0.876451027611179,0.2659046538638099,0.4858125754652887,0.3957407085864573,-0.03998790542665209,-0.343424425230863,-0.6412789318269141,-0.5451773853096966,0.8368025035521149,0.7981035139176076,0.5518964744355876,-1,-0.3371423119927061,1,-0.4165008676354246,-0.05436097720746835,-0.9056074473400739,-0.6351166791954225,0.3463371088714611,0.2840791052796214,-0.452784346192902,-0.2151702104756209,0.4029719951772581,0.8157936572684668,-0.7350456039744352,-0.2405658816086422,0.9494636352695971,-0.6095299949455821,0.4858721920195321,0.2634777335460554,-0.5365615719983574,-0.2383886766119697,0.5985884123223364,0.0679190570413748,-0.8351862235441831,0.4002383662522098,0.2530724887627775,-0.3898011722094669,-0.5057109298249487,-0.3921208331291471,0.4067389147406648,-0.1362259645515438,-0.5374458946348588],"y":[-0.6265950209293514,0.0330771373473433,0.5530995980633036,0.05669385528815707,-0.6069383646971604,1,0.7695426451171148,-0.5872198066214667,-0.5473294357080993,0.4424168573826592,-0.6690743823033338,0.6079929777527715,-0.02140537374062423,0.5923950131830973,0.1298196633915913,-1,-0.7685887251645661,0.280865441393408,-0.09005622074861153,-0.5169005526084504,0.0773548278027707,0.4318742439471313,-0.2292776779972573,0.7041412064926307,0.2138238347564649,-0.3889265257076966,0.521162807253972,0.283727273561134,-0.344954209133381,-0.2985139008447972,-0.7972167812346143,0.6004951332634896,0.9162201145462801,-0.6263398134836209,-0.504133853837363,0.06691890093281283,-0.7838398770656292,-0.2801441041443069,0.154099294973371,0.7205821448916443,-0.4641450920725099,0.3841970164754942,0.7933328329212064,-0.8020811858119234]},"edges":{"from":[2,15,8,19,7,22,2,10,9,19,4,20,1,20,14,22,6,7,11,20,17,20,23,13,19,1,5,20,21,19,22,23,7,14,9,23,4,12,21,24,6,14,9,16,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"to":[25,25,26,26,27,27,28,28,29,29,30,30,31,31,32,32,33,33,34,34,35,35,35,36,36,37,37,38,38,39,39,39,40,40,41,41,42,42,42,42,43,43,44,44,10,9,14,15,8,5,5,7,14,5,5,18,20,1,14,22,8,3,7,8],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":false},"physics":{"stabilization":false},"interaction":{"hover":true,"zoomSpeed":1}},"groups":["1","2"],"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","igraphlayout":{"type":"square"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":true,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>graph_rules &lt;- head(sort(rules_pruned, by = &quot;lift&quot;, decreasing = TRUE), 20)
+graph_rules_df &lt;- as(graph_rules, &quot;data.frame&quot;) %&gt;%
+  as_tibble() %&gt;%
+  mutate(
+    rule_id = paste0(&quot;rule_&quot;, row_number()),
+    lhs = labels(lhs(graph_rules)),
+    rhs = labels(rhs(graph_rules))
+  )
+
+parse_itemset &lt;- function(label) {
+  cleaned &lt;- stringr::str_remove_all(label, &quot;\\{|\\}&quot;)
+  if (nchar(cleaned) == 0) {
+    character(0)
+  } else {
+    stringr::str_split(cleaned, &quot;,\\s*&quot;)[[1]]
+  }
+}
+
+graph_rules_df &lt;- graph_rules_df %&gt;%
+  mutate(
+    lhs_items = map(lhs, parse_itemset),
+    rhs_items = map(rhs, parse_itemset),
+    node_strength = lift
+  )
+
+graph_item_names &lt;- sort(unique(c(unlist(graph_rules_df$lhs_items), unlist(graph_rules_df$rhs_items))))
+
+graph_item_stats &lt;- item_frequency_table %&gt;%
+  filter(item %in% graph_item_names) %&gt;%
+  mutate(
+    connected_lift_mean = map_dbl(item, function(item_name) {
+      connected_rules &lt;- map_lgl(seq_len(nrow(graph_rules_df)), function(i) {
+        item_name %in% graph_rules_df$lhs_items[[i]] ||
+          item_name %in% graph_rules_df$rhs_items[[i]]
+      })
+
+      if (any(connected_rules)) {
+        mean(graph_rules_df$lift[connected_rules])
+      } else {
+        support
+      }
+    }),
+    node_strength = connected_lift_mean
+  ) %&gt;%
+  arrange(desc(node_strength), desc(support))
+
+rules_graph_data &lt;- list(
+  graph = list(
+    title = &quot;Association Rules Network&quot;,
+    z_axis = &quot;Association prominence&quot;,
+    note = &quot;Rule nodes use lift; item nodes use the average lift of connected rules.&quot;
+  ),
+  items = graph_item_stats %&gt;%
+    select(item, count, support, connected_lift_mean, node_strength),
+  rules = graph_rules_df %&gt;%
+    select(
+      rule_id,
+      lhs,
+      rhs,
+      lhs_items,
+      rhs_items,
+      support,
+      confidence,
+      lift,
+      count,
+      node_strength
+    )
+)
+
+export_paths &lt;- c(
+  &quot;rules_graph.json&quot;,
+  file.path(&quot;basket-viz&quot;, &quot;public&quot;, &quot;rules_graph.json&quot;)
+)
+
+walk(export_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    rules_graph_data,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+head(graph_rules_df, 10)</code></pre>
+<pre><code>## # A tibble: 10 x 12
+##    rules   support confidence coverage  lift count rule_id lhs   rhs   lhs_items
+##    &lt;chr&gt;     &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;list&gt;   
+##  1 {bottl~ 0.00193      0.396  0.00488  35.7    19 rule_1  {bot~ {liq~ &lt;chr [2]&gt;
+##  2 {hambu~ 0.00122      0.211  0.00580  26.2    12 rule_2  {ham~ {Ins~ &lt;chr [2]&gt;
+##  3 {ham,w~ 0.00193      0.38   0.00508  22.9    19 rule_3  {ham~ {pro~ &lt;chr [2]&gt;
+##  4 {bottl~ 0.00193      0.413  0.00468  21.5    19 rule_4  {bot~ {red~ &lt;chr [2]&gt;
+##  5 {Insta~ 0.00122      0.632  0.00193  19.0    12 rule_5  {Ins~ {ham~ &lt;chr [2]&gt;
+##  6 {curd,~ 0.00112      0.324  0.00346  18.6    11 rule_6  {cur~ {flo~ &lt;chr [2]&gt;
+##  7 {bakin~ 0.00102      0.312  0.00325  18.0    10 rule_7  {bak~ {flo~ &lt;chr [2]&gt;
+##  8 {proce~ 0.00193      0.463  0.00417  17.8    19 rule_8  {pro~ {ham} &lt;chr [2]&gt;
+##  9 {fruit~ 0.00112      0.289  0.00386  17.5    11 rule_9  {fru~ {pro~ &lt;chr [2]&gt;
+## 10 {marga~ 0.00163      0.296  0.00549  17.0    16 rule_10 {mar~ {flo~ &lt;chr [2]&gt;
+## # i 2 more variables: rhs_items &lt;list&gt;, node_strength &lt;dbl&gt;</code></pre>
+</div>
+<div id="interpretation-of-the-top-rules" class="section level1"
+number="10">
+<h1><span class="header-section-number">10</span> Interpretation of the
+Top Rules</h1>
+<p>The highest-lift rules identify item combinations that occur together
+much more often than expected by chance. These rules are especially
+useful for:</p>
+<ul>
+<li>Product placement</li>
+<li>Bundle recommendations</li>
+<li>Coupon targeting</li>
+<li>Cross-selling strategy</li>
+<li>Understanding recurring shopping missions</li>
+</ul>
+<p>A high-lift rule does not automatically mean the items are frequently
+purchased overall. It means the items are unusually strongly associated
+relative to their individual purchase frequencies.</p>
+</div>
+<div id="extra-credit-simple-cluster-analysis" class="section level1"
+number="11">
+<h1><span class="header-section-number">11</span> Extra Credit: Simple
+Cluster Analysis</h1>
+<p>Association rules identify relationships between specific items.
+Cluster analysis answers a different question:</p>
+<blockquote>
+<p>Which receipts look similar overall?</p>
+</blockquote>
+<p>For this section, each transaction is converted into a binary vector
+where:</p>
+<ul>
+<li><code>1</code> means the item appears in the basket</li>
+<li><code>0</code> means the item does not appear in the basket</li>
+</ul>
+<p>Because the full item matrix can be sparse and high-dimensional, this
+analysis focuses on the most frequently purchased items.</p>
+<div id="build-a-basket-item-matrix" class="section level2"
+number="11.1">
+<h2><span class="header-section-number">11.1</span> Build a Basket-Item
+Matrix</h2>
+<pre class="r"><code>transaction_matrix &lt;- as(transactions, &quot;ngCMatrix&quot;)
+transaction_matrix &lt;- t(transaction_matrix)
+colnames(transaction_matrix) &lt;- itemLabels(transactions)
+
+# Keep the top N items to make clustering more interpretable.
+top_n_items &lt;- 50
+top_items &lt;- item_frequency_table %&gt;%
+  slice_head(n = top_n_items) %&gt;%
+  pull(item)
+
+cluster_matrix &lt;- as.matrix(transaction_matrix[, top_items])
+
+cluster_matrix[1:10, 1:10]</code></pre>
+<pre><code>##       whole milk other vegetables rolls/buns  soda yogurt bottled water
+##  [1,]      FALSE            FALSE      FALSE FALSE  FALSE         FALSE
+##  [2,]      FALSE            FALSE      FALSE FALSE   TRUE         FALSE
+##  [3,]       TRUE            FALSE      FALSE FALSE  FALSE         FALSE
+##  [4,]      FALSE            FALSE      FALSE FALSE   TRUE         FALSE
+##  [5,]       TRUE             TRUE      FALSE FALSE  FALSE         FALSE
+##  [6,]       TRUE            FALSE      FALSE FALSE   TRUE         FALSE
+##  [7,]      FALSE            FALSE       TRUE FALSE  FALSE         FALSE
+##  [8,]      FALSE             TRUE       TRUE FALSE  FALSE         FALSE
+##  [9,]      FALSE            FALSE      FALSE FALSE  FALSE         FALSE
+## [10,]       TRUE            FALSE      FALSE FALSE  FALSE         FALSE
+##       root vegetables tropical fruit shopping bags sausage
+##  [1,]           FALSE          FALSE         FALSE   FALSE
+##  [2,]           FALSE           TRUE         FALSE   FALSE
+##  [3,]           FALSE          FALSE         FALSE   FALSE
+##  [4,]           FALSE          FALSE         FALSE   FALSE
+##  [5,]           FALSE          FALSE         FALSE   FALSE
+##  [6,]           FALSE          FALSE         FALSE   FALSE
+##  [7,]           FALSE          FALSE         FALSE   FALSE
+##  [8,]           FALSE          FALSE         FALSE   FALSE
+##  [9,]           FALSE          FALSE         FALSE   FALSE
+## [10,]           FALSE          FALSE         FALSE   FALSE</code></pre>
+</div>
+<div id="reduce-dimensions-with-pca" class="section level2"
+number="11.2">
+<h2><span class="header-section-number">11.2</span> Reduce Dimensions
+with PCA</h2>
+<pre class="r"><code>pca_result &lt;- prcomp(cluster_matrix, center = TRUE, scale. = TRUE)
+
+pca_scores &lt;- as_tibble(pca_result$x[, 1:3]) %&gt;%
+  rename(PC1 = 1, PC2 = 2, PC3 = 3)
+
+variance_explained &lt;- tibble(
+  component = paste0(&quot;PC&quot;, seq_along(pca_result$sdev)),
+  variance = pca_result$sdev^2 / sum(pca_result$sdev^2)
+)
+
+variance_explained %&gt;%
+  slice_head(n = 10)</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    component variance
+##    &lt;chr&gt;        &lt;dbl&gt;
+##  1 PC1         0.0582
+##  2 PC2         0.0293
+##  3 PC3         0.0248
+##  4 PC4         0.0244
+##  5 PC5         0.0241
+##  6 PC6         0.0231
+##  7 PC7         0.0227
+##  8 PC8         0.0225
+##  9 PC9         0.0219
+## 10 PC10        0.0216</code></pre>
+<pre class="r"><code>variance_explained %&gt;%
+  slice_head(n = 10) %&gt;%
+  ggplot(aes(x = component, y = variance)) +
+  geom_col() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = &quot;Variance Explained by Principal Components&quot;,
+    x = &quot;Principal Component&quot;,
+    y = &quot;Variance Explained&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/pca-scree-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="choose-a-number-of-clusters" class="section level2"
+number="11.3">
+<h2><span class="header-section-number">11.3</span> Choose a Number of
+Clusters</h2>
+<pre class="r"><code>set.seed(42)
+
+wss &lt;- map_dbl(1:10, function(k) {
+  kmeans(pca_scores, centers = k, nstart = 25)$tot.withinss
+})
+
+elbow_table &lt;- tibble(k = 1:10, within_cluster_sum_squares = wss)
+elbow_table</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##        k within_cluster_sum_squares
+##    &lt;int&gt;                      &lt;dbl&gt;
+##  1     1                     55241.
+##  2     2                     36108.
+##  3     3                     29745.
+##  4     4                     24884.
+##  5     5                     21028.
+##  6     6                     18636.
+##  7     7                     16950.
+##  8     8                     15670.
+##  9     9                     14655.
+## 10    10                     13731.</code></pre>
+<pre class="r"><code>elbow_table %&gt;%
+  ggplot(aes(x = k, y = within_cluster_sum_squares)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = 1:10) +
+  labs(
+    title = &quot;Elbow Method for Choosing Number of Clusters&quot;,
+    x = &quot;Number of Clusters&quot;,
+    y = &quot;Total Within-Cluster Sum of Squares&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/elbow-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="run-k-means-clustering" class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Run K-Means
+Clustering</h2>
+<p>This report uses <code>k = 4</code> as a simple, interpretable
+default. Adjust this value if the elbow plot suggests a better
+choice.</p>
+<pre class="r"><code>set.seed(42)
+
+k_value &lt;- 4
+kmeans_result &lt;- kmeans(pca_scores, centers = k_value, nstart = 50)
+
+clustered_baskets &lt;- pca_scores %&gt;%
+  mutate(
+    transaction_id = row_number(),
+    cluster = factor(kmeans_result$cluster),
+    basket_size = basket_sizes
+  )
+
+clustered_baskets %&gt;%
+  count(cluster, name = &quot;number_of_transactions&quot;)</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   cluster number_of_transactions
+##   &lt;fct&gt;                    &lt;int&gt;
+## 1 1                         1458
+## 2 2                         1639
+## 3 3                         5826
+## 4 4                          912</code></pre>
+<pre class="r"><code>clustered_baskets %&gt;%
+  ggplot(aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(alpha = 0.6, size = 1.8) +
+  labs(
+    title = &quot;Receipt Clusters Based on Grocery Basket Similarity&quot;,
+    subtitle = &quot;Each point represents one transaction projected into PCA space&quot;,
+    x = &quot;Principal Component 1&quot;,
+    y = &quot;Principal Component 2&quot;,
+    color = &quot;Cluster&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/cluster-plot-2d-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="cluster-profiles" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> Cluster Profiles</h1>
+<p>The table below shows which items are most common within each
+cluster. This helps explain what each cluster represents.</p>
+<pre class="r"><code>cluster_profiles &lt;- map_dfr(levels(clustered_baskets$cluster), function(cl) {
+  transaction_ids &lt;- clustered_baskets %&gt;%
+    filter(cluster == cl) %&gt;%
+    pull(transaction_id)
+
+  item_rates &lt;- colMeans(cluster_matrix[transaction_ids, , drop = FALSE])
+
+  tibble(
+    cluster = cl,
+    item = names(item_rates),
+    within_cluster_support = item_rates
+  ) %&gt;%
+    arrange(desc(within_cluster_support)) %&gt;%
+    slice_head(n = 10)
+})
+
+cluster_profiles</code></pre>
+<pre><code>## # A tibble: 40 x 3
+##    cluster item               within_cluster_support
+##    &lt;chr&gt;   &lt;chr&gt;                               &lt;dbl&gt;
+##  1 1       whole milk                          0.613
+##  2 1       other vegetables                    0.578
+##  3 1       root vegetables                     0.446
+##  4 1       yogurt                              0.318
+##  5 1       whipped/sour cream                  0.287
+##  6 1       rolls/buns                          0.241
+##  7 1       tropical fruit                      0.222
+##  8 1       citrus fruit                        0.218
+##  9 1       beef                                0.209
+## 10 1       domestic eggs                       0.201
+## # i 30 more rows</code></pre>
+<pre class="r"><code>cluster_profiles %&gt;%
+  mutate(item = reorder_within(item, within_cluster_support, cluster)) %&gt;%
+  ggplot(aes(x = item, y = within_cluster_support)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ cluster, scales = &quot;free_y&quot;) +
+  scale_x_reordered() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = &quot;Top Items by Cluster&quot;,
+    x = &quot;Item&quot;,
+    y = &quot;Within-Cluster Support&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="market_basket_analysis_files/figure-html/cluster-profile-plot-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="optional-export-for-a-three.js-next.js-3d-visualization"
+class="section level1" number="13">
+<h1><span class="header-section-number">13</span> Optional Export for a
+Three.js / Next.js 3D Visualization</h1>
+<p>This creates a JSON file where each receipt becomes one point in a 3D
+scene.</p>
+<p>Suggested visual design:</p>
+<ul>
+<li>Each point is one receipt</li>
+<li>X and Y are the first two PCA coordinates</li>
+<li>Z is a basket rarity score derived from item support</li>
+<li>Color represents cluster</li>
+<li>Point size represents basket size</li>
+<li>Hover text shows the items in the basket</li>
+</ul>
+<pre class="r"><code>items_by_transaction &lt;- map_chr(grocery_list, ~ paste(.x, collapse = &quot;, &quot;))
+item_support_map &lt;- setNames(item_frequency_table$support, item_frequency_table$item)
+
+basket_rarity_score &lt;- map_dbl(grocery_list, function(items) {
+  support_values &lt;- item_support_map[items]
+  mean(-log10(support_values), na.rm = TRUE)
+})
+
+basket_rarity_scaled &lt;- rescale(basket_rarity_score, to = c(-2.75, 2.75))
+
+threejs_data &lt;- clustered_baskets %&gt;%
+  mutate(
+    x = PC1,
+    y = PC2,
+    z = basket_rarity_scaled,
+    rarity_score = basket_rarity_score,
+    rarity_score_scaled = basket_rarity_scaled,
+    items = items_by_transaction,
+    basket_size_scaled = rescale(basket_size, to = c(2, 10))
+  ) %&gt;%
+  select(
+    transaction_id,
+    x,
+    y,
+    z,
+    cluster,
+    basket_size,
+    basket_size_scaled,
+    rarity_score,
+    rarity_score_scaled,
+    items
+  )
+
+export_paths &lt;- c(
+  &quot;basket_clusters.json&quot;,
+  file.path(&quot;basket-viz&quot;, &quot;public&quot;, &quot;basket_clusters.json&quot;)
+)
+
+walk(export_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    threejs_data,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+head(threejs_data, 10)</code></pre>
+<pre><code>## # A tibble: 10 x 10
+##    transaction_id       x       y      z cluster basket_size basket_size_scaled
+##             &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;              &lt;dbl&gt;
+##  1              1 -0.421   1.01   -0.571 3                 4               2.77
+##  2              2 -0.0400 -0.0248 -1.90  2                 3               2.52
+##  3              3 -1.14    0.717  -2.75  3                 1               2   
+##  4              4  0.386  -0.0274 -1.09  2                 4               2.77
+##  5              5  0.186  -0.122  -1.59  3                 4               2.77
+##  6              6  0.385   1.00   -1.06  3                 5               3.03
+##  7              7 -1.50    0.317  -2.47  3                 1               2   
+##  8              8 -0.424   0.544  -1.51  2                 5               3.03
+##  9              9 -1.74    0.388  -0.451 3                 1               2   
+## 10             10 -1.14    0.717  -1.13  3                 2               2.26
+## # i 3 more variables: rarity_score &lt;dbl&gt;, rarity_score_scaled &lt;dbl&gt;,
+## #   items &lt;chr&gt;</code></pre>
+<pre class="r"><code>presentation_report &lt;- list(
+  summary = list(
+    total_transactions = length(transactions),
+    unique_items = length(itemLabels(transactions)),
+    average_basket_size = round(mean(basket_sizes), 2),
+    median_basket_size = as.integer(median(basket_sizes)),
+    largest_basket = as.integer(max(basket_sizes)),
+    total_rules = as.integer(length(rules_pruned)),
+    strongest_lift = round(top_10_rules_table$lift[1], 4),
+    cluster_count = k_value
+  ),
+  item_frequency = list(
+    top_items = top_20_items %&gt;%
+      mutate(
+        support_pct = support * 100
+      ) %&gt;%
+      select(item, count, support, support_pct)
+  ),
+  association_rules = list(
+    top_rules = top_10_rules_table %&gt;%
+      mutate(
+        lhs = labels(lhs(top_10_rules)),
+        rhs = labels(rhs(top_10_rules))
+      ) %&gt;%
+      select(lhs, rhs, support, confidence, coverage, lift, count)
+  ),
+  clustering = list(
+    variance_explained = variance_explained %&gt;%
+      slice_head(n = 10) %&gt;%
+      mutate(variance_pct = variance * 100),
+    elbow = elbow_table,
+    cluster_counts = clustered_baskets %&gt;%
+      count(cluster, name = &quot;count&quot;) %&gt;%
+      arrange(cluster),
+    cluster_profiles = cluster_profiles %&gt;%
+      mutate(
+        cluster = as.character(cluster),
+        within_cluster_support_pct = within_cluster_support * 100
+      ) %&gt;%
+      select(cluster, item, within_cluster_support, within_cluster_support_pct)
+  )
+)
+
+presentation_paths &lt;- c(
+  &quot;presentation_report.json&quot;,
+  file.path(&quot;basket-viz&quot;, &quot;public&quot;, &quot;presentation_report.json&quot;)
+)
+
+walk(presentation_paths, function(path) {
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+  write_json(
+    presentation_report,
+    path = path,
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+})
+
+presentation_report</code></pre>
+<pre><code>## $summary
+## $summary$total_transactions
+## [1] 9835
+## 
+## $summary$unique_items
+## [1] 169
+## 
+## $summary$average_basket_size
+## [1] 4.41
+## 
+## $summary$median_basket_size
+## [1] 3
+## 
+## $summary$largest_basket
+## [1] 32
+## 
+## $summary$total_rules
+## [1] 18606
+## 
+## $summary$strongest_lift
+## [1] 35.7158
+## 
+## $summary$cluster_count
+## [1] 4
+## 
+## 
+## $item_frequency
+## $item_frequency$top_items
+## # A tibble: 20 x 4
+##    item                  count support support_pct
+##    &lt;chr&gt;                 &lt;int&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+##  1 whole milk             2513  0.256        25.6 
+##  2 other vegetables       1903  0.193        19.3 
+##  3 rolls/buns             1809  0.184        18.4 
+##  4 soda                   1715  0.174        17.4 
+##  5 yogurt                 1372  0.140        14.0 
+##  6 bottled water          1087  0.111        11.1 
+##  7 root vegetables        1072  0.109        10.9 
+##  8 tropical fruit         1032  0.105        10.5 
+##  9 shopping bags           969  0.0985        9.85
+## 10 sausage                 924  0.0940        9.40
+## 11 pastry                  875  0.0890        8.90
+## 12 citrus fruit            814  0.0828        8.28
+## 13 bottled beer            792  0.0805        8.05
+## 14 newspapers              785  0.0798        7.98
+## 15 canned beer             764  0.0777        7.77
+## 16 pip fruit               744  0.0756        7.56
+## 17 fruit/vegetable juice   711  0.0723        7.23
+## 18 whipped/sour cream      705  0.0717        7.17
+## 19 brown bread             638  0.0649        6.49
+## 20 domestic eggs           624  0.0634        6.34
+## 
+## 
+## $association_rules
+## $association_rules$top_rules
+## # A tibble: 10 x 7
+##    lhs                            rhs    support confidence coverage  lift count
+##    &lt;chr&gt;                          &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 {bottled beer,red/blush wine}  {liqu~  0.0019      0.396  0.00488  35.7    19
+##  2 {hamburger meat,soda}          {Inst~  0.0012      0.210  0.00580  26.2    12
+##  3 {ham,white bread}              {proc~  0.0019      0.38   0.00508  22.9    19
+##  4 {bottled beer,liquor}          {red/~  0.0019      0.413  0.00468  21.5    19
+##  5 {Instant food products,soda}   {hamb~  0.0012      0.632  0.00193  19.0    12
+##  6 {curd,sugar}                   {flou~  0.0011      0.324  0.00346  18.6    11
+##  7 {baking powder,sugar}          {flou~  0.001       0.312  0.00325  18.0    10
+##  8 {processed cheese,white bread} {ham}   0.0019      0.463  0.00417  17.8    19
+##  9 {fruit/vegetable juice,ham}    {proc~  0.0011      0.290  0.00386  17.5    11
+## 10 {margarine,sugar}              {flou~  0.0016      0.296  0.00549  17.0    16
+## 
+## 
+## $clustering
+## $clustering$variance_explained
+## # A tibble: 10 x 3
+##    component variance variance_pct
+##    &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+##  1 PC1         0.0582         5.82
+##  2 PC2         0.0293         2.93
+##  3 PC3         0.0248         2.48
+##  4 PC4         0.0244         2.44
+##  5 PC5         0.0241         2.41
+##  6 PC6         0.0231         2.31
+##  7 PC7         0.0227         2.27
+##  8 PC8         0.0225         2.25
+##  9 PC9         0.0219         2.19
+## 10 PC10        0.0216         2.16
+## 
+## $clustering$elbow
+## # A tibble: 10 x 2
+##        k within_cluster_sum_squares
+##    &lt;int&gt;                      &lt;dbl&gt;
+##  1     1                     55241.
+##  2     2                     36108.
+##  3     3                     29745.
+##  4     4                     24884.
+##  5     5                     21028.
+##  6     6                     18636.
+##  7     7                     16950.
+##  8     8                     15670.
+##  9     9                     14655.
+## 10    10                     13731.
+## 
+## $clustering$cluster_counts
+## # A tibble: 4 x 2
+##   cluster count
+##   &lt;fct&gt;   &lt;int&gt;
+## 1 1        1458
+## 2 2        1639
+## 3 3        5826
+## 4 4         912
+## 
+## $clustering$cluster_profiles
+## # A tibble: 40 x 4
+##    cluster item               within_cluster_support within_cluster_support_pct
+##    &lt;chr&gt;   &lt;chr&gt;                               &lt;dbl&gt;                      &lt;dbl&gt;
+##  1 1       whole milk                          0.613                       61.3
+##  2 1       other vegetables                    0.578                       57.8
+##  3 1       root vegetables                     0.446                       44.6
+##  4 1       yogurt                              0.318                       31.8
+##  5 1       whipped/sour cream                  0.287                       28.7
+##  6 1       rolls/buns                          0.241                       24.1
+##  7 1       tropical fruit                      0.222                       22.2
+##  8 1       citrus fruit                        0.218                       21.8
+##  9 1       beef                                0.209                       20.9
+## 10 1       domestic eggs                       0.201                       20.1
+## # i 30 more rows</code></pre>
+</div>
+<div id="conclusion" class="section level1" number="14">
+<h1><span class="header-section-number">14</span> Conclusion</h1>
+<p>This analysis shows how association-rule mining can identify products
+that appear together more often than expected by chance. The top rules
+by lift reveal the strongest item relationships in the grocery
+transactions.</p>
+<p>The cluster analysis adds a second layer of insight by grouping
+entire baskets according to similarity. Instead of only asking “which
+items go together?”, clustering asks “which shopping trips look alike?”
+This is useful for understanding broad customer shopping patterns and
+for building a more visual story around the data.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
